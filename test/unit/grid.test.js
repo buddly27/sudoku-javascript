@@ -511,7 +511,6 @@ describe("SudokuGrid", () => {
         let grid;
 
         beforeEach(() => {
-            const _cell = require("sudoku/cell");
             applyNextCandidatesSpy = jest.fn();
             updateCandidatesSpy = jest.fn();
 
