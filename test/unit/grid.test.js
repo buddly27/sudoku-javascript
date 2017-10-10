@@ -622,6 +622,45 @@ describe("SudokuGrid", () => {
         );
     });
 
+    describe("validate", () => {
+        beforeAll(() => {
+            const cell = require("sudoku/cell");
+
+            cell.SudokuCell = jest.fn(
+                (value, rowIndex, columnIndex) => (
+                    {
+                        value: () => value,
+                        row: () => rowIndex,
+                        column: () => columnIndex,
+                    }
+                )
+            );
+        });
+
+        it("should not return any errors", () => {
+            const grid = new SudokuGrid();
+            expect(grid.validate()).toEqual({});
+        });
+
+        it("should return a two errors", () => {
+            const grid = new SudokuGrid({c00: 3, c02: 3});
+            expect(grid.validate()).toEqual({
+                c00: grid.cell(0, 0),
+                c02: grid.cell(0, 2),
+            });
+        });
+
+        it("should return several errors", () => {
+            const grid = new SudokuGrid({c00: 3, c02: 3, c20: 3, c28: 3});
+            expect(grid.validate()).toEqual({
+                c00: grid.cell(0, 0),
+                c02: grid.cell(0, 2),
+                c20: grid.cell(2, 0),
+                c28: grid.cell(2, 8),
+            });
+        });
+    });
+
     describe("toMapping", () => {
         beforeAll(() => {
             const cell = require("sudoku/cell");

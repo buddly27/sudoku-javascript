@@ -261,6 +261,64 @@ export class SudokuGrid {
     }
 
     /**
+     * Validate the grid and return potential errors.
+     *
+     * Errors are returned in the form of an object mapping each cell identifier
+     * with a :class:`sudoku.cell.SudokuCell` instance::
+     *
+     *     >>> grid.validate()
+     *     {
+     *         "c42": [SudokuCell],
+     *         "c47": [SudokuCell],
+     *     }
+     *
+     * A valid grid would return an empty object.
+     */
+    validate() {
+        const errors = {};
+
+        _.range(this.rowSize).forEach((rowIndex) => {
+            const cells = this.cellsInRow(rowIndex);
+            const counter = _.countBy(cells.map((cell) => cell.value()));
+
+            cells.forEach((cell) => {
+                if (cell.value() !== 0 && counter[cell.value()] > 1) {
+                    errors[`c${cell.row()}${cell.column()}`] = cell;
+                }
+            });
+        });
+
+        _.range(this.columnSize).forEach((columnIndex) => {
+            const cells = this.cellsInColumn(columnIndex);
+            const counter = _.countBy(cells.map((cell) => cell.value()));
+
+            cells.forEach((cell) => {
+                if (cell.value() !== 0 && counter[cell.value()] > 1) {
+                    errors[`c${cell.row()}${cell.column()}`] = cell;
+                }
+            });
+        });
+
+        const rows = _.range(0, this.rowSize, this.blockRowSize);
+        const columns = _.range(0, this.columnSize, this.blockColumnSize);
+
+        rows.forEach((rowIndex) => {
+            columns.forEach((columnIndex) => {
+                const cells = this.cellsInBlock(rowIndex, columnIndex);
+                const counter = _.countBy(cells.map((cell) => cell.value()));
+
+                cells.forEach((cell) => {
+                    if (cell.value() !== 0 && counter[cell.value()] > 1) {
+                        errors[`c${cell.row()}${cell.column()}`] = cell;
+                    }
+                });
+            });
+        });
+
+        return errors;
+    }
+
+    /**
      * Return the content of the grid as a cell mapping.
      *
      * The mapping is similar to the *cellsMapping* argument given to the
