@@ -8,3 +8,4 @@ sudoku
 ======
 
 .. automodule:: sudoku
+    :module-path-alias: sudoku-javascript
