@@ -94,7 +94,7 @@ export class IntersectionStrategy {
  * which are aligned and makes their other occurrences in the entire row or
  * column impossible.
  *
- * .. notes::
+ * .. note::
  *
  *     http://www.sudokuwiki.org/Intersection_Removal
  */
@@ -337,7 +337,7 @@ export class PointingStrategy extends IntersectionStrategy {
  * content of the blocks. All numbers found grouped in a row or a column in just
  * one bloc will invalidate those numbers from the rest of the block.
  *
- * .. notes::
+ * .. note::
  *
  *     http://www.sudokuwiki.org/Intersection_Removal
  */

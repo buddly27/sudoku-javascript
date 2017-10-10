@@ -162,7 +162,7 @@ export class BasicStrategy {
  * Strategy to solve a grid by removing possibilities from one cell
  * if we identify numbers which can be only in this cell.
  *
- * .. notes::
+ * .. note::
  *
  *     http://www.sudokuwiki.org/Hidden_Candidates
  *
