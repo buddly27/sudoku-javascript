@@ -194,7 +194,7 @@ export class HiddenSingleStrategy extends BasicStrategy {
  * Strategy to solve a grid by removing possibilities from two cells
  * if we identify numbers which can be only in those two cells.
  *
- * .. notes::
+ * .. note::
  *
  *     http://www.sudokuwiki.org/Hidden_Candidates
  *
@@ -242,7 +242,7 @@ export class HiddenPairStrategy extends BasicStrategy {
  * Strategy to solve a grid by removing possibilities from three cells
  * if we identify numbers which can be only in those three cells.
  *
- * .. notes::
+ * .. note::
  *
  *     http://www.sudokuwiki.org/Hidden_Candidates
  *
@@ -286,7 +286,7 @@ export class HiddenTripleStrategy extends BasicStrategy {
  * Strategy to solve a grid by removing possibilities from four cells
  * if we identify numbers which can be only in those four cells.
  *
- * .. notes::
+ * .. note::
  *
  *     http://www.sudokuwiki.org/Hidden_Candidates
  *
@@ -330,7 +330,7 @@ export class HiddenQuadStrategy extends BasicStrategy {
  * Strategy to solve a grid by removing two possible numbers from all cells
  * when we identify two cells which can only contains those numbers.
  *
- * .. notes::
+ * .. note::
  *
  *     http://www.sudokuwiki.org/Naked_Candidates
  *
@@ -374,7 +374,7 @@ export class NakedPairStrategy extends BasicStrategy {
  * Strategy to solve a grid by removing three possible numbers from all cells
  * when we identify three cells which can only contains those numbers.
  *
- * .. notes::
+ * .. note::
  *
  *     http://www.sudokuwiki.org/Naked_Candidates
  *
