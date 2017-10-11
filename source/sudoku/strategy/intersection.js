@@ -451,7 +451,7 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
         cellsInRows.concat(cellsInColumns)
             .forEach((cells) => {
                 cells.forEach((cell) => {
-                    const id = `${cell.row()}-${cell.column()}`;
+                    const id = cell.identifier;
 
                     if (!visitedCells.includes(id)) {
                         const counter = _.countBy(cell.candidates());

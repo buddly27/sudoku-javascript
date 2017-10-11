@@ -28,6 +28,8 @@ export class SudokuCell {
      *     []
      */
     constructor(value, rowIndex, columnIndex) {
+        this.identifier = `c${rowIndex}${columnIndex}`;
+
         this._value = value;
         this._rowIndex = rowIndex;
         this._columnIndex = columnIndex;

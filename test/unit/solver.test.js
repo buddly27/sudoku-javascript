@@ -92,8 +92,8 @@ describe("SudokuSolver", () => {
             solver.strategies = strategies;
 
             cells = [
-                {row: () => 1, column: () => 0},
-                {row: () => 1, column: () => 1},
+                {identifier: "c10"},
+                {identifier: "c11"},
             ];
         });
 

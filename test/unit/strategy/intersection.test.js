@@ -586,6 +586,7 @@ describe("BoxLineReductionStrategy", () => {
                     {
                         row: jest.fn(() => row),
                         column: jest.fn(() => column),
+                        identifier: `c${row}${column}`,
                         candidates: _rowsCandidates[row][column],
                         latestCandidates: _rowsCandidates[row][column],
                         setNextCandidates: jest.fn(),
@@ -603,6 +604,7 @@ describe("BoxLineReductionStrategy", () => {
                     {
                         row: jest.fn(() => row),
                         column: jest.fn(() => column),
+                        identifier: `c${row}${column}`,
                         candidates: _columnsCandidates[column][row],
                         latestCandidates: _columnsCandidates[column][row],
                         setNextCandidates: jest.fn(),
@@ -867,6 +869,7 @@ describe("BoxLineReductionStrategy", () => {
             cellsInRows = _.range(3).map((row) =>
                 _.range(9).map((column) => (
                     {
+                        identifier: `c${row}${column}`,
                         row: jest.fn(() => row),
                         column: jest.fn(() => column),
                         candidates: jest.fn(() => []),
@@ -878,6 +881,7 @@ describe("BoxLineReductionStrategy", () => {
             cellsInColumns = _.range(3).map((column) =>
                 _.range(9).map((row) => (
                     {
+                        identifier: `c${row}${column}`,
                         row: jest.fn(() => row),
                         column: jest.fn(() => column),
                         candidates: jest.fn(() => []),

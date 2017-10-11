@@ -629,8 +629,7 @@ describe("SudokuGrid", () => {
                 (value, rowIndex, columnIndex) => (
                     {
                         value: () => value,
-                        row: () => rowIndex,
-                        column: () => columnIndex,
+                        identifier: `c${rowIndex}${columnIndex}`,
                     }
                 )
             );
@@ -668,8 +667,7 @@ describe("SudokuGrid", () => {
                 (value, rowIndex, columnIndex) => (
                     {
                         value: () => value,
-                        row: () => rowIndex,
-                        column: () => columnIndex,
+                        identifier: `c${rowIndex}${columnIndex}`,
                     }
                 )
             );

@@ -283,7 +283,7 @@ export class SudokuGrid {
 
             cells.forEach((cell) => {
                 if (cell.value() !== 0 && counter[cell.value()] > 1) {
-                    errors[`c${cell.row()}${cell.column()}`] = cell;
+                    errors[cell.identifier] = cell;
                 }
             });
         });
@@ -294,7 +294,7 @@ export class SudokuGrid {
 
             cells.forEach((cell) => {
                 if (cell.value() !== 0 && counter[cell.value()] > 1) {
-                    errors[`c${cell.row()}${cell.column()}`] = cell;
+                    errors[cell.identifier] = cell;
                 }
             });
         });
@@ -309,7 +309,7 @@ export class SudokuGrid {
 
                 cells.forEach((cell) => {
                     if (cell.value() !== 0 && counter[cell.value()] > 1) {
-                        errors[`c${cell.row()}${cell.column()}`] = cell;
+                        errors[cell.identifier] = cell;
                     }
                 });
             });
@@ -329,7 +329,7 @@ export class SudokuGrid {
 
         this._grid.forEach((cells) => {
             cells.forEach((cell) => {
-                mapping[`c${cell.row()}${cell.column()}`] = cell.value();
+                mapping[cell.identifier] = cell.value();
             });
         });
 

@@ -106,7 +106,7 @@ export class SudokuSolver {
                     }
 
                     modifiedCells.forEach((cell) => {
-                        mapping[`c${cell.row()}${cell.column()}`] = cell;
+                        mapping[cell.identifier] = cell;
                     });
                     break;
                 }
