@@ -46,10 +46,22 @@ export class SudokuSolver {
      *
      * *grid* must be a :class:`sudoku.grid.SudokuGrid` instance.
      *
-     * Return a list of modified :class:`sudoku.cell.SudokuCell` instances.
+     * Return a mapping of each modified :class:`sudoku.cell.SudokuCell`
+     * instances organized per identifier.
+     *
+     * Example::
+     *
+     *     >>> solver.resolve(grid)
+     *     {
+     *         "c15": [SudokuCell],
+     *         "c16": [SudokuCell],
+     *         "c18": [SudokuCell],
+     *         "c40": [SudokuCell],
+     *         "c43": [SudokuCell],
+     *     }
      */
     resolve(grid) {
-        let modifiedCells = [];
+        let mapping = {};
 
         while (grid.update()) {
             const solved = grid.isSolved();
@@ -57,11 +69,11 @@ export class SudokuSolver {
                 break;
             }
 
-            const _modifiedCells = this.applyStrategiesUntilFirstResult(grid);
-            modifiedCells = modifiedCells.concat(_modifiedCells);
+            const _mapping = this.applyStrategiesUntilFirstResult(grid);
+            mapping = Object.assign({}, mapping, _mapping);
         }
 
-        return modifiedCells;
+        return mapping;
     }
 
     /**
@@ -69,25 +81,38 @@ export class SudokuSolver {
      *
      * *grid* must be a :class:`sudoku.grid.SudokuGrid` instance.
      *
-     * Return a list of modified :class:`sudoku.cell.SudokuCell` instances.
+     * Return a mapping of each modified :class:`sudoku.cell.SudokuCell`
+     * instances organized per identifier.
+     *
+     * Example::
+     *
+     *     >>> solver.applyStrategiesUntilFirstResult(grid)
+     *     {
+     *         "c40": [SudokuCell],
+     *         "c43": [SudokuCell],
+     *     }
      */
     applyStrategiesUntilFirstResult(grid) {
-        let modifiedCells = [];
+        const mapping = {};
 
         // eslint-disable-next-line no-restricted-syntax
         for (const strategy of this.strategies) {
             if (strategy.processGrid) {
-                modifiedCells = strategy.processGrid(grid);
+                const modifiedCells = strategy.processGrid(grid);
                 if (modifiedCells.length > 0) {
                     const id = strategy.identifier;
                     if (this.strategiesUsed.indexOf(id) === -1) {
                         this.strategiesUsed.push(id);
                     }
+
+                    modifiedCells.forEach((cell) => {
+                        mapping[`c${cell.row()}${cell.column()}`] = cell;
+                    });
                     break;
                 }
             }
         }
 
-        return modifiedCells;
+        return mapping;
     }
 }

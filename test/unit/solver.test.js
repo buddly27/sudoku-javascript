@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars, global-require */
+/* eslint-disable object-property-newline, no-unused-vars, global-require */
 
 import {SudokuSolver} from "sudoku";
 
@@ -19,7 +19,11 @@ describe("SudokuSolver", () => {
         beforeEach(() => {
             updateSpy = jest.fn();
             isSolvedSpy = jest.fn();
-            applyStrategiesUntilFirstResultSpy = jest.fn(() => "MODIFIED CELL");
+            applyStrategiesUntilFirstResultSpy = jest.fn()
+                .mockReturnValueOnce({c10: "CELL", c11: "CELL"})
+                .mockReturnValueOnce({c30: "CELL"})
+                .mockReturnValueOnce({c10: "CELL", c18: "CELL"})
+                .mockReturnValueOnce({c65: "CELL", c66: "CELL"});
 
             grid.update = updateSpy;
             grid.isSolved = isSolvedSpy;
@@ -38,10 +42,11 @@ describe("SudokuSolver", () => {
                 .mockReturnValueOnce(true)
                 .mockReturnValueOnce(true);
 
-            expect(solver.resolve(grid)).toEqual([
-                "MODIFIED CELL", "MODIFIED CELL",
-                "MODIFIED CELL", "MODIFIED CELL",
-            ]);
+            expect(solver.resolve(grid)).toEqual({
+                c10: "CELL", c11: "CELL", c18: "CELL",
+                c30: "CELL",
+                c65: "CELL", c66: "CELL",
+            });
             expect(applyStrategiesUntilFirstResultSpy.mock.calls)
                 .toEqual([[grid], [grid], [grid], [grid]]);
             expect(isSolvedSpy).toHaveBeenCalledTimes(4);
@@ -61,9 +66,10 @@ describe("SudokuSolver", () => {
                 .mockReturnValueOnce(true)
                 .mockReturnValueOnce(true);
 
-            expect(solver.resolve(grid)).toEqual([
-                "MODIFIED CELL", "MODIFIED CELL",
-            ]);
+            expect(solver.resolve(grid)).toEqual({
+                c10: "CELL", c11: "CELL",
+                c30: "CELL",
+            });
             expect(applyStrategiesUntilFirstResultSpy.mock.calls)
                 .toEqual([[grid], [grid]]);
             expect(isSolvedSpy).toHaveBeenCalledTimes(3);
@@ -72,6 +78,8 @@ describe("SudokuSolver", () => {
     });
 
     describe("applyStrategiesUntilFirstResult", () => {
+        let cells = [];
+
         beforeEach(() => {
             strategies = [
                 {identifier: "test1", processGrid: jest.fn()},
@@ -82,13 +90,18 @@ describe("SudokuSolver", () => {
 
             solver = new SudokuSolver();
             solver.strategies = strategies;
+
+            cells = [
+                {row: () => 1, column: () => 0},
+                {row: () => 1, column: () => 1},
+            ];
         });
 
         it("should apply the first strategy", () => {
-            strategies[0].processGrid.mockReturnValue(["CELL1", "CELL2"]);
+            strategies[0].processGrid.mockReturnValue(cells);
 
             expect(solver.applyStrategiesUntilFirstResult(grid))
-                .toEqual(["CELL1", "CELL2"]);
+                .toEqual({c10: cells[0], c11: cells[1]});
             expect(strategies[0].processGrid).toHaveBeenLastCalledWith(grid);
             expect(strategies[1].processGrid).toHaveBeenCalledTimes(0);
             expect(strategies[2].processGrid).toHaveBeenCalledTimes(0);
@@ -99,10 +112,10 @@ describe("SudokuSolver", () => {
         it("should apply the third strategy", () => {
             strategies[0].processGrid.mockReturnValue([]);
             strategies[1].processGrid.mockReturnValue([]);
-            strategies[2].processGrid.mockReturnValue(["CELL1", "CELL2"]);
+            strategies[2].processGrid.mockReturnValue(cells);
 
             expect(solver.applyStrategiesUntilFirstResult(grid))
-                .toEqual(["CELL1", "CELL2"]);
+                .toEqual({c10: cells[0], c11: cells[1]});
             expect(strategies[0].processGrid).toHaveBeenLastCalledWith(grid);
             expect(strategies[1].processGrid).toHaveBeenLastCalledWith(grid);
             expect(strategies[2].processGrid).toHaveBeenLastCalledWith(grid);
@@ -111,19 +124,19 @@ describe("SudokuSolver", () => {
         });
 
         it("should apply a strategy already used", () => {
-            strategies[0].processGrid.mockReturnValue(["CELL1", "CELL2"]);
+            strategies[0].processGrid.mockReturnValue(cells);
             solver.strategiesUsed = ["test1"];
             expect(solver.applyStrategiesUntilFirstResult(grid))
-                .toEqual(["CELL1", "CELL2"]);
+                .toEqual({c10: cells[0], c11: cells[1]});
             expect(solver.strategiesUsed).toEqual(["test1"]);
         });
 
         it("should skip a strategy without a 'processGrid' method", () => {
             delete strategies[0].processGrid;
-            strategies[1].processGrid.mockReturnValue(["CELL1", "CELL2"]);
+            strategies[1].processGrid.mockReturnValue(cells);
 
             expect(solver.applyStrategiesUntilFirstResult(grid))
-                .toEqual(["CELL1", "CELL2"]);
+                .toEqual({c10: cells[0], c11: cells[1]});
             expect(strategies[1].processGrid).toHaveBeenLastCalledWith(grid);
             expect(strategies[2].processGrid).toHaveBeenCalledTimes(0);
             expect(strategies[3].processGrid).toHaveBeenCalledTimes(0);

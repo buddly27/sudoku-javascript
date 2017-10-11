@@ -18,7 +18,9 @@ describe("Sudoku Solver", () => {
         });
 
         const solver = new SudokuSolver();
-        solver.resolve(grid);
+        const resolvedCellMapping = solver.resolve(grid);
+
+        expect(resolvedCellMapping).toEqual({});
 
         expect(grid.isSolved()).toEqual(true);
         expect(grid.toMapping()).toEqual({
@@ -68,7 +70,18 @@ describe("Sudoku Solver", () => {
         });
 
         const solver = new SudokuSolver();
-        solver.resolve(grid);
+        const resolvedCellMapping = solver.resolve(grid);
+
+        expect(Object.keys(resolvedCellMapping).sort()).toEqual([
+            "c00", "c02", "c03", "c04",
+            "c14", "c17", "c22", "c27", "c28",
+            "c32", "c34", "c37",
+            "c40", "c45", "c48",
+            "c57",
+            "c60", "c65", "c66",
+            "c75",
+            "c84", "c86", "c88",
+        ]);
 
         expect(grid.isSolved()).toEqual(true);
         expect(grid.toMapping()).toEqual({
@@ -118,7 +131,19 @@ describe("Sudoku Solver", () => {
         });
 
         const solver = new SudokuSolver();
-        solver.resolve(grid);
+        const resolvedCellMapping = solver.resolve(grid);
+
+        expect(Object.keys(resolvedCellMapping).sort()).toEqual([
+            "c01", "c02", "c06", "c07", "c08",
+            "c12", "c15", "c16", "c17", "c18",
+            "c26",
+            "c31", "c34", "c37",
+            "c41", "c42",
+            "c51", "c54", "c56", "c57",
+            "c61", "c62",
+            "c73",
+            "c81", "c83",
+        ]);
 
         expect(grid.isSolved()).toEqual(true);
         expect(grid.toMapping()).toEqual({
