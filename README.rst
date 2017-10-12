@@ -2,7 +2,7 @@
 Sudoku Javascript
 #################
 
-.. image:: https://circleci.com/gh/buddly27/sudoku-javascript.svg?style=svg
+.. image:: https://circleci.com/gh/buddly27/sudoku-javascript.svg?style=shield
     :target: https://circleci.com/gh/buddly27/sudoku-javascript
 
 This library is attempting to solve 9x9 Sudoku grids based on built-in
