@@ -40,6 +40,7 @@ Documentation
 *************
 
 Full documentation, including installation and setup guides, can be found at
+
 http://sudoku-javascript.readthedocs.io/en/stable
 
 *********************
