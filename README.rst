@@ -5,6 +5,10 @@ Sudoku Javascript
 .. image:: https://circleci.com/gh/buddly27/sudoku-javascript.svg?style=shield
     :target: https://circleci.com/gh/buddly27/sudoku-javascript
 
+.. image:: https://readthedocs.org/projects/sudoku-javascript/badge/?version=stable
+        :target: http://sudoku-javascript.readthedocs.io/en/stable
+        :alt: Documentation Status
+
 This library is attempting to solve 9x9 Sudoku grids based on built-in
 strategies. It records the modified cells and keep track of the strategies
 used in order to be used for didactic purposes.
@@ -31,6 +35,12 @@ solver.
     const solver = new SudokuSolver();
     solver.resolve(grid);
 
+*************
+Documentation
+*************
+
+Full documentation, including installation and setup guides, can be found at
+http://sudoku-javascript.readthedocs.io/en/stable
 
 *********************
 Copyright and license
