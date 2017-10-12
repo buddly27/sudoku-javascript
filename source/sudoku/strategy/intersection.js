@@ -9,16 +9,16 @@ import chain from "iter-tools/lib/chain";
 /**
  * Intersection Strategy.
  *
- * Base class for Intersection Removal strategies.
+ * Base class for all Intersection Removal strategies.
  */
 export class IntersectionStrategy {
     /**
-     * Process the *grid* and return the list of modified cells.
+     * Attempt to resolve *grid* and return a list of all modified cells.
      *
      * Call *processCells* method for each group of cells in row and column
      * intersecting with each block.
      *
-     * Return modified cells.
+     * Return list of modified :class:`sudoku.cell.SudokuCell` instances.
      *
      * the *processCells* method must be a function which takes two collections
      * of :class:`sudoku.cell.SudokuCell` instances lists, for rows and columns
@@ -59,8 +59,8 @@ export class IntersectionStrategy {
     /**
      * Return all cells from the intersection of rows and columns.
      *
-     * *cellsInRows* and *cellsInColumns* are lists of
-     * :class:`sudoku.cell.SudokuCell` instances.
+     * *cellsInRows* and *cellsInColumns* are collections of
+     * :class:`sudoku.cell.SudokuCell` instance lists.
      *
      * Return a list of :class:`sudoku.cell.SudokuCell` instances.
      */
@@ -90,9 +90,9 @@ export class IntersectionStrategy {
 /**
  * Pointing Strategy.
  *
- * Strategy to identify the single pair or triple candidates within one block
- * which are aligned and makes their other occurrences in the entire row or
- * column impossible.
+ * Identify when a candidate number appears two or three time within the row
+ * or column of a block and remove it from other cells in the rest of the
+ * row or column.
  *
  * .. note::
  *
@@ -101,10 +101,20 @@ export class IntersectionStrategy {
 export class PointingStrategy extends IntersectionStrategy {
     static identifier = "Pointing Strategy";
 
+    /**
+     * Attempt to resolve cells and return a list of all modified cells.
+     *
+     * *cellsInRows* and *cellsInColumns* are collections of
+     * :class:`sudoku.cell.SudokuCell` instance lists.
+     *
+     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
+     * returned are modified with the new candidate numbers and will be applied
+     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     */
     static processCells(cellsInRows, cellsInColumns) {
         const cells = this.cellsInIntersection(cellsInRows, cellsInColumns);
 
-        // Count all candidates within the bloc at the intersection of the
+        // Count all candidates within the block at the intersection of the
         // rows and columns, per row and per column and globally
         const counters = this.getBlockCounters(cells);
 
@@ -203,15 +213,14 @@ export class PointingStrategy extends IntersectionStrategy {
     /**
      * Return mapping of cells per row and column indices.
      *
-     * *cellsInBlock* is a list of all :class:`sudoku.cell.SudokuCell` instances
-     * within the block.
+     * *cellsInBlock* is a collection of all :class:`sudoku.cell.SudokuCell`
+     * instance lists within the block.
      *
-     * *cellsInRows* is a list of :class:`sudoku.cell.SudokuCell` instances
-     * lists for each row which has an intersection with the block.
+     * *cellsInRows* is a collection of :class:`sudoku.cell.SudokuCell`
+     * instance lists for each row which has an intersection with the block.
      *
-     * *cellsInColumns* is a list of
-     * :class:`sudoku.cell.SudokuCell` instances lists for
-     * each column which has an intersection with the block.
+     * *cellsInColumns* is a collection of :class:`sudoku.cell.SudokuCell`
+     * instance lists for each column which has an intersection with the block.
      *
      * Example::
      *
@@ -333,9 +342,8 @@ export class PointingStrategy extends IntersectionStrategy {
 /**
  * Box Line Reduction Strategy.
  *
- * This strategy involves careful comparison of rows and columns against the
- * content of the blocks. All numbers found grouped in a row or a column in just
- * one bloc will invalidate those numbers from the rest of the block.
+ * Identify when a candidate number appears two or three time within the row
+ * or column of a block and remove it from other cells of the block.
  *
  * .. note::
  *
@@ -344,6 +352,16 @@ export class PointingStrategy extends IntersectionStrategy {
 export class BoxLineReductionStrategy extends IntersectionStrategy {
     static identifier = "Box Line Reduction Strategy";
 
+    /**
+     * Attempt to resolve cells and return a list of all modified cells.
+     *
+     * *cellsInRows* and *cellsInColumns* are collections of
+     * :class:`sudoku.cell.SudokuCell` instance lists.
+     *
+     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
+     * returned are modified with the new candidate numbers and will be applied
+     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     */
     static processCells(cellsInRows, cellsInColumns) {
         const cells = this.cellsInIntersection(cellsInRows, cellsInColumns);
 
@@ -404,11 +422,11 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
      *
      * Count the occurrence of each cell candidate for each row and column.
      *
-     * *cellsInRows* is a list of :class:`sudoku.cell.SudokuCell` instances
-     * lists for each row.
+     * *cellsInRows* is a collection of :class:`sudoku.cell.SudokuCell`
+     * instance lists for each row.
      *
-     * *cellsInColumns* is a list of :class:`sudoku.cell.SudokuCell` instances
-     * lists for each column.
+     * *cellsInColumns* is a collection of :class:`sudoku.cell.SudokuCell`
+     * instance lists for each column.
      *
      * Example::
      *

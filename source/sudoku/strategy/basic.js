@@ -10,17 +10,16 @@ import combinations from "iter-tools/lib/combinations";
 /**
  * Basic Strategy.
  *
- * Base class for strategies which process together each row, column and block
- * from a sudoku grid to find 'Hidden' and 'Naked' candidates.
+ * Base class for 'Hidden' and 'Naked' strategies.
  */
 export class BasicStrategy {
     /**
-     * Process the *grid* and return the list of modified cells.
+     * Attempt to resolve *grid* and return a list of all modified cells.
      *
      * Call the *processCells* method for the group of cells within each row,
-     * column and block
+     * column and block.
      *
-     * Return modified cells.
+     * Return list of modified :class:`sudoku.cell.SudokuCell` instances.
      *
      * the *processCells* method must be a function which takes a list of
      * :class:`sudoku.cell.SudokuCell` instances and return a list
@@ -63,10 +62,9 @@ export class BasicStrategy {
      * Update candidates from *cells* based on the intersection with
      * *hiddenCandidates*.
      *
-     * *hiddenCandidates* should be a list of hidden candidates lists.
+     * *hiddenCandidates* should be a collections of hidden candidates lists.
      *
-     * Return a list of :class:`sudoku.cell.SudokuCell` instances
-     * modified.
+     * Return a list of :class:`sudoku.cell.SudokuCell` instances modified.
      *
      * The first occurrence of hidden candidates within a cell is set as its
      * 'next' candidates and will be applied next time the grid is
@@ -76,7 +74,7 @@ export class BasicStrategy {
      *
      *     >>> const cell = new SudokuCell(0, 0, 0);
      *     >>> BasicStrategy.updateFromIntersection([cell], [[3, 4],]);
-     *     [[Object]]
+     *     [[SudokuCell], [SudokuCell]]
      *     >>> cell.setNextCandidates();
      *     >>> cell.candidates();
      *     [3, 4]
@@ -110,20 +108,19 @@ export class BasicStrategy {
      * Update candidates from *cells* based on the difference with
      * *nakedCandidates*.
      *
-     * *nakedCandidates* should be a list of naked candidates lists.
+     * *nakedCandidates* should be a collections of naked candidates lists.
      *
      * Return a list of :class:`sudoku.cell.SudokuCell` instances modified.
      *
      * The first occurrence of numbers different than the naked candidates found
      * within a cell is set as its 'next' candidates and will be applied next
-     * time the grid is :meth:`updated
-     * <sudoku.grid.SudokuGrid.update>`.
+     * time the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
      *
      * Example::
      *
      *     >>> const cell = new SudokuCell(0, 0, 0);
      *     >>> BasicStrategy.updateFromDifference([cell], [[3, 4],]);
-     *     [[Object]]
+     *     [[SudokuCell], [SudokuCell]]
      *     >>> cell.setNextCandidates();
      *     >>> cell.candidates();
      *     [1, 2, 5, 6, 7, 8, 9]
@@ -159,17 +156,26 @@ export class BasicStrategy {
 /**
  * Hidden Single Strategy.
  *
- * Strategy to solve a grid by removing possibilities from one cell
- * if we identify numbers which can be only in this cell.
+ * Identify when a cell from a row, a column or a block can only contain
+ * a specific candidate number and remove other candidate numbers from this
+ * cell.
  *
  * .. note::
  *
  *     http://www.sudokuwiki.org/Hidden_Candidates
- *
  */
 export class HiddenSingleStrategy extends BasicStrategy {
     static identifier = "Hidden Single Strategy";
 
+    /**
+     * Attempt to resolve *cells* and return a list of all modified cells.
+     *
+     * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
+     *
+     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
+     * returned are modified with the new candidate number and will be applied
+     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     */
     static processCells(cells) {
         const candidatesList = cells.map((cell) => cell.candidates());
 
@@ -191,17 +197,26 @@ export class HiddenSingleStrategy extends BasicStrategy {
 /**
  * Hidden Pair Strategy.
  *
- * Strategy to solve a grid by removing possibilities from two cells
- * if we identify numbers which can be only in those two cells.
+ * Identify when two cells from a row, a column or a block can only contain two
+ * specific candidate numbers and remove other candidate numbers from those
+ * cells.
  *
  * .. note::
  *
  *     http://www.sudokuwiki.org/Hidden_Candidates
- *
  */
 export class HiddenPairStrategy extends BasicStrategy {
     static identifier = "Hidden Pair Strategy";
 
+    /**
+     * Attempt to resolve *cells* and return a list of all modified cells.
+     *
+     * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
+     *
+     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
+     * returned are modified with the new candidate numbers and will be applied
+     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     */
     static processCells(cells) {
         const candidatesList = cells.map((cell) => cell.candidates());
         const candidatesPairList = candidatesList.map(
@@ -239,17 +254,26 @@ export class HiddenPairStrategy extends BasicStrategy {
 /**
  * Hidden Triple Strategy.
  *
- * Strategy to solve a grid by removing possibilities from three cells
- * if we identify numbers which can be only in those three cells.
+ * Identify when three cells from a row, a column or a block can only contain
+ * three specific candidate numbers and remove other candidate numbers from
+ * those cells.
  *
  * .. note::
  *
  *     http://www.sudokuwiki.org/Hidden_Candidates
- *
  */
 export class HiddenTripleStrategy extends BasicStrategy {
     static identifier = "Hidden Triple Strategy";
 
+    /**
+     * Attempt to resolve *cells* and return a list of all modified cells.
+     *
+     * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
+     *
+     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
+     * returned are modified with the new candidate numbers and will be applied
+     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     */
     static processCells(cells) {
         const hiddenCandidates = [];
 
@@ -283,17 +307,26 @@ export class HiddenTripleStrategy extends BasicStrategy {
 /**
  * Hidden Quad Strategy.
  *
- * Strategy to solve a grid by removing possibilities from four cells
- * if we identify numbers which can be only in those four cells.
+ * Identify when four cells from a row, a column or a block can only contain
+ * four specific candidate numbers and remove other candidate numbers from
+ * those cells.
  *
  * .. note::
  *
  *     http://www.sudokuwiki.org/Hidden_Candidates
- *
  */
 export class HiddenQuadStrategy extends BasicStrategy {
     static identifier = "Hidden Quad Strategy";
 
+    /**
+     * Attempt to resolve *cells* and return a list of all modified cells.
+     *
+     * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
+     *
+     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
+     * returned are modified with the new candidate numbers and will be applied
+     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     */
     static processCells(cells) {
         const hiddenCandidates = [];
 
@@ -327,17 +360,25 @@ export class HiddenQuadStrategy extends BasicStrategy {
 /**
  * Naked Pair Strategy.
  *
- * Strategy to solve a grid by removing two possible numbers from all cells
- * when we identify two cells which can only contains those numbers.
+ * Identify when two candidate numbers can only be in two specific cells from
+ * a row, a column or a block and remove these candidates from other cells.
  *
  * .. note::
  *
  *     http://www.sudokuwiki.org/Naked_Candidates
- *
  */
 export class NakedPairStrategy extends BasicStrategy {
     static identifier = "Naked Pair Strategy";
 
+    /**
+     * Attempt to resolve *cells* and return a list of all modified cells.
+     *
+     * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
+     *
+     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
+     * returned are modified with the new candidate numbers and will be applied
+     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     */
     static processCells(cells) {
         const candidatesList = cells.map((cell) => cell.candidates());
         const candidatesPairList = candidatesList
@@ -371,17 +412,25 @@ export class NakedPairStrategy extends BasicStrategy {
 /**
  * Naked Triple Strategy.
  *
- * Strategy to solve a grid by removing three possible numbers from all cells
- * when we identify three cells which can only contains those numbers.
+ * Identify when three candidate numbers can only be in three specific cells
+ * from a row, a column or a block and remove these candidates from other cells.
  *
  * .. note::
  *
  *     http://www.sudokuwiki.org/Naked_Candidates
- *
  */
 export class NakedTripleStrategy extends BasicStrategy {
     static identifier = "Naked Triple Strategy";
 
+    /**
+     * Attempt to resolve *cells* and return a list of all modified cells.
+     *
+     * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
+     *
+     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
+     * returned are modified with the new candidate numbers and will be applied
+     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     */
     static processCells(cells) {
         const nakedCandidates = [];
 
