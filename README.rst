@@ -5,6 +5,9 @@ Sudoku Javascript
 .. image:: https://circleci.com/gh/buddly27/sudoku-javascript.svg?style=shield
     :target: https://circleci.com/gh/buddly27/sudoku-javascript
 
+.. image:: https://codecov.io/gh/buddly27/sudoku-javascript/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/buddly27/sudoku-javascript
+
 .. image:: https://readthedocs.org/projects/sudoku-javascript/badge/?version=stable
         :target: http://sudoku-javascript.readthedocs.io/en/stable
         :alt: Documentation Status
