@@ -2,6 +2,9 @@
 Sudoku Javascript
 #################
 
+.. image:: https://circleci.com/gh/buddly27/sudoku-javascript.svg?style=svg
+    :target: https://circleci.com/gh/buddly27/sudoku-javascript
+
 This library is attempting to solve 9x9 Sudoku grids based on built-in
 strategies. It records the modified cells and keep track of the strategies
 used in order to be used for didactic purposes.
