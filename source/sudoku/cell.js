@@ -51,6 +51,12 @@ export class SudokuCell {
         return this._value;
     }
 
+    /** Set a new value for the cell and initiate the candidates. */
+    set value(value) {
+        this._value = value;
+        this._candidates = [];
+    }
+
     /** Return row index of the cell. */
     get row() {
         return this._rowIndex;
@@ -78,11 +84,9 @@ export class SudokuCell {
 
     /**
      * Indicate whether the cell is solved.
-     *
-     * A cell is considered solved when it has no candidates anymore.
      */
     isSolved() {
-        return (this._candidates.length === 0);
+        return (this._value !== 0);
     }
 
     /**
@@ -154,7 +158,7 @@ export class SudokuCell {
      * set it as the new cell value.
      */
     resolve() {
-        if (this._candidates.length === 1) {
+        if (!this.isSolved() && this._candidates.length === 1) {
             this._value = this._candidates.pop();
             return true;
         }

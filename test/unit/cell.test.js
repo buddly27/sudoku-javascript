@@ -50,6 +50,15 @@ describe("SudokuCell", () => {
         });
     });
 
+    describe("set a new value", () => {
+        const cell = new SudokuCell(0, 3, 5);
+
+        it("should set new cell value and modify candidates", () => {
+            cell.value = 4;
+            expect(cell.value).toEqual(4);
+        });
+    });
+
     describe("set and apply next candidates", () => {
         it("should apply a list of non existing next candidates", () => {
             const cell = new SudokuCell(0, 1, 9);
