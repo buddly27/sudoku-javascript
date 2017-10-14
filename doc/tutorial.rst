@@ -37,10 +37,10 @@ indicate the value and the candidates available::
     >>> cell1.isSolved()
     false
 
-    >>> cell1.value()
+    >>> cell1.value
     0
 
-    >>> cell1.candidates()
+    >>> cell1.candidates
     [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 When the value of a cell is zero, it means that the cell is not solved yet. A
@@ -50,10 +50,10 @@ cell with a non-zero value is considered solved and does not have candidates::
     >>> cell1.isSolved()
     true
 
-    >>> cell2.value()
+    >>> cell2.value
     9
 
-    >>> cell2.candidates()
+    >>> cell2.candidates
     []
 
 A :class:`~sudoku.solver.SudokuSolver` must then be created and used to resolve

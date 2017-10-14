@@ -20,11 +20,11 @@ export class SudokuCell {
      * Example::
      *
      *     >>> const cell1 = new SudokuCell(0, 0, 0);
-     *     >>> cell1.candidates();
+     *     >>> cell1.candidates;
      *     [1, 2, 3, 4, 5, 6, 7, 8, 9]
      *
      *     >>> const cell2 = new SudokuCell(4, 0, 0);
-     *     >>> cell2.candidates();
+     *     >>> cell2.candidates;
      *     []
      */
     constructor(value, rowIndex, columnIndex) {
