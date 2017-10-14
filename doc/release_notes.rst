@@ -4,6 +4,13 @@
 Release Notes
 *************
 
+.. release:: 0.2.0
+
+    .. change:: new
+
+        Added setter to manually change the value of a
+        :class:`~sudoku.cell.SudokuCell` and empty its list of candidates.
+
 .. release:: 0.1.0
 
     .. change:: new

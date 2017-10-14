@@ -51,10 +51,11 @@ export class SudokuCell {
         return this._value;
     }
 
-    /** Set a new value for the cell and initiate the candidates. */
+    /** Set a new value for the cell and empty the list of candidates. */
     set value(value) {
         this._value = value;
         this._candidates = [];
+        this._nextCandidates = null;
     }
 
     /** Return row index of the cell. */
