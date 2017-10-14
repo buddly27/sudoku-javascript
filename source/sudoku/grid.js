@@ -42,10 +42,10 @@ export class SudokuGrid {
      *     ... });
      */
     constructor(cellMapping = {}) {
-        this.blockRowSize = 3;
-        this.blockColumnSize = 3;
-        this.rowSize = this.blockRowSize * 3;
-        this.columnSize = this.blockColumnSize * 3;
+        this._blockRowSize = 3;
+        this._blockColumnSize = 3;
+        this._rowSize = this._blockRowSize * 3;
+        this._columnSize = this._blockColumnSize * 3;
 
         const {
             c00 = 0, c01 = 0, c02 = 0, c03 = 0, c04 = 0,
@@ -97,6 +97,26 @@ export class SudokuGrid {
                 (value, index) => new SudokuCell(value, 8, index)
             ),
         ];
+    }
+
+    /** Return the number of rows. */
+    get rowSize() {
+        return this._rowSize;
+    }
+
+    /** Return the number of columns. */
+    get columnSize() {
+        return this._columnSize;
+    }
+
+    /** Return the number of rows within each block. */
+    get blockRowSize() {
+        return this._blockRowSize;
+    }
+
+    /** Return the number of columns within each block. */
+    get blockColumnSize() {
+        return this._blockColumnSize;
     }
 
     /**
@@ -217,13 +237,13 @@ export class SudokuGrid {
 
         const valuesInRows = _.range(this.rowSize).map((rowIndex) =>
             this.cellsInRow(rowIndex)
-                .map((cell) => cell.value())
+                .map((cell) => cell.value)
                 .filter((value) => value !== 0)
         );
 
         const valuesInColumns = _.range(this.columnSize).map((columnIndex) =>
             this.cellsInColumn(columnIndex)
-                .map((cell) => cell.value())
+                .map((cell) => cell.value)
                 .filter((value) => value !== 0)
         );
 
@@ -236,7 +256,7 @@ export class SudokuGrid {
 
                 // Get all positive values in the block
                 const blockValues = cells
-                    .map((cell) => cell.value())
+                    .map((cell) => cell.value)
                     .filter((value) => value !== 0);
 
                 cells.forEach((cell) => {
@@ -245,8 +265,8 @@ export class SudokuGrid {
                     }
                     else {
                         const updated = cell.updateCandidates(
-                            valuesInRows[cell.row()],
-                            valuesInColumns[cell.column()],
+                            valuesInRows[cell.row],
+                            valuesInColumns[cell.column],
                             blockValues,
                         );
                         if (updated) {
@@ -279,10 +299,10 @@ export class SudokuGrid {
 
         _.range(this.rowSize).forEach((rowIndex) => {
             const cells = this.cellsInRow(rowIndex);
-            const counter = _.countBy(cells.map((cell) => cell.value()));
+            const counter = _.countBy(cells.map((cell) => cell.value));
 
             cells.forEach((cell) => {
-                if (cell.value() !== 0 && counter[cell.value()] > 1) {
+                if (cell.value !== 0 && counter[cell.value] > 1) {
                     errors[cell.identifier] = cell;
                 }
             });
@@ -290,10 +310,10 @@ export class SudokuGrid {
 
         _.range(this.columnSize).forEach((columnIndex) => {
             const cells = this.cellsInColumn(columnIndex);
-            const counter = _.countBy(cells.map((cell) => cell.value()));
+            const counter = _.countBy(cells.map((cell) => cell.value));
 
             cells.forEach((cell) => {
-                if (cell.value() !== 0 && counter[cell.value()] > 1) {
+                if (cell.value !== 0 && counter[cell.value] > 1) {
                     errors[cell.identifier] = cell;
                 }
             });
@@ -305,10 +325,10 @@ export class SudokuGrid {
         rows.forEach((rowIndex) => {
             columns.forEach((columnIndex) => {
                 const cells = this.cellsInBlock(rowIndex, columnIndex);
-                const counter = _.countBy(cells.map((cell) => cell.value()));
+                const counter = _.countBy(cells.map((cell) => cell.value));
 
                 cells.forEach((cell) => {
-                    if (cell.value() !== 0 && counter[cell.value()] > 1) {
+                    if (cell.value !== 0 && counter[cell.value] > 1) {
                         errors[cell.identifier] = cell;
                     }
                 });
@@ -329,7 +349,7 @@ export class SudokuGrid {
 
         this._grid.forEach((cells) => {
             cells.forEach((cell) => {
-                mapping[cell.identifier] = cell.value();
+                mapping[cell.identifier] = cell.value;
             });
         });
 

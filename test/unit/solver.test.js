@@ -89,7 +89,7 @@ describe("SudokuSolver", () => {
             ];
 
             solver = new SudokuSolver();
-            solver.strategies = strategies;
+            solver._strategies = strategies;
 
             cells = [
                 {identifier: "c10"},
@@ -125,7 +125,7 @@ describe("SudokuSolver", () => {
 
         it("should apply a strategy already used", () => {
             strategies[0].processGrid.mockReturnValue(cells);
-            solver.strategiesUsed = ["test1"];
+            solver._strategiesUsed = ["test1"];
             expect(solver.applyStrategiesUntilFirstResult(grid))
                 .toEqual({c10: cells[0], c11: cells[1]});
             expect(solver.strategiesUsed).toEqual(["test1"]);

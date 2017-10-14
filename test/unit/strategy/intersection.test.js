@@ -74,21 +74,11 @@ describe("IntersectionStrategy", () => {
     describe("cellsInIntersection", () => {
         it("should return the centered intersection cells", () => {
             const cellsInRows = _.range(3).map((row) =>
-                _.range(9).map((column) => (
-                    {
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                    }
-                )),
+                _.range(9).map((column) => ({row, column}))
             );
 
             const cellsInColumns = _.range(3, 6).map((column) =>
-                _.range(9).map((row) => (
-                    {
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                    }
-                )),
+                _.range(9).map((row) => ({row, column}))
             );
 
             const cells = IntersectionStrategy.cellsInIntersection(
@@ -111,21 +101,11 @@ describe("IntersectionStrategy", () => {
 
         it("should return the top-left intersection cells", () => {
             const cellsInRows = _.range(3).map((row) =>
-                _.range(9).map((column) => (
-                    {
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                    }
-                )),
+                _.range(9).map((column) => ({row, column}))
             );
 
             const cellsInColumns = _.range(3).map((column) =>
-                _.range(9).map((row) => (
-                    {
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                    }
-                )),
+                _.range(9).map((row) => ({row, column}))
             );
 
             const cells = IntersectionStrategy.cellsInIntersection(
@@ -157,8 +137,6 @@ describe("PointingStrategy", () => {
     describe("processCells", () => {
         let cellsInRows = [];
         let cellsInColumns = [];
-        let _rowsCandidates = [];
-        let _columnsCandidates = [];
 
         let cellsInIntersectionSpy;
         let getBlockCountersSpy;
@@ -166,37 +144,22 @@ describe("PointingStrategy", () => {
         let getMatchingCandidatesSpy;
 
         beforeEach(() => {
-            _rowsCandidates = _.range(3).map((row) =>
-                _.range(9).map((column) => jest.fn(() => [])),
-            );
-
             cellsInRows = _.range(3).map((row) =>
-                _.range(9).map((column) => (
-                    {
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                        candidates: _rowsCandidates[row][column],
-                        latestCandidates: _rowsCandidates[row][column],
-                        setNextCandidates: jest.fn(),
-                    }
-                )),
-            );
-
-
-            _columnsCandidates = _.range(3).map((column) =>
-                _.range(9).map((row) => jest.fn(() => [])),
+                _.range(9).map((column) => ({
+                    row, column,
+                    candidates: [],
+                    latestCandidates: [],
+                    setNextCandidates: jest.fn(),
+                })),
             );
 
             cellsInColumns = _.range(3).map((column) =>
-                _.range(9).map((row) => (
-                    {
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                        candidates: _columnsCandidates[column][row],
-                        latestCandidates: _columnsCandidates[column][row],
-                        setNextCandidates: jest.fn(),
-                    }
-                )),
+                _.range(9).map((row) => ({
+                    row, column,
+                    candidates: [],
+                    latestCandidates: [],
+                    setNextCandidates: jest.fn(),
+                })),
             );
 
             cellsInIntersectionSpy = jest.spyOn(
@@ -256,65 +219,57 @@ describe("PointingStrategy", () => {
         });
 
         it("should updates matching candidates in rows", () => {
-            _rowsCandidates[0][0].mockReturnValue([]);
-            _rowsCandidates[0][1].mockReturnValue([4, 8]);
-            _rowsCandidates[0][2].mockReturnValue([2, 4, 8]);
-            _rowsCandidates[0][3].mockReturnValue([2, 4, 5, 8]);
-            _rowsCandidates[0][4].mockReturnValue([]);
-            _rowsCandidates[0][5].mockReturnValue([]);
-            _rowsCandidates[0][6].mockReturnValue([]);
-            _rowsCandidates[0][7].mockReturnValue([2, 4, 5]);
-            _rowsCandidates[0][8].mockReturnValue([]);
+            const rowsCandidates = [
+                [
+                    [], [4, 8], [2, 4, 8],
+                    [2, 4, 5, 8], [], [],
+                    [], [2, 4, 5], [],
+                ],
+                [
+                    [1, 3, 9], [1, 4, 9], [1, 2, 3, 4, 9],
+                    [2, 3, 4, 5, 6], [2, 3, 4, 5], [3, 6],
+                    [1, 2, 5, 7], [], [5, 7],
+                ],
+                [
+                    [], [1, 4, 8], [],
+                    [], [2, 3, 4, 8], [3, 6, 8],
+                    [1, 2], [2, 4, 6], [4, 6],
+                ],
+            ];
 
-            _rowsCandidates[1][0].mockReturnValue([1, 3, 9]);
-            _rowsCandidates[1][1].mockReturnValue([1, 4, 9]);
-            _rowsCandidates[1][2].mockReturnValue([1, 2, 3, 4, 9]);
-            _rowsCandidates[1][3].mockReturnValue([2, 3, 4, 5, 6]);
-            _rowsCandidates[1][4].mockReturnValue([2, 3, 4, 5]);
-            _rowsCandidates[1][5].mockReturnValue([3, 6]);
-            _rowsCandidates[1][6].mockReturnValue([1, 2, 5, 7]);
-            _rowsCandidates[1][7].mockReturnValue([]);
-            _rowsCandidates[1][8].mockReturnValue([5, 7]);
+            _.range(3).forEach((row) =>
+                _.range(9).forEach((column) => {
+                    const candidates = rowsCandidates[row][column];
+                    cellsInRows[row][column].candidates = candidates;
+                    cellsInRows[row][column].latestCandidates = candidates;
+                }),
+            );
 
-            _rowsCandidates[2][0].mockReturnValue([]);
-            _rowsCandidates[2][1].mockReturnValue([1, 4, 8]);
-            _rowsCandidates[2][2].mockReturnValue([]);
-            _rowsCandidates[2][3].mockReturnValue([]);
-            _rowsCandidates[2][4].mockReturnValue([2, 3, 4, 8]);
-            _rowsCandidates[2][5].mockReturnValue([3, 6, 8]);
-            _rowsCandidates[2][6].mockReturnValue([1, 2]);
-            _rowsCandidates[2][7].mockReturnValue([2, 4, 6]);
-            _rowsCandidates[2][8].mockReturnValue([4, 6]);
+            const columnsCandidates = [
+                [
+                    [], [1, 3, 9], [],
+                    [], [1, 8, 9], [],
+                    [3, 8, 9], [1, 8, 9], [],
+                ],
+                [
+                    [4, 8], [1, 4, 9], [1, 4, 8],
+                    [], [], [],
+                    [], [1, 4, 8, 9], [],
+                ],
+                [
+                    [2, 4, 8], [1, 2, 3, 4, 9], [],
+                    [6, 9], [1, 6, 8, 9], [1, 8, 9],
+                    [], [1, 4, 8, 9], [3, 4, 8, 9],
+                ],
+            ];
 
-            _columnsCandidates[0][0].mockReturnValue([]);
-            _columnsCandidates[0][1].mockReturnValue([1, 3, 9]);
-            _columnsCandidates[0][2].mockReturnValue([]);
-            _columnsCandidates[0][3].mockReturnValue([]);
-            _columnsCandidates[0][4].mockReturnValue([1, 8, 9]);
-            _columnsCandidates[0][5].mockReturnValue([]);
-            _columnsCandidates[0][6].mockReturnValue([3, 8, 9]);
-            _columnsCandidates[0][7].mockReturnValue([1, 8, 9]);
-            _columnsCandidates[0][8].mockReturnValue([]);
-
-            _columnsCandidates[1][0].mockReturnValue([4, 8]);
-            _columnsCandidates[1][1].mockReturnValue([1, 4, 9]);
-            _columnsCandidates[1][2].mockReturnValue([1, 4, 8]);
-            _columnsCandidates[1][3].mockReturnValue([]);
-            _columnsCandidates[1][4].mockReturnValue([]);
-            _columnsCandidates[1][5].mockReturnValue([]);
-            _columnsCandidates[1][6].mockReturnValue([]);
-            _columnsCandidates[1][7].mockReturnValue([1, 4, 8, 9]);
-            _columnsCandidates[1][8].mockReturnValue([]);
-
-            _columnsCandidates[2][0].mockReturnValue([2, 4, 8]);
-            _columnsCandidates[2][1].mockReturnValue([1, 2, 3, 4, 9]);
-            _columnsCandidates[2][2].mockReturnValue([]);
-            _columnsCandidates[2][3].mockReturnValue([6, 9]);
-            _columnsCandidates[2][4].mockReturnValue([1, 6, 8, 9]);
-            _columnsCandidates[2][5].mockReturnValue([1, 8, 9]);
-            _columnsCandidates[2][6].mockReturnValue([]);
-            _columnsCandidates[2][7].mockReturnValue([1, 4, 8, 9]);
-            _columnsCandidates[2][8].mockReturnValue([3, 4, 8, 9]);
+            _.range(3).forEach((row) =>
+                _.range(9).forEach((column) => {
+                    const candidates = columnsCandidates[row][column];
+                    cellsInColumns[row][column].candidates = candidates;
+                    cellsInColumns[row][column].latestCandidates = candidates;
+                }),
+            );
 
             expect(PointingStrategy.processCells(cellsInRows, cellsInColumns))
                 .toEqual([
@@ -347,65 +302,57 @@ describe("PointingStrategy", () => {
         });
 
         it("should updates matching candidates in columns", () => {
-            _rowsCandidates[0][0].mockReturnValue([]);
-            _rowsCandidates[0][1].mockReturnValue([2, 7, 8]);
-            _rowsCandidates[0][2].mockReturnValue([1, 8]);
-            _rowsCandidates[0][3].mockReturnValue([1, 6]);
-            _rowsCandidates[0][4].mockReturnValue([]);
-            _rowsCandidates[0][5].mockReturnValue([3, 7]);
-            _rowsCandidates[0][6].mockReturnValue([2, 3, 6]);
-            _rowsCandidates[0][7].mockReturnValue([2, 3, 8]);
-            _rowsCandidates[0][8].mockReturnValue([]);
+            const rowsCandidates = [
+                [
+                    [], [2, 7, 8], [1, 8],
+                    [1, 6], [], [3, 7],
+                    [2, 3, 6], [2, 3, 8], [],
+                ],
+                [
+                    [2, 8, 9], [], [4, 8, 9],
+                    [3, 4, 8], [3, 4, 5, 8], [3, 4, 5],
+                    [2, 3, 9], [], [],
+                ],
+                [
+                    [], [4, 7, 8, 9], [1, 4, 8, 9],
+                    [1, 6], [], [4, 7],
+                    [6, 9], [8, 9], [],
+                ],
+            ];
 
-            _rowsCandidates[1][0].mockReturnValue([2, 8, 9]);
-            _rowsCandidates[1][1].mockReturnValue([]);
-            _rowsCandidates[1][2].mockReturnValue([4, 8, 9]);
-            _rowsCandidates[1][3].mockReturnValue([3, 4, 8]);
-            _rowsCandidates[1][4].mockReturnValue([3, 4, 5, 8]);
-            _rowsCandidates[1][5].mockReturnValue([3, 4, 5]);
-            _rowsCandidates[1][6].mockReturnValue([2, 3, 9]);
-            _rowsCandidates[1][7].mockReturnValue([]);
-            _rowsCandidates[1][8].mockReturnValue([]);
+            _.range(3).forEach((row) =>
+                _.range(9).forEach((column) => {
+                    const candidates = rowsCandidates[row][column];
+                    cellsInRows[row][column].candidates = candidates;
+                    cellsInRows[row][column].latestCandidates = candidates;
+                }),
+            );
 
-            _rowsCandidates[2][0].mockReturnValue([]);
-            _rowsCandidates[2][1].mockReturnValue([4, 7, 8, 9]);
-            _rowsCandidates[2][2].mockReturnValue([1, 4, 8, 9]);
-            _rowsCandidates[2][3].mockReturnValue([1, 6]);
-            _rowsCandidates[2][4].mockReturnValue([]);
-            _rowsCandidates[2][5].mockReturnValue([4, 7]);
-            _rowsCandidates[2][6].mockReturnValue([6, 9]);
-            _rowsCandidates[2][7].mockReturnValue([8, 9]);
-            _rowsCandidates[2][8].mockReturnValue([]);
+            const columnsCandidates = [
+                [
+                    [], [2, 8, 9], [],
+                    [7, 8, 9], [], [6, 7, 8],
+                    [1, 2, 6, 9], [2, 6, 8], [1, 2],
+                ],
+                [
+                    [2, 7, 8], [], [4, 7, 8, 9],
+                    [], [], [7, 8],
+                    [2, 4, 9], [2, 4, 8], [],
+                ],
+                [
+                    [1, 8], [4, 8, 9], [1, 4, 8, 9],
+                    [], [5, 6, 8, 9], [5, 6, 8],
+                    [1, 3, 4, 6, 9], [3, 4, 6, 8], [],
+                ],
+            ];
 
-            _columnsCandidates[0][0].mockReturnValue([]);
-            _columnsCandidates[0][1].mockReturnValue([2, 8, 9]);
-            _columnsCandidates[0][2].mockReturnValue([]);
-            _columnsCandidates[0][3].mockReturnValue([7, 8, 9]);
-            _columnsCandidates[0][4].mockReturnValue([]);
-            _columnsCandidates[0][5].mockReturnValue([6, 7, 8]);
-            _columnsCandidates[0][6].mockReturnValue([1, 2, 6, 9]);
-            _columnsCandidates[0][7].mockReturnValue([2, 6, 8]);
-            _columnsCandidates[0][8].mockReturnValue([1, 2]);
-
-            _columnsCandidates[1][0].mockReturnValue([2, 7, 8]);
-            _columnsCandidates[1][1].mockReturnValue([]);
-            _columnsCandidates[1][2].mockReturnValue([4, 7, 8, 9]);
-            _columnsCandidates[1][3].mockReturnValue([]);
-            _columnsCandidates[1][4].mockReturnValue([]);
-            _columnsCandidates[1][5].mockReturnValue([7, 8]);
-            _columnsCandidates[1][6].mockReturnValue([2, 4, 9]);
-            _columnsCandidates[1][7].mockReturnValue([2, 4, 8]);
-            _columnsCandidates[1][8].mockReturnValue([]);
-
-            _columnsCandidates[2][0].mockReturnValue([1, 8]);
-            _columnsCandidates[2][1].mockReturnValue([4, 8, 9]);
-            _columnsCandidates[2][2].mockReturnValue([1, 4, 8, 9]);
-            _columnsCandidates[2][3].mockReturnValue([]);
-            _columnsCandidates[2][4].mockReturnValue([5, 6, 8, 9]);
-            _columnsCandidates[2][5].mockReturnValue([5, 6, 8]);
-            _columnsCandidates[2][6].mockReturnValue([1, 3, 4, 6, 9]);
-            _columnsCandidates[2][7].mockReturnValue([3, 4, 6, 8]);
-            _columnsCandidates[2][8].mockReturnValue([]);
+            _.range(3).forEach((row) =>
+                _.range(9).forEach((column) => {
+                    const candidates = columnsCandidates[row][column];
+                    cellsInColumns[row][column].candidates = candidates;
+                    cellsInColumns[row][column].latestCandidates = candidates;
+                }),
+            );
 
             expect(PointingStrategy.processCells(cellsInRows, cellsInColumns))
                 .toEqual([
@@ -443,25 +390,21 @@ describe("PointingStrategy", () => {
 
             _.range(3).forEach((row) =>
                 _.range(3).forEach((column) => (
-                    cellsInBlock.push({
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                        candidates: jest.fn(() => []),
-                    })
+                    cellsInBlock.push({row, column, candidates: []})
                 )),
             );
         });
 
         it("should return the counters from all cells", () => {
-            cellsInBlock[0].candidates.mockReturnValue([]);
-            cellsInBlock[1].candidates.mockReturnValue([8, 4]);
-            cellsInBlock[2].candidates.mockReturnValue([8, 2, 4]);
-            cellsInBlock[3].candidates.mockReturnValue([1, 3, 9]);
-            cellsInBlock[4].candidates.mockReturnValue([1, 4, 9]);
-            cellsInBlock[5].candidates.mockReturnValue([1, 2, 3, 4, 9]);
-            cellsInBlock[6].candidates.mockReturnValue([]);
-            cellsInBlock[7].candidates.mockReturnValue([8, 1, 4]);
-            cellsInBlock[8].candidates.mockReturnValue([]);
+            cellsInBlock[0].candidates = [];
+            cellsInBlock[1].candidates = [8, 4];
+            cellsInBlock[2].candidates = [8, 2, 4];
+            cellsInBlock[3].candidates = [1, 3, 9];
+            cellsInBlock[4].candidates = [1, 4, 9];
+            cellsInBlock[5].candidates = [1, 2, 3, 4, 9];
+            cellsInBlock[6].candidates = [];
+            cellsInBlock[7].candidates = [8, 1, 4];
+            cellsInBlock[8].candidates = [];
 
             const expected = {
                 global: {1: 4, 2: 2, 3: 2, 4: 5, 8: 3, 9: 3},
@@ -484,33 +427,23 @@ describe("PointingStrategy", () => {
     describe("getNonBlockCellsMapping", () => {
         it("should return the mapping per row and column indices", () => {
             const cellsInBlock = [
-                {row: jest.fn(() => 3), column: jest.fn(() => 0)},
-                {row: jest.fn(() => 3), column: jest.fn(() => 1)},
-                {row: jest.fn(() => 3), column: jest.fn(() => 2)},
-                {row: jest.fn(() => 4), column: jest.fn(() => 0)},
-                {row: jest.fn(() => 4), column: jest.fn(() => 1)},
-                {row: jest.fn(() => 4), column: jest.fn(() => 2)},
-                {row: jest.fn(() => 5), column: jest.fn(() => 0)},
-                {row: jest.fn(() => 5), column: jest.fn(() => 1)},
-                {row: jest.fn(() => 5), column: jest.fn(() => 2)},
+                {row: 3, column: 0},
+                {row: 3, column: 1},
+                {row: 3, column: 2},
+                {row: 4, column: 0},
+                {row: 4, column: 1},
+                {row: 4, column: 2},
+                {row: 5, column: 0},
+                {row: 5, column: 1},
+                {row: 5, column: 2},
             ];
 
             const cellsInRows = _.range(3, 6).map((row) =>
-                _.range(9).map((column) => (
-                    {
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                    }
-                )),
+                _.range(9).map((column) => ({row, column}))
             );
 
             const cellsInColumns = _.range(3).map((column) =>
-                _.range(9).map((row) => (
-                    {
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                    }
-                )),
+                _.range(9).map((row) => ({row, column}))
             );
 
             const expected = {
@@ -568,8 +501,6 @@ describe("BoxLineReductionStrategy", () => {
     describe("processCells", () => {
         let cellsInRows = [];
         let cellsInColumns = [];
-        let _rowsCandidates = [];
-        let _columnsCandidates = [];
 
         let cellsInIntersectionSpy;
         let getCountersSpy;
@@ -577,39 +508,24 @@ describe("BoxLineReductionStrategy", () => {
         let getMatchingCandidatesSpy;
 
         beforeEach(() => {
-            _rowsCandidates = _.range(3).map((row) =>
-                _.range(9).map((column) => jest.fn(() => [])),
-            );
-
             cellsInRows = _.range(3).map((row) =>
-                _.range(9).map((column) => (
-                    {
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                        identifier: `c${row}${column}`,
-                        candidates: _rowsCandidates[row][column],
-                        latestCandidates: _rowsCandidates[row][column],
-                        setNextCandidates: jest.fn(),
-                    }
-                )),
-            );
-
-
-            _columnsCandidates = _.range(3).map((column) =>
-                _.range(9).map((row) => jest.fn(() => [])),
+                _.range(9).map((column) => ({
+                    row, column,
+                    identifier: `c${row}${column}`,
+                    candidates: [],
+                    latestCandidates: [],
+                    setNextCandidates: jest.fn(),
+                }))
             );
 
             cellsInColumns = _.range(3).map((column) =>
-                _.range(9).map((row) => (
-                    {
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                        identifier: `c${row}${column}`,
-                        candidates: _columnsCandidates[column][row],
-                        latestCandidates: _columnsCandidates[column][row],
-                        setNextCandidates: jest.fn(),
-                    }
-                )),
+                _.range(9).map((row) => ({
+                    row, column,
+                    identifier: `c${row}${column}`,
+                    candidates: [],
+                    latestCandidates: [],
+                    setNextCandidates: jest.fn(),
+                }))
             );
 
             cellsInIntersectionSpy = jest.spyOn(
@@ -702,65 +618,57 @@ describe("BoxLineReductionStrategy", () => {
         });
 
         it("should updates matching candidates in rows", () => {
-            _rowsCandidates[0][0].mockReturnValue([2, 4, 5]);
-            _rowsCandidates[0][1].mockReturnValue([2, 4, 5, 9]);
-            _rowsCandidates[0][2].mockReturnValue([]);
-            _rowsCandidates[0][3].mockReturnValue([4, 5]);
-            _rowsCandidates[0][4].mockReturnValue([]);
-            _rowsCandidates[0][5].mockReturnValue([]);
-            _rowsCandidates[0][6].mockReturnValue([]);
-            _rowsCandidates[0][7].mockReturnValue([4, 9]);
-            _rowsCandidates[0][8].mockReturnValue([]);
+            const rowsCandidates = [
+                [
+                    [2, 4, 5], [2, 4, 5, 9], [],
+                    [4, 5], [], [],
+                    [], [4, 9], [],
+                ],
+                [
+                    [], [2, 3, 4, 5, 6], [3, 4, 5, 6],
+                    [3, 4, 5], [], [2, 3, 5],
+                    [1, 2, 4, 7], [4, 7], [1, 4, 5, 7],
+                ],
+                [
+                    [2, 3, 4, 5], [2, 3, 4, 5, 9], [],
+                    [], [], [2, 3, 5],
+                    [2, 4], [], [4, 5, 9],
+                ],
+            ];
 
-            _rowsCandidates[1][0].mockReturnValue([]);
-            _rowsCandidates[1][1].mockReturnValue([2, 3, 4, 5, 6]);
-            _rowsCandidates[1][2].mockReturnValue([3, 4, 5, 6]);
-            _rowsCandidates[1][3].mockReturnValue([3, 4, 5]);
-            _rowsCandidates[1][4].mockReturnValue([]);
-            _rowsCandidates[1][5].mockReturnValue([2, 3, 5]);
-            _rowsCandidates[1][6].mockReturnValue([1, 2, 4, 7]);
-            _rowsCandidates[1][7].mockReturnValue([4, 7]);
-            _rowsCandidates[1][8].mockReturnValue([1, 4, 5, 7]);
+            _.range(3).forEach((row) =>
+                _.range(9).forEach((column) => {
+                    const candidates = rowsCandidates[row][column];
+                    cellsInRows[row][column].candidates = candidates;
+                    cellsInRows[row][column].latestCandidates = candidates;
+                }),
+            );
 
-            _rowsCandidates[2][0].mockReturnValue([2, 3, 4, 5]);
-            _rowsCandidates[2][1].mockReturnValue([2, 3, 4, 5, 9]);
-            _rowsCandidates[2][2].mockReturnValue([]);
-            _rowsCandidates[2][3].mockReturnValue([]);
-            _rowsCandidates[2][4].mockReturnValue([]);
-            _rowsCandidates[2][5].mockReturnValue([2, 3, 5]);
-            _rowsCandidates[2][6].mockReturnValue([2, 4]);
-            _rowsCandidates[2][7].mockReturnValue([]);
-            _rowsCandidates[2][8].mockReturnValue([4, 5, 9]);
+            const columnsCandidates = [
+                [
+                    [2, 4, 5], [], [2, 3, 4, 5],
+                    [1, 2, 5, 7], [1, 3, 4, 7], [1, 2, 4, 7],
+                    [], [1, 4, 5, 7], [],
+                ],
+                [
+                    [2, 4, 5, 9], [2, 3, 4, 5, 6], [2, 3, 4, 5, 9],
+                    [1, 2, 5, 6, 7], [1, 3, 4, 7], [1, 2, 4, 7, 8],
+                    [1, 5, 7, 8], [1, 4, 5, 7], [3, 7, 8],
+                ],
+                [
+                    [], [3, 4, 5, 6], [],
+                    [5, 6], [], [4, 8],
+                    [5, 8], [], [3, 8],
+                ],
+            ];
 
-            _columnsCandidates[0][0].mockReturnValue([2, 4, 5]);
-            _columnsCandidates[0][1].mockReturnValue([]);
-            _columnsCandidates[0][2].mockReturnValue([2, 3, 4, 5]);
-            _columnsCandidates[0][3].mockReturnValue([1, 2, 5, 7]);
-            _columnsCandidates[0][4].mockReturnValue([1, 3, 4, 7]);
-            _columnsCandidates[0][5].mockReturnValue([1, 2, 4, 7]);
-            _columnsCandidates[0][6].mockReturnValue([]);
-            _columnsCandidates[0][7].mockReturnValue([1, 4, 5, 7]);
-            _columnsCandidates[0][8].mockReturnValue([]);
-
-            _columnsCandidates[1][0].mockReturnValue([2, 4, 5, 9]);
-            _columnsCandidates[1][1].mockReturnValue([2, 3, 4, 5, 6]);
-            _columnsCandidates[1][2].mockReturnValue([2, 3, 4, 5, 9]);
-            _columnsCandidates[1][3].mockReturnValue([1, 2, 5, 6, 7]);
-            _columnsCandidates[1][4].mockReturnValue([1, 3, 4, 7]);
-            _columnsCandidates[1][5].mockReturnValue([1, 2, 4, 7, 8]);
-            _columnsCandidates[1][6].mockReturnValue([1, 5, 7, 8]);
-            _columnsCandidates[1][7].mockReturnValue([1, 4, 5, 7]);
-            _columnsCandidates[1][8].mockReturnValue([3, 7, 8]);
-
-            _columnsCandidates[2][0].mockReturnValue([]);
-            _columnsCandidates[2][1].mockReturnValue([3, 4, 5, 6]);
-            _columnsCandidates[2][2].mockReturnValue([]);
-            _columnsCandidates[2][3].mockReturnValue([5, 6]);
-            _columnsCandidates[2][4].mockReturnValue([]);
-            _columnsCandidates[2][5].mockReturnValue([4, 8]);
-            _columnsCandidates[2][6].mockReturnValue([5, 8]);
-            _columnsCandidates[2][7].mockReturnValue([]);
-            _columnsCandidates[2][8].mockReturnValue([3, 8]);
+            _.range(3).forEach((row) =>
+                _.range(9).forEach((column) => {
+                    const candidates = columnsCandidates[row][column];
+                    cellsInColumns[row][column].candidates = candidates;
+                    cellsInColumns[row][column].latestCandidates = candidates;
+                }),
+            );
 
             expect(
                 BoxLineReductionStrategy
@@ -780,65 +688,57 @@ describe("BoxLineReductionStrategy", () => {
         });
 
         it("should updates matching candidates in columns", () => {
-            _rowsCandidates[0][0].mockReturnValue([]);
-            _rowsCandidates[0][1].mockReturnValue([4, 9]);
-            _rowsCandidates[0][2].mockReturnValue([]);
-            _rowsCandidates[0][3].mockReturnValue([4, 5]);
-            _rowsCandidates[0][4].mockReturnValue([]);
-            _rowsCandidates[0][5].mockReturnValue([]);
-            _rowsCandidates[0][6].mockReturnValue([2, 4, 5]);
-            _rowsCandidates[0][7].mockReturnValue([2, 4, 5, 9]);
-            _rowsCandidates[0][8].mockReturnValue([]);
+            const rowsCandidates = [
+                [
+                    [], [4, 9], [],
+                    [4, 5], [], [],
+                    [2, 4, 5], [2, 4, 5, 9], [],
+                ],
+                [
+                    [1, 2, 4, 7], [4, 7], [1, 4, 5, 7],
+                    [3, 4, 5], [], [2, 3, 5],
+                    [], [3, 4, 5, 6], [3, 4, 5, 6],
+                ],
+                [
+                    [2, 4], [], [4, 5, 9],
+                    [], [], [2, 3, 5],
+                    [3, 4, 5], [3, 4, 5, 9], [],
+                ],
+            ];
 
-            _rowsCandidates[1][0].mockReturnValue([1, 2, 4, 7]);
-            _rowsCandidates[1][1].mockReturnValue([4, 7]);
-            _rowsCandidates[1][2].mockReturnValue([1, 4, 5, 7]);
-            _rowsCandidates[1][3].mockReturnValue([3, 4, 5]);
-            _rowsCandidates[1][4].mockReturnValue([]);
-            _rowsCandidates[1][5].mockReturnValue([2, 3, 5]);
-            _rowsCandidates[1][6].mockReturnValue([]);
-            _rowsCandidates[1][7].mockReturnValue([3, 4, 5, 6]);
-            _rowsCandidates[1][8].mockReturnValue([3, 4, 5, 6]);
+            _.range(3).forEach((row) =>
+                _.range(9).forEach((column) => {
+                    const candidates = rowsCandidates[row][column];
+                    cellsInRows[row][column].candidates = candidates;
+                    cellsInRows[row][column].latestCandidates = candidates;
+                }),
+            );
 
-            _rowsCandidates[2][0].mockReturnValue([2, 4]);
-            _rowsCandidates[2][1].mockReturnValue([]);
-            _rowsCandidates[2][2].mockReturnValue([4, 5, 9]);
-            _rowsCandidates[2][3].mockReturnValue([]);
-            _rowsCandidates[2][4].mockReturnValue([]);
-            _rowsCandidates[2][5].mockReturnValue([2, 3, 5]);
-            _rowsCandidates[2][6].mockReturnValue([3, 4, 5]);
-            _rowsCandidates[2][7].mockReturnValue([3, 4, 5, 9]);
-            _rowsCandidates[2][8].mockReturnValue([]);
+            const columnsCandidates = [
+                [
+                    [], [1, 2, 4, 7], [2, 4],
+                    [], [1, 4, 7], [],
+                    [4, 7], [], [],
+                ],
+                [
+                    [4, 9], [4, 7], [],
+                    [7, 9], [], [],
+                    [], [], [],
+                ],
+                [
+                    [], [1, 4, 5, 7], [4, 5, 9],
+                    [1, 7, 9], [], [1, 4, 7],
+                    [4, 7, 8], [], [7, 8],
+                ],
+            ];
 
-            _columnsCandidates[0][0].mockReturnValue([]);
-            _columnsCandidates[0][1].mockReturnValue([1, 2, 4, 7]);
-            _columnsCandidates[0][2].mockReturnValue([2, 4]);
-            _columnsCandidates[0][3].mockReturnValue([]);
-            _columnsCandidates[0][4].mockReturnValue([1, 4, 7]);
-            _columnsCandidates[0][5].mockReturnValue([]);
-            _columnsCandidates[0][6].mockReturnValue([4, 7]);
-            _columnsCandidates[0][7].mockReturnValue([]);
-            _columnsCandidates[0][8].mockReturnValue([]);
-
-            _columnsCandidates[1][0].mockReturnValue([4, 9]);
-            _columnsCandidates[1][1].mockReturnValue([4, 7]);
-            _columnsCandidates[1][2].mockReturnValue([]);
-            _columnsCandidates[1][3].mockReturnValue([7, 9]);
-            _columnsCandidates[1][4].mockReturnValue([]);
-            _columnsCandidates[1][5].mockReturnValue([]);
-            _columnsCandidates[1][6].mockReturnValue([]);
-            _columnsCandidates[1][7].mockReturnValue([]);
-            _columnsCandidates[1][8].mockReturnValue([]);
-
-            _columnsCandidates[2][0].mockReturnValue([]);
-            _columnsCandidates[2][1].mockReturnValue([1, 4, 5, 7]);
-            _columnsCandidates[2][2].mockReturnValue([4, 5, 9]);
-            _columnsCandidates[2][3].mockReturnValue([1, 7, 9]);
-            _columnsCandidates[2][4].mockReturnValue([]);
-            _columnsCandidates[2][5].mockReturnValue([1, 4, 7]);
-            _columnsCandidates[2][6].mockReturnValue([4, 7, 8]);
-            _columnsCandidates[2][7].mockReturnValue([]);
-            _columnsCandidates[2][8].mockReturnValue([7, 8]);
+            _.range(3).forEach((row) =>
+                _.range(9).forEach((column) => {
+                    const candidates = columnsCandidates[row][column];
+                    cellsInColumns[row][column].candidates = candidates;
+                    cellsInColumns[row][column].latestCandidates = candidates;
+                }),
+            );
 
             expect(
                 BoxLineReductionStrategy
@@ -867,89 +767,83 @@ describe("BoxLineReductionStrategy", () => {
 
         beforeEach(() => {
             cellsInRows = _.range(3).map((row) =>
-                _.range(9).map((column) => (
-                    {
-                        identifier: `c${row}${column}`,
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                        candidates: jest.fn(() => []),
-                        setNextCandidates: jest.fn(),
-                    }
-                )),
+                _.range(9).map((column) => ({
+                    row, column,
+                    identifier: `c${row}${column}`,
+                    candidates: [],
+                    setNextCandidates: jest.fn(),
+                }))
             );
 
             cellsInColumns = _.range(3).map((column) =>
-                _.range(9).map((row) => (
-                    {
-                        identifier: `c${row}${column}`,
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                        candidates: jest.fn(() => []),
-                    }
-                )),
+                _.range(9).map((row) => ({
+                    row, column,
+                    identifier: `c${row}${column}`,
+                    candidates: [],
+                }))
             );
         });
 
         it("should return counters from all cells in row and column", () => {
-            cellsInRows[0][0].candidates.mockReturnValue([]);
-            cellsInRows[0][1].candidates.mockReturnValue([2, 7, 8]);
-            cellsInRows[0][2].candidates.mockReturnValue([1, 8]);
-            cellsInRows[0][3].candidates.mockReturnValue([1, 6]);
-            cellsInRows[0][4].candidates.mockReturnValue([]);
-            cellsInRows[0][5].candidates.mockReturnValue([3, 7]);
-            cellsInRows[0][6].candidates.mockReturnValue([2, 3, 6]);
-            cellsInRows[0][7].candidates.mockReturnValue([2, 3, 8]);
-            cellsInRows[0][8].candidates.mockReturnValue([]);
+            cellsInRows[0][0].candidates = [];
+            cellsInRows[0][1].candidates = [2, 7, 8];
+            cellsInRows[0][2].candidates = [1, 8];
+            cellsInRows[0][3].candidates = [1, 6];
+            cellsInRows[0][4].candidates = [];
+            cellsInRows[0][5].candidates = [3, 7];
+            cellsInRows[0][6].candidates = [2, 3, 6];
+            cellsInRows[0][7].candidates = [2, 3, 8];
+            cellsInRows[0][8].candidates = [];
 
-            cellsInRows[1][0].candidates.mockReturnValue([2, 8, 9]);
-            cellsInRows[1][1].candidates.mockReturnValue([]);
-            cellsInRows[1][2].candidates.mockReturnValue([4, 8, 9]);
-            cellsInRows[1][3].candidates.mockReturnValue([3, 4, 8]);
-            cellsInRows[1][4].candidates.mockReturnValue([3, 4, 5, 8]);
-            cellsInRows[1][5].candidates.mockReturnValue([3, 4, 5]);
-            cellsInRows[1][6].candidates.mockReturnValue([2, 3, 9]);
-            cellsInRows[1][7].candidates.mockReturnValue([]);
-            cellsInRows[1][8].candidates.mockReturnValue([]);
+            cellsInRows[1][0].candidates = [2, 8, 9];
+            cellsInRows[1][1].candidates = [];
+            cellsInRows[1][2].candidates = [4, 8, 9];
+            cellsInRows[1][3].candidates = [3, 4, 8];
+            cellsInRows[1][4].candidates = [3, 4, 5, 8];
+            cellsInRows[1][5].candidates = [3, 4, 5];
+            cellsInRows[1][6].candidates = [2, 3, 9];
+            cellsInRows[1][7].candidates = [];
+            cellsInRows[1][8].candidates = [];
 
-            cellsInRows[2][0].candidates.mockReturnValue([]);
-            cellsInRows[2][1].candidates.mockReturnValue([4, 7, 8, 9]);
-            cellsInRows[2][2].candidates.mockReturnValue([1, 4, 8, 9]);
-            cellsInRows[2][3].candidates.mockReturnValue([1, 6]);
-            cellsInRows[2][4].candidates.mockReturnValue([]);
-            cellsInRows[2][5].candidates.mockReturnValue([4, 7]);
-            cellsInRows[2][6].candidates.mockReturnValue([6, 9]);
-            cellsInRows[2][7].candidates.mockReturnValue([8, 9]);
-            cellsInRows[2][8].candidates.mockReturnValue([]);
+            cellsInRows[2][0].candidates = [];
+            cellsInRows[2][1].candidates = [4, 7, 8, 9];
+            cellsInRows[2][2].candidates = [1, 4, 8, 9];
+            cellsInRows[2][3].candidates = [1, 6];
+            cellsInRows[2][4].candidates = [];
+            cellsInRows[2][5].candidates = [4, 7];
+            cellsInRows[2][6].candidates = [6, 9];
+            cellsInRows[2][7].candidates = [8, 9];
+            cellsInRows[2][8].candidates = [];
 
-            cellsInColumns[0][0].candidates.mockReturnValue([]);
-            cellsInColumns[0][1].candidates.mockReturnValue([2, 8, 9]);
-            cellsInColumns[0][2].candidates.mockReturnValue([]);
-            cellsInColumns[0][3].candidates.mockReturnValue([7, 8, 9]);
-            cellsInColumns[0][4].candidates.mockReturnValue([]);
-            cellsInColumns[0][5].candidates.mockReturnValue([6, 7, 8]);
-            cellsInColumns[0][6].candidates.mockReturnValue([1, 2, 6, 9]);
-            cellsInColumns[0][7].candidates.mockReturnValue([2, 6, 8]);
-            cellsInColumns[0][8].candidates.mockReturnValue([1, 2]);
+            cellsInColumns[0][0].candidates = [];
+            cellsInColumns[0][1].candidates = [2, 8, 9];
+            cellsInColumns[0][2].candidates = [];
+            cellsInColumns[0][3].candidates = [7, 8, 9];
+            cellsInColumns[0][4].candidates = [];
+            cellsInColumns[0][5].candidates = [6, 7, 8];
+            cellsInColumns[0][6].candidates = [1, 2, 6, 9];
+            cellsInColumns[0][7].candidates = [2, 6, 8];
+            cellsInColumns[0][8].candidates = [1, 2];
 
-            cellsInColumns[1][0].candidates.mockReturnValue([2, 7, 8]);
-            cellsInColumns[1][1].candidates.mockReturnValue([]);
-            cellsInColumns[1][2].candidates.mockReturnValue([4, 7, 8, 9]);
-            cellsInColumns[1][3].candidates.mockReturnValue([]);
-            cellsInColumns[1][4].candidates.mockReturnValue([]);
-            cellsInColumns[1][5].candidates.mockReturnValue([7, 8]);
-            cellsInColumns[1][6].candidates.mockReturnValue([2, 4, 9]);
-            cellsInColumns[1][7].candidates.mockReturnValue([2, 4, 8]);
-            cellsInColumns[1][8].candidates.mockReturnValue([]);
+            cellsInColumns[1][0].candidates = [2, 7, 8];
+            cellsInColumns[1][1].candidates = [];
+            cellsInColumns[1][2].candidates = [4, 7, 8, 9];
+            cellsInColumns[1][3].candidates = [];
+            cellsInColumns[1][4].candidates = [];
+            cellsInColumns[1][5].candidates = [7, 8];
+            cellsInColumns[1][6].candidates = [2, 4, 9];
+            cellsInColumns[1][7].candidates = [2, 4, 8];
+            cellsInColumns[1][8].candidates = [];
 
-            cellsInColumns[2][0].candidates.mockReturnValue([1, 8]);
-            cellsInColumns[2][1].candidates.mockReturnValue([4, 8, 9]);
-            cellsInColumns[2][2].candidates.mockReturnValue([1, 4, 8, 9]);
-            cellsInColumns[2][3].candidates.mockReturnValue([]);
-            cellsInColumns[2][4].candidates.mockReturnValue([5, 6, 8, 9]);
-            cellsInColumns[2][5].candidates.mockReturnValue([5, 6, 8]);
-            cellsInColumns[2][6].candidates.mockReturnValue([1, 3, 4, 6, 9]);
-            cellsInColumns[2][7].candidates.mockReturnValue([3, 4, 6, 8]);
-            cellsInColumns[2][8].candidates.mockReturnValue([]);
+            cellsInColumns[2][0].candidates = [1, 8];
+            cellsInColumns[2][1].candidates = [4, 8, 9];
+            cellsInColumns[2][2].candidates = [1, 4, 8, 9];
+            cellsInColumns[2][3].candidates = [];
+            cellsInColumns[2][4].candidates = [5, 6, 8, 9];
+            cellsInColumns[2][5].candidates = [5, 6, 8];
+            cellsInColumns[2][6].candidates = [1, 3, 4, 6, 9];
+            cellsInColumns[2][7].candidates = [3, 4, 6, 8];
+            cellsInColumns[2][8].candidates = [];
 
             const expected = {
                 row: {
@@ -985,15 +879,15 @@ describe("BoxLineReductionStrategy", () => {
     describe("getCellsMapping", () => {
         it("should return the mapping per row and column indices", () => {
             const cellsInBlock = [
-                {row: jest.fn(() => 3), column: jest.fn(() => 0)},
-                {row: jest.fn(() => 3), column: jest.fn(() => 1)},
-                {row: jest.fn(() => 3), column: jest.fn(() => 2)},
-                {row: jest.fn(() => 4), column: jest.fn(() => 0)},
-                {row: jest.fn(() => 4), column: jest.fn(() => 1)},
-                {row: jest.fn(() => 4), column: jest.fn(() => 2)},
-                {row: jest.fn(() => 5), column: jest.fn(() => 0)},
-                {row: jest.fn(() => 5), column: jest.fn(() => 1)},
-                {row: jest.fn(() => 5), column: jest.fn(() => 2)},
+                {row: 3, column: 0},
+                {row: 3, column: 1},
+                {row: 3, column: 2},
+                {row: 4, column: 0},
+                {row: 4, column: 1},
+                {row: 4, column: 2},
+                {row: 5, column: 0},
+                {row: 5, column: 1},
+                {row: 5, column: 2},
             ];
 
             const expected = {
@@ -1025,25 +919,21 @@ describe("BoxLineReductionStrategy", () => {
 
             _.range(3, 6).forEach((row) =>
                 _.range(3).forEach((column) => (
-                    cellsInBlock.push({
-                        row: jest.fn(() => row),
-                        column: jest.fn(() => column),
-                        candidates: jest.fn(() => []),
-                    })
+                    cellsInBlock.push({row, column, candidates: []})
                 )),
             );
         });
 
         it("should return list of candidates per row and column", () => {
-            cellsInBlock[0].candidates.mockReturnValue([2, 4, 5]);
-            cellsInBlock[1].candidates.mockReturnValue([]);
-            cellsInBlock[2].candidates.mockReturnValue([2, 3, 4, 5]);
-            cellsInBlock[3].candidates.mockReturnValue([9, 2, 4, 5]);
-            cellsInBlock[4].candidates.mockReturnValue([2, 3, 4, 5, 6]);
-            cellsInBlock[5].candidates.mockReturnValue([9, 2, 3, 4, 5]);
-            cellsInBlock[6].candidates.mockReturnValue([]);
-            cellsInBlock[7].candidates.mockReturnValue([3, 4, 5, 6]);
-            cellsInBlock[8].candidates.mockReturnValue([]);
+            cellsInBlock[0].candidates = [2, 4, 5];
+            cellsInBlock[1].candidates = [];
+            cellsInBlock[2].candidates = [2, 3, 4, 5];
+            cellsInBlock[3].candidates = [9, 2, 4, 5];
+            cellsInBlock[4].candidates = [2, 3, 4, 5, 6];
+            cellsInBlock[5].candidates = [9, 2, 3, 4, 5];
+            cellsInBlock[6].candidates = [];
+            cellsInBlock[7].candidates = [3, 4, 5, 6];
+            cellsInBlock[8].candidates = [];
 
             const counters = {
                 row: {

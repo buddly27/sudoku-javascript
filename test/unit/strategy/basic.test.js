@@ -65,14 +65,11 @@ describe("BasicStrategy", () => {
                 ]);
             expect(processCellsSpy.mock.calls)
                 .toEqual(
-                    []
-                        .concat(
-                            _.range(9).map(() => [[
-                                "R1", "R2", "R3",
-                                "R4", "R5", "R6",
-                                "R7", "R8", "R9",
-                            ]])
-                        )
+                    _.range(9).map(() => [[
+                        "R1", "R2", "R3",
+                        "R4", "R5", "R6",
+                        "R7", "R8", "R9",
+                    ]])
                         .concat(
                             _.range(9).map(() => [[
                                 "C1", "C2", "C3",
@@ -96,29 +93,19 @@ describe("BasicStrategy", () => {
 
         beforeEach(() => {
             cells = [
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
             ];
         });
 
         it("should not match any candidates", () => {
-            cells[0].candidates.mockReturnValue([]);
-            cells[1].candidates.mockReturnValue([]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([]);
-            cells[4].candidates.mockReturnValue([]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([]);
-
             expect(BasicStrategy.updateFromIntersection(cells, [[3, 5]]))
                 .toEqual([]);
 
@@ -134,15 +121,15 @@ describe("BasicStrategy", () => {
         });
 
         it("should update a few cells", () => {
-            cells[0].candidates.mockReturnValue([5, 9]);
-            cells[1].candidates.mockReturnValue([7, 8, 9]);
-            cells[2].candidates.mockReturnValue([5, 9]);
-            cells[3].candidates.mockReturnValue([1, 5, 3]);
-            cells[4].candidates.mockReturnValue([1, 5, 3]);
-            cells[5].candidates.mockReturnValue([1, 4]);
-            cells[6].candidates.mockReturnValue([1, 2, 3, 5, 7]);
-            cells[7].candidates.mockReturnValue([8, 7, 3]);
-            cells[8].candidates.mockReturnValue([]);
+            cells[0].candidates = [5, 9];
+            cells[1].candidates = [7, 8, 9];
+            cells[2].candidates = [5, 9];
+            cells[3].candidates = [1, 5, 3];
+            cells[4].candidates = [1, 5, 3];
+            cells[5].candidates = [1, 4];
+            cells[6].candidates = [1, 2, 3, 5, 7];
+            cells[7].candidates = [8, 7, 3];
+            cells[8].candidates = [];
 
             expect(BasicStrategy.updateFromIntersection(cells, [[2], [4]]))
                 .toEqual([cells[5], cells[6]]);
@@ -164,29 +151,19 @@ describe("BasicStrategy", () => {
 
         beforeEach(() => {
             cells = [
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
-                {candidates: jest.fn(), setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
+                {candidates: [], setNextCandidates: jest.fn()},
             ];
         });
 
         it("should not match any candidates", () => {
-            cells[0].candidates.mockReturnValue([]);
-            cells[1].candidates.mockReturnValue([]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([]);
-            cells[4].candidates.mockReturnValue([]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([]);
-
             expect(BasicStrategy.updateFromDifference(cells, [[3, 5]]))
                 .toEqual([]);
 
@@ -202,15 +179,15 @@ describe("BasicStrategy", () => {
         });
 
         it("should update a few cells", () => {
-            cells[0].candidates.mockReturnValue([1, 2, 3, 4]);
-            cells[1].candidates.mockReturnValue([]);
-            cells[2].candidates.mockReturnValue([1, 2, 9]);
-            cells[3].candidates.mockReturnValue([3, 9]);
-            cells[4].candidates.mockReturnValue([5, 8, 7]);
-            cells[5].candidates.mockReturnValue([4, 9]);
-            cells[6].candidates.mockReturnValue([3, 7]);
-            cells[7].candidates.mockReturnValue([5, 8]);
-            cells[8].candidates.mockReturnValue([]);
+            cells[0].candidates = [1, 2, 3, 4];
+            cells[1].candidates = [];
+            cells[2].candidates = [1, 2, 9];
+            cells[3].candidates = [3, 9];
+            cells[4].candidates = [5, 8, 7];
+            cells[5].candidates = [4, 9];
+            cells[6].candidates = [3, 7];
+            cells[7].candidates = [5, 8];
+            cells[8].candidates = [];
 
             expect(BasicStrategy.updateFromDifference(cells, [[1, 2], [5, 8]]))
                 .toEqual([cells[0], cells[2], cells[4]]);
@@ -244,29 +221,19 @@ describe("HiddenSingleStrategy", () => {
                 .mockImplementation(() => {});
 
             cells = [
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
             ];
         });
 
         it("should not match any candidates", () => {
-            cells[0].candidates.mockReturnValue([]);
-            cells[1].candidates.mockReturnValue([]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([]);
-            cells[4].candidates.mockReturnValue([]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([]);
-
             HiddenSingleStrategy.processCells(cells);
 
             expect(updateFromIntersectionSpy)
@@ -274,15 +241,15 @@ describe("HiddenSingleStrategy", () => {
         });
 
         it("should find one hidden single candidate", () => {
-            cells[0].candidates.mockReturnValue([1, 4, 5, 6, 9]);
-            cells[1].candidates.mockReturnValue([4, 5, 9]);
-            cells[2].candidates.mockReturnValue([4, 9]);
-            cells[3].candidates.mockReturnValue([1, 5]);
-            cells[4].candidates.mockReturnValue([4, 9]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([]);
+            cells[0].candidates = [1, 4, 5, 6, 9];
+            cells[1].candidates = [4, 5, 9];
+            cells[2].candidates = [4, 9];
+            cells[3].candidates = [1, 5];
+            cells[4].candidates = [4, 9];
+            cells[5].candidates = [];
+            cells[6].candidates = [];
+            cells[7].candidates = [];
+            cells[8].candidates = [];
 
             HiddenSingleStrategy.processCells(cells);
 
@@ -291,15 +258,15 @@ describe("HiddenSingleStrategy", () => {
         });
 
         it("should find two hidden single candidates", () => {
-            cells[0].candidates.mockReturnValue([5, 9]);
-            cells[1].candidates.mockReturnValue([7, 8, 9]);
-            cells[2].candidates.mockReturnValue([5, 9]);
-            cells[3].candidates.mockReturnValue([1, 5, 3]);
-            cells[4].candidates.mockReturnValue([1, 5, 3]);
-            cells[5].candidates.mockReturnValue([1, 4]);
-            cells[6].candidates.mockReturnValue([1, 2, 3, 5, 7]);
-            cells[7].candidates.mockReturnValue([8, 7, 3]);
-            cells[8].candidates.mockReturnValue([]);
+            cells[0].candidates = [5, 9];
+            cells[1].candidates = [7, 8, 9];
+            cells[2].candidates = [5, 9];
+            cells[3].candidates = [1, 5, 3];
+            cells[4].candidates = [1, 5, 3];
+            cells[5].candidates = [1, 4];
+            cells[6].candidates = [1, 2, 3, 5, 7];
+            cells[7].candidates = [8, 7, 3];
+            cells[8].candidates = [];
 
             HiddenSingleStrategy.processCells(cells);
 
@@ -308,15 +275,15 @@ describe("HiddenSingleStrategy", () => {
         });
 
         it("should find two other hidden single candidates", () => {
-            cells[0].candidates.mockReturnValue([1, 4]);
-            cells[1].candidates.mockReturnValue([1, 2, 7]);
-            cells[2].candidates.mockReturnValue([4, 7, 8]);
-            cells[3].candidates.mockReturnValue([4, 7]);
-            cells[4].candidates.mockReturnValue([2, 3, 9]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([4, 7, 3]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([2, 3, 4, 7]);
+            cells[0].candidates = [1, 4];
+            cells[1].candidates = [1, 2, 7];
+            cells[2].candidates = [4, 7, 8];
+            cells[3].candidates = [4, 7];
+            cells[4].candidates = [2, 3, 9];
+            cells[5].candidates = [];
+            cells[6].candidates = [4, 7, 3];
+            cells[7].candidates = [];
+            cells[8].candidates = [2, 3, 4, 7];
 
             HiddenSingleStrategy.processCells(cells);
 
@@ -342,29 +309,19 @@ describe("HiddenPairStrategy", () => {
                 .mockImplementation(() => {});
 
             cells = [
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
             ];
         });
 
         it("should not match any candidates", () => {
-            cells[0].candidates.mockReturnValue([]);
-            cells[1].candidates.mockReturnValue([]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([]);
-            cells[4].candidates.mockReturnValue([]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([]);
-
             HiddenPairStrategy.processCells(cells);
 
             expect(updateFromIntersectionSpy)
@@ -372,15 +329,15 @@ describe("HiddenPairStrategy", () => {
         });
 
         it("should find one hidden pair candidate", () => {
-            cells[0].candidates.mockReturnValue([7, 8, 6]);
-            cells[1].candidates.mockReturnValue([2, 6]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([2, 7]);
-            cells[4].candidates.mockReturnValue([1, 9, 6]);
-            cells[5].candidates.mockReturnValue([1, 9]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([2, 7, 8]);
-            cells[8].candidates.mockReturnValue([]);
+            cells[0].candidates = [7, 8, 6];
+            cells[1].candidates = [2, 6];
+            cells[2].candidates = [];
+            cells[3].candidates = [2, 7];
+            cells[4].candidates = [1, 9, 6];
+            cells[5].candidates = [1, 9];
+            cells[6].candidates = [];
+            cells[7].candidates = [2, 7, 8];
+            cells[8].candidates = [];
 
             HiddenPairStrategy.processCells(cells);
 
@@ -389,15 +346,15 @@ describe("HiddenPairStrategy", () => {
         });
 
         it("should find one other hidden pair candidate", () => {
-            cells[0].candidates.mockReturnValue([2, 3, 4, 5, 7, 8, 9]);
-            cells[1].candidates.mockReturnValue([1, 2, 3, 4, 5, 7, 8]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([3, 8, 9]);
-            cells[4].candidates.mockReturnValue([5, 8, 9]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([1, 5, 8]);
-            cells[8].candidates.mockReturnValue([1, 2, 5, 8]);
+            cells[0].candidates = [2, 3, 4, 5, 7, 8, 9];
+            cells[1].candidates = [1, 2, 3, 4, 5, 7, 8];
+            cells[2].candidates = [];
+            cells[3].candidates = [3, 8, 9];
+            cells[4].candidates = [5, 8, 9];
+            cells[5].candidates = [];
+            cells[6].candidates = [];
+            cells[7].candidates = [1, 5, 8];
+            cells[8].candidates = [1, 2, 5, 8];
 
             HiddenPairStrategy.processCells(cells);
 
@@ -406,15 +363,15 @@ describe("HiddenPairStrategy", () => {
         });
 
         it("should find two hidden pair candidates", () => {
-            cells[0].candidates.mockReturnValue([1, 4]);
-            cells[1].candidates.mockReturnValue([]);
-            cells[2].candidates.mockReturnValue([1, 7]);
-            cells[3].candidates.mockReturnValue([4, 7, 8, 9]);
-            cells[4].candidates.mockReturnValue([4, 7]);
-            cells[5].candidates.mockReturnValue([5, 8, 9]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([2, 7, 3]);
-            cells[8].candidates.mockReturnValue([2, 3, 4, 7]);
+            cells[0].candidates = [1, 4];
+            cells[1].candidates = [];
+            cells[2].candidates = [1, 7];
+            cells[3].candidates = [4, 7, 8, 9];
+            cells[4].candidates = [4, 7];
+            cells[5].candidates = [5, 8, 9];
+            cells[6].candidates = [];
+            cells[7].candidates = [2, 7, 3];
+            cells[8].candidates = [2, 3, 4, 7];
 
             HiddenPairStrategy.processCells(cells);
 
@@ -423,15 +380,15 @@ describe("HiddenPairStrategy", () => {
         });
 
         it("should find two other hidden pair candidates", () => {
-            cells[0].candidates.mockReturnValue([]);
-            cells[1].candidates.mockReturnValue([4, 6, 9, 5]);
-            cells[2].candidates.mockReturnValue([2, 4, 8, 9]);
-            cells[3].candidates.mockReturnValue([1, 3, 4, 9]);
-            cells[4].candidates.mockReturnValue([4, 5]);
-            cells[5].candidates.mockReturnValue([2, 6, 8, 9]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([1, 3, 5]);
+            cells[0].candidates = [];
+            cells[1].candidates = [4, 6, 9, 5];
+            cells[2].candidates = [2, 4, 8, 9];
+            cells[3].candidates = [1, 3, 4, 9];
+            cells[4].candidates = [4, 5];
+            cells[5].candidates = [2, 6, 8, 9];
+            cells[6].candidates = [];
+            cells[7].candidates = [];
+            cells[8].candidates = [1, 3, 5];
 
             HiddenPairStrategy.processCells(cells);
 
@@ -457,29 +414,19 @@ describe("HiddenTripleStrategy", () => {
                 .mockImplementation(() => {});
 
             cells = [
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
             ];
         });
 
         it("should not update solved grid", () => {
-            cells[0].candidates.mockReturnValue([]);
-            cells[1].candidates.mockReturnValue([]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([]);
-            cells[4].candidates.mockReturnValue([]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([]);
-
             HiddenTripleStrategy.processCells(cells);
 
             expect(updateFromIntersectionSpy)
@@ -487,15 +434,15 @@ describe("HiddenTripleStrategy", () => {
         });
 
         it("should find a hidden triple candidate", () => {
-            cells[0].candidates.mockReturnValue([1, 7, 8]);
-            cells[1].candidates.mockReturnValue([]);
-            cells[2].candidates.mockReturnValue([7, 8]);
-            cells[3].candidates.mockReturnValue([7, 6]);
-            cells[4].candidates.mockReturnValue([4, 5]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([1, 6]);
-            cells[7].candidates.mockReturnValue([1, 2, 4, 5]);
-            cells[8].candidates.mockReturnValue([2, 5, 6]);
+            cells[0].candidates = [1, 7, 8];
+            cells[1].candidates = [];
+            cells[2].candidates = [7, 8];
+            cells[3].candidates = [7, 6];
+            cells[4].candidates = [4, 5];
+            cells[5].candidates = [];
+            cells[6].candidates = [1, 6];
+            cells[7].candidates = [1, 2, 4, 5];
+            cells[8].candidates = [2, 5, 6];
 
             HiddenTripleStrategy.processCells(cells);
 
@@ -504,15 +451,15 @@ describe("HiddenTripleStrategy", () => {
         });
 
         it("should find another hidden triple candidate", () => {
-            cells[0].candidates.mockReturnValue([1, 4]);
-            cells[1].candidates.mockReturnValue([1, 3, 7]);
-            cells[2].candidates.mockReturnValue([1, 3, 4, 7]);
-            cells[3].candidates.mockReturnValue([1, 2, 4, 5, 6, 7, 8]);
-            cells[4].candidates.mockReturnValue([1, 3, 4, 7, 8]);
-            cells[5].candidates.mockReturnValue([1, 2, 4, 5, 6, 8]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([1, 2, 3, 4, 6, 8]);
-            cells[8].candidates.mockReturnValue([1, 3, 4]);
+            cells[0].candidates = [1, 4];
+            cells[1].candidates = [1, 3, 7];
+            cells[2].candidates = [1, 3, 4, 7];
+            cells[3].candidates = [1, 2, 4, 5, 6, 7, 8];
+            cells[4].candidates = [1, 3, 4, 7, 8];
+            cells[5].candidates = [1, 2, 4, 5, 6, 8];
+            cells[6].candidates = [];
+            cells[7].candidates = [1, 2, 3, 4, 6, 8];
+            cells[8].candidates = [1, 3, 4];
 
             HiddenTripleStrategy.processCells(cells);
 
@@ -538,29 +485,19 @@ describe("HiddenQuadStrategy", () => {
                 .mockImplementation(() => {});
 
             cells = [
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
             ];
         });
 
         it("should not update solved grid", () => {
-            cells[0].candidates.mockReturnValue([]);
-            cells[1].candidates.mockReturnValue([]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([]);
-            cells[4].candidates.mockReturnValue([]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([]);
-
             HiddenQuadStrategy.processCells(cells);
 
             expect(updateFromIntersectionSpy)
@@ -568,15 +505,15 @@ describe("HiddenQuadStrategy", () => {
         });
 
         it("should find a hidden quad candidate", () => {
-            cells[0].candidates.mockReturnValue([1, 9]);
-            cells[1].candidates.mockReturnValue([1, 8]);
-            cells[2].candidates.mockReturnValue([1, 6, 8]);
-            cells[3].candidates.mockReturnValue([2, 9]);
-            cells[4].candidates.mockReturnValue([3, 4, 7]);
-            cells[5].candidates.mockReturnValue([4, 7]);
-            cells[6].candidates.mockReturnValue([3, 5, 6, 7]);
-            cells[7].candidates.mockReturnValue([4, 5, 6, 7]);
-            cells[8].candidates.mockReturnValue([2, 6]);
+            cells[0].candidates = [1, 9];
+            cells[1].candidates = [1, 8];
+            cells[2].candidates = [1, 6, 8];
+            cells[3].candidates = [2, 9];
+            cells[4].candidates = [3, 4, 7];
+            cells[5].candidates = [4, 7];
+            cells[6].candidates = [3, 5, 6, 7];
+            cells[7].candidates = [4, 5, 6, 7];
+            cells[8].candidates = [2, 6];
 
             HiddenQuadStrategy.processCells(cells);
 
@@ -585,15 +522,15 @@ describe("HiddenQuadStrategy", () => {
         });
 
         it("should find another hidden quad candidate", () => {
-            cells[0].candidates.mockReturnValue([1, 3, 4, 6, 7, 8, 9]);
-            cells[1].candidates.mockReturnValue([3, 7, 8]);
-            cells[2].candidates.mockReturnValue([3, 4, 6, 7, 8, 9]);
-            cells[3].candidates.mockReturnValue([2, 3, 7, 8]);
-            cells[4].candidates.mockReturnValue([2, 3, 5, 7, 8]);
-            cells[5].candidates.mockReturnValue([2, 3, 5, 7, 8]);
-            cells[6].candidates.mockReturnValue([1, 3, 4, 7, 8, 9]);
-            cells[7].candidates.mockReturnValue([3, 5, 7, 8]);
-            cells[8].candidates.mockReturnValue([3, 4, 5, 7, 8, 9]);
+            cells[0].candidates = [1, 3, 4, 6, 7, 8, 9];
+            cells[1].candidates = [3, 7, 8];
+            cells[2].candidates = [3, 4, 6, 7, 8, 9];
+            cells[3].candidates = [2, 3, 7, 8];
+            cells[4].candidates = [2, 3, 5, 7, 8];
+            cells[5].candidates = [2, 3, 5, 7, 8];
+            cells[6].candidates = [1, 3, 4, 7, 8, 9];
+            cells[7].candidates = [3, 5, 7, 8];
+            cells[8].candidates = [3, 4, 5, 7, 8, 9];
 
             HiddenQuadStrategy.processCells(cells);
 
@@ -619,29 +556,19 @@ describe("NakedPairStrategy", () => {
                 .mockImplementation(() => {});
 
             cells = [
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
             ];
         });
 
         it("should not match any candidates", () => {
-            cells[0].candidates.mockReturnValue([]);
-            cells[1].candidates.mockReturnValue([]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([]);
-            cells[4].candidates.mockReturnValue([]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([]);
-
             NakedPairStrategy.processCells(cells);
 
             expect(updateFromDifferenceSpy)
@@ -649,15 +576,15 @@ describe("NakedPairStrategy", () => {
         });
 
         it("should find one naked pair candidate", () => {
-            cells[0].candidates.mockReturnValue([5, 8, 9]);
-            cells[1].candidates.mockReturnValue([8, 9]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([1, 2, 4, 8, 9]);
-            cells[4].candidates.mockReturnValue([1, 2, 4, 8, 9]);
-            cells[5].candidates.mockReturnValue([8, 9]);
-            cells[6].candidates.mockReturnValue([4, 5, 6, 8, 9]);
-            cells[7].candidates.mockReturnValue([3, 4, 6, 8, 9]);
-            cells[8].candidates.mockReturnValue([3, 5, 8, 9]);
+            cells[0].candidates = [5, 8, 9];
+            cells[1].candidates = [8, 9];
+            cells[2].candidates = [];
+            cells[3].candidates = [1, 2, 4, 8, 9];
+            cells[4].candidates = [1, 2, 4, 8, 9];
+            cells[5].candidates = [8, 9];
+            cells[6].candidates = [4, 5, 6, 8, 9];
+            cells[7].candidates = [3, 4, 6, 8, 9];
+            cells[8].candidates = [3, 5, 8, 9];
 
             NakedPairStrategy.processCells(cells);
 
@@ -666,15 +593,15 @@ describe("NakedPairStrategy", () => {
         });
 
         it("should find one other naked pair candidate", () => {
-            cells[0].candidates.mockReturnValue([1, 6, 7, 9]);
-            cells[1].candidates.mockReturnValue([1, 6, 7, 8]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([1, 6, 7, 8, 9]);
-            cells[4].candidates.mockReturnValue([]);
-            cells[5].candidates.mockReturnValue([6, 7]);
-            cells[6].candidates.mockReturnValue([6, 7]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([]);
+            cells[0].candidates = [1, 6, 7, 9];
+            cells[1].candidates = [1, 6, 7, 8];
+            cells[2].candidates = [];
+            cells[3].candidates = [1, 6, 7, 8, 9];
+            cells[4].candidates = [];
+            cells[5].candidates = [6, 7];
+            cells[6].candidates = [6, 7];
+            cells[7].candidates = [];
+            cells[8].candidates = [];
 
             NakedPairStrategy.processCells(cells);
 
@@ -700,29 +627,19 @@ describe("NakedTripleStrategy", () => {
                 .mockImplementation(() => {});
 
             cells = [
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
-                {candidates: jest.fn()},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
+                {candidates: []},
             ];
         });
 
         it("should not match any candidates", () => {
-            cells[0].candidates.mockReturnValue([]);
-            cells[1].candidates.mockReturnValue([]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([]);
-            cells[4].candidates.mockReturnValue([]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([]);
-
             NakedTripleStrategy.processCells(cells);
 
             expect(updateFromDifferenceSpy)
@@ -730,15 +647,15 @@ describe("NakedTripleStrategy", () => {
         });
 
         it("should find one naked triple candidate", () => {
-            cells[0].candidates.mockReturnValue([1, 6, 7]);
-            cells[1].candidates.mockReturnValue([3, 9]);
-            cells[2].candidates.mockReturnValue([]);
-            cells[3].candidates.mockReturnValue([6, 9]);
-            cells[4].candidates.mockReturnValue([3, 6, 9]);
-            cells[5].candidates.mockReturnValue([]);
-            cells[6].candidates.mockReturnValue([]);
-            cells[7].candidates.mockReturnValue([]);
-            cells[8].candidates.mockReturnValue([1, 7]);
+            cells[0].candidates = [1, 6, 7];
+            cells[1].candidates = [3, 9];
+            cells[2].candidates = [];
+            cells[3].candidates = [6, 9];
+            cells[4].candidates = [3, 6, 9];
+            cells[5].candidates = [];
+            cells[6].candidates = [];
+            cells[7].candidates = [];
+            cells[8].candidates = [1, 7];
 
             NakedTripleStrategy.processCells(cells);
 
@@ -747,15 +664,15 @@ describe("NakedTripleStrategy", () => {
         });
 
         it("should find another naked triple candidate", () => {
-            cells[0].candidates.mockReturnValue([1, 2, 4, 5, 6]);
-            cells[1].candidates.mockReturnValue([1, 2, 6]);
-            cells[2].candidates.mockReturnValue([1, 2, 5, 6, 8]);
-            cells[3].candidates.mockReturnValue([1, 2, 4, 7]);
-            cells[4].candidates.mockReturnValue([1, 2, 3, 7, 9]);
-            cells[5].candidates.mockReturnValue([1, 2, 3, 7, 8, 9]);
-            cells[6].candidates.mockReturnValue([1, 2, 6]);
-            cells[7].candidates.mockReturnValue([1, 2, 6]);
-            cells[8].candidates.mockReturnValue([1, 2, 6, 8]);
+            cells[0].candidates = [1, 2, 4, 5, 6];
+            cells[1].candidates = [1, 2, 6];
+            cells[2].candidates = [1, 2, 5, 6, 8];
+            cells[3].candidates = [1, 2, 4, 7];
+            cells[4].candidates = [1, 2, 3, 7, 9];
+            cells[5].candidates = [1, 2, 3, 7, 8, 9];
+            cells[6].candidates = [1, 2, 6];
+            cells[7].candidates = [1, 2, 6];
+            cells[8].candidates = [1, 2, 6, 8];
 
             NakedTripleStrategy.processCells(cells);
 

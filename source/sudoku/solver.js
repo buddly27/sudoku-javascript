@@ -24,7 +24,7 @@ export class SudokuSolver {
      * The list of strategies to use in order to resolve a grid is initiated.
      */
     constructor() {
-        this.strategies = [
+        this._strategies = [
             HiddenSingleStrategy,
             HiddenPairStrategy,
             HiddenTripleStrategy,
@@ -35,7 +35,17 @@ export class SudokuSolver {
             BoxLineReductionStrategy,
         ];
 
-        this.strategiesUsed = [];
+        this._strategiesUsed = [];
+    }
+
+    /** Return a list of all strategies available. */
+    get strategies() {
+        return this._strategies;
+    }
+
+    /** Return a list of identifiers for each strategy used. */
+    get strategiesUsed() {
+        return this._strategiesUsed;
     }
 
     /**
@@ -101,8 +111,8 @@ export class SudokuSolver {
                 const modifiedCells = strategy.processGrid(grid);
                 if (modifiedCells.length > 0) {
                     const id = strategy.identifier;
-                    if (this.strategiesUsed.indexOf(id) === -1) {
-                        this.strategiesUsed.push(id);
+                    if (this._strategiesUsed.indexOf(id) === -1) {
+                        this._strategiesUsed.push(id);
                     }
 
                     modifiedCells.forEach((cell) => {

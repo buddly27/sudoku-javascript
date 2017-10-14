@@ -6,19 +6,19 @@ describe("SudokuCell", () => {
         const cell = new SudokuCell(0, 3, 5);
 
         it("should have a correct null cell value", () => {
-            expect(cell.value()).toEqual(0);
+            expect(cell.value).toEqual(0);
         });
 
         it("should have a correct row value", () => {
-            expect(cell.row()).toEqual(3);
+            expect(cell.row).toEqual(3);
         });
 
         it("should have a correct column value", () => {
-            expect(cell.column()).toEqual(5);
+            expect(cell.column).toEqual(5);
         });
 
         it("should have a correct list of candidates", () => {
-            expect(cell.candidates()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            expect(cell.candidates).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         });
 
         it("should indicate that the cell is not solved", () => {
@@ -30,19 +30,19 @@ describe("SudokuCell", () => {
         const cell = new SudokuCell(4, 1, 9);
 
         it("should have a correct cell value", () => {
-            expect(cell.value()).toEqual(4);
+            expect(cell.value).toEqual(4);
         });
 
         it("should have a correct row value", () => {
-            expect(cell.row()).toEqual(1);
+            expect(cell.row).toEqual(1);
         });
 
         it("should have a correct column value", () => {
-            expect(cell.column()).toEqual(9);
+            expect(cell.column).toEqual(9);
         });
 
         it("should have an empty list of candidates", () => {
-            expect(cell.candidates()).toEqual([]);
+            expect(cell.candidates).toEqual([]);
         });
 
         it("should indicate that the cell is solved", () => {
@@ -53,21 +53,21 @@ describe("SudokuCell", () => {
     describe("set and apply next candidates", () => {
         it("should apply a list of non existing next candidates", () => {
             const cell = new SudokuCell(0, 1, 9);
-            expect(cell.candidates()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            expect(cell.candidates).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
             expect(cell.applyNextCandidates()).toEqual(false);
-            expect(cell.candidates()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            expect(cell.candidates).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         });
 
         it("should set and apply a list of next candidates", () => {
             const cell = new SudokuCell(0, 1, 9);
-            expect(cell.latestCandidates())
+            expect(cell.latestCandidates)
                 .toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
             cell.setNextCandidates([8, 2, 2, 1, 5, 7]);
-            expect(cell.latestCandidates())
+            expect(cell.latestCandidates)
                 .toEqual([1, 2, 5, 7, 8]);
-            expect(cell.candidates()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            expect(cell.candidates).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
             expect(cell.applyNextCandidates()).toEqual(true);
-            expect(cell.candidates()).toEqual([1, 2, 5, 7, 8]);
+            expect(cell.candidates).toEqual([1, 2, 5, 7, 8]);
         });
     });
 
@@ -76,17 +76,17 @@ describe("SudokuCell", () => {
 
         it("should not update when empty arrays are given", () => {
             expect(cell.updateCandidates([], [], [])).toEqual(false);
-            expect(cell.candidates()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            expect(cell.candidates).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         });
 
         it("should update when one matching value is found", () => {
             expect(cell.updateCandidates([1], [], [])).toEqual(true);
-            expect(cell.candidates()).toEqual([2, 3, 4, 5, 6, 7, 8, 9]);
+            expect(cell.candidates).toEqual([2, 3, 4, 5, 6, 7, 8, 9]);
         });
 
         it("should update when several matching values are found", () => {
             expect(cell.updateCandidates([1, 4, 5], [2, 5], [9])).toEqual(true);
-            expect(cell.candidates()).toEqual([3, 6, 7, 8]);
+            expect(cell.candidates).toEqual([3, 6, 7, 8]);
         });
     });
 
@@ -95,14 +95,14 @@ describe("SudokuCell", () => {
             const cell = new SudokuCell(0, 1, 9);
             expect(cell.resolve()).toEqual(false);
             expect(cell.isSolved()).toEqual(false);
-            expect(cell.value()).toEqual(0);
+            expect(cell.value).toEqual(0);
         });
 
         it("should not solve a cell with no candidates left", () => {
             const cell = new SudokuCell(4, 1, 9);
             expect(cell.resolve()).toEqual(false);
             expect(cell.isSolved()).toEqual(true);
-            expect(cell.value()).toEqual(4);
+            expect(cell.value).toEqual(4);
         });
 
         it("should solve a cell with only one candidate left", () => {
@@ -111,7 +111,7 @@ describe("SudokuCell", () => {
             cell.applyNextCandidates();
             expect(cell.resolve()).toEqual(true);
             expect(cell.isSolved()).toEqual(true);
-            expect(cell.value()).toEqual(8);
+            expect(cell.value).toEqual(8);
         });
     });
 });

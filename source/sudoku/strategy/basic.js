@@ -76,7 +76,7 @@ export class BasicStrategy {
      *     >>> BasicStrategy.updateFromIntersection([cell], [[3, 4],]);
      *     [[SudokuCell], [SudokuCell]]
      *     >>> cell.setNextCandidates();
-     *     >>> cell.candidates();
+     *     >>> cell.candidates;
      *     [3, 4]
      */
     static updateFromIntersection(cells, hiddenCandidates) {
@@ -85,7 +85,7 @@ export class BasicStrategy {
         cells.forEach((cell) => {
             // eslint-disable-next-line no-restricted-syntax
             for (const numbers of hiddenCandidates) {
-                const cellCandidates = new Set(cell.candidates());
+                const cellCandidates = new Set(cell.candidates);
                 const intersection = new Set(
                     numbers.filter((res) => cellCandidates.has(Number(res)))
                 );
@@ -122,7 +122,7 @@ export class BasicStrategy {
      *     >>> BasicStrategy.updateFromDifference([cell], [[3, 4],]);
      *     [[SudokuCell], [SudokuCell]]
      *     >>> cell.setNextCandidates();
-     *     >>> cell.candidates();
+     *     >>> cell.candidates;
      *     [1, 2, 5, 6, 7, 8, 9]
      */
     static updateFromDifference(cells, nakedCandidates) {
@@ -133,13 +133,13 @@ export class BasicStrategy {
             for (const numbers of nakedCandidates) {
                 const _numbers = new Set(numbers);
                 const difference = new Set(
-                    cell.candidates()
+                    cell.candidates
                         .filter((res) => !_numbers.has(Number(res)))
                 );
 
                 if (
                     difference.size &&
-                    !_.isEqual(difference, new Set(cell.candidates()))
+                    !_.isEqual(difference, new Set(cell.candidates))
                 ) {
                     cell.setNextCandidates(Array.from(difference).sort());
                     modifiedCells.push(cell);
@@ -177,7 +177,7 @@ export class HiddenSingleStrategy extends BasicStrategy {
      * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
      */
     static processCells(cells) {
-        const candidatesList = cells.map((cell) => cell.candidates());
+        const candidatesList = cells.map((cell) => cell.candidates);
 
         // Count number of single number in all cells
         const c1 = _.countBy(Array.from(chain(...candidatesList)));
@@ -218,7 +218,7 @@ export class HiddenPairStrategy extends BasicStrategy {
      * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
      */
     static processCells(cells) {
-        const candidatesList = cells.map((cell) => cell.candidates());
+        const candidatesList = cells.map((cell) => cell.candidates);
         const candidatesPairList = candidatesList.map(
             (candidates) => Array
                 .from(combinations(candidates, 2))
@@ -277,7 +277,7 @@ export class HiddenTripleStrategy extends BasicStrategy {
     static processCells(cells) {
         const hiddenCandidates = [];
 
-        const candidatesList = cells.map((cell) => cell.candidates());
+        const candidatesList = cells.map((cell) => cell.candidates);
         const _candidates = new Set(Array.from(chain(...candidatesList)));
         const candidatesTripleList = Array.from(combinations(_candidates, 3));
 
@@ -330,7 +330,7 @@ export class HiddenQuadStrategy extends BasicStrategy {
     static processCells(cells) {
         const hiddenCandidates = [];
 
-        const candidatesList = cells.map((cell) => cell.candidates());
+        const candidatesList = cells.map((cell) => cell.candidates);
         const _candidates = new Set(Array.from(chain(...candidatesList)));
         const candidatesQuadList = Array.from(combinations(_candidates, 4));
 
@@ -380,7 +380,7 @@ export class NakedPairStrategy extends BasicStrategy {
      * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
      */
     static processCells(cells) {
-        const candidatesList = cells.map((cell) => cell.candidates());
+        const candidatesList = cells.map((cell) => cell.candidates);
         const candidatesPairList = candidatesList
             .filter((candidates) => candidates.length === 2)
             .map((pairCandidates) => pairCandidates.sort().join(","));
@@ -434,7 +434,7 @@ export class NakedTripleStrategy extends BasicStrategy {
     static processCells(cells) {
         const nakedCandidates = [];
 
-        const candidatesList = cells.map((cell) => cell.candidates());
+        const candidatesList = cells.map((cell) => cell.candidates);
         const _candidatesList = candidatesList.filter(
             (candidates) => [2, 3].includes(candidates.length)
         );

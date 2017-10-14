@@ -28,7 +28,7 @@ export class SudokuCell {
      *     []
      */
     constructor(value, rowIndex, columnIndex) {
-        this.identifier = `c${rowIndex}${columnIndex}`;
+        this._identifier = `c${rowIndex}${columnIndex}`;
 
         this._value = value;
         this._rowIndex = rowIndex;
@@ -41,23 +41,28 @@ export class SudokuCell {
         this._nextCandidates = null;
     }
 
+    /** Return cell identifier. */
+    get identifier() {
+        return this._identifier;
+    }
+
     /** Return value of the cell. */
-    value() {
+    get value() {
         return this._value;
     }
 
     /** Return row index of the cell. */
-    row() {
+    get row() {
         return this._rowIndex;
     }
 
     /** Return column index of the cell. */
-    column() {
+    get column() {
         return this._columnIndex;
     }
 
     /** Return list of candidate numbers of the cell. */
-    candidates() {
+    get candidates() {
         return this._candidates;
     }
 
@@ -67,7 +72,7 @@ export class SudokuCell {
      * Return the non applied 'next' candidates if available, otherwise
      * return the actual candidate numbers of the cell.
      */
-    latestCandidates() {
+    get latestCandidates() {
         return this._nextCandidates || this._candidates;
     }
 

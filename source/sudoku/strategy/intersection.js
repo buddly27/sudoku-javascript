@@ -72,8 +72,8 @@ export class IntersectionStrategy {
                 rowCells.forEach((rowCell) => {
                     columnCells.forEach((columnCell) => {
                         if (
-                            rowCell.row() === columnCell.row() &&
-                            rowCell.column() === columnCell.column()
+                            rowCell.row === columnCell.row &&
+                            rowCell.column === columnCell.column
                         ) {
                             cells.push(rowCell);
                         }
@@ -133,7 +133,7 @@ export class PointingStrategy extends IntersectionStrategy {
 
         matched.row.forEach(([rowIndex, number]) => {
             mapping.row[rowIndex].forEach((cell) => {
-                const candidates = cell.latestCandidates();
+                const candidates = cell.latestCandidates;
 
                 if (candidates.includes(number)) {
                     cell.setNextCandidates(
@@ -146,7 +146,7 @@ export class PointingStrategy extends IntersectionStrategy {
 
         matched.column.forEach(([columnIndex, number]) => {
             mapping.column[columnIndex].forEach((cell) => {
-                const candidates = cell.latestCandidates();
+                const candidates = cell.latestCandidates;
 
                 if (candidates.includes(number)) {
                     cell.setNextCandidates(
@@ -193,17 +193,17 @@ export class PointingStrategy extends IntersectionStrategy {
         };
 
         cells.forEach((cell) => {
-            const counter = _.countBy(cell.candidates());
+            const counter = _.countBy(cell.candidates);
 
-            if (!counters.row[cell.row()]) {
-                counters.row[cell.row()] = {};
+            if (!counters.row[cell.row]) {
+                counters.row[cell.row] = {};
             }
-            if (!counters.column[cell.column()]) {
-                counters.column[cell.column()] = {};
+            if (!counters.column[cell.column]) {
+                counters.column[cell.column] = {};
             }
 
-            _.mergeWith(counters.row[cell.row()], counter, sum);
-            _.mergeWith(counters.column[cell.column()], counter, sum);
+            _.mergeWith(counters.row[cell.row], counter, sum);
+            _.mergeWith(counters.column[cell.column], counter, sum);
             _.mergeWith(counters.global, counter, sum);
         });
 
@@ -250,17 +250,17 @@ export class PointingStrategy extends IntersectionStrategy {
         const mapping = {row: {}, column: {}};
 
         // Get all rows and columns within block
-        const blockRows = new Set(cellsInBlock.map((cell) => cell.row()));
-        const blockColumns = new Set(cellsInBlock.map((cell) => cell.column()));
+        const blockRows = new Set(cellsInBlock.map((cell) => cell.row));
+        const blockColumns = new Set(cellsInBlock.map((cell) => cell.column));
 
         // Map all cells per row
         cellsInRows.forEach((_cells) => {
             _cells.forEach((cell) => {
-                if (!blockColumns.has(cell.column())) {
-                    if (!mapping.row[cell.row()]) {
-                        mapping.row[cell.row()] = [];
+                if (!blockColumns.has(cell.column)) {
+                    if (!mapping.row[cell.row]) {
+                        mapping.row[cell.row] = [];
                     }
-                    mapping.row[cell.row()].push(cell);
+                    mapping.row[cell.row].push(cell);
                 }
             });
         });
@@ -268,11 +268,11 @@ export class PointingStrategy extends IntersectionStrategy {
         // Map all cells per column
         cellsInColumns.forEach((_cells) => {
             _cells.forEach((cell) => {
-                if (!blockRows.has(cell.row())) {
-                    if (!mapping.column[cell.column()]) {
-                        mapping.column[cell.column()] = [];
+                if (!blockRows.has(cell.row)) {
+                    if (!mapping.column[cell.column]) {
+                        mapping.column[cell.column] = [];
                     }
-                    mapping.column[cell.column()].push(cell);
+                    mapping.column[cell.column].push(cell);
                 }
             });
         });
@@ -382,7 +382,7 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
             Object.keys(mapping.row).forEach((blockIndex) => {
                 if (rowIndex !== Number(blockIndex)) {
                     mapping.row[blockIndex].forEach((cell) => {
-                        const candidates = cell.latestCandidates();
+                        const candidates = cell.latestCandidates;
                         if (candidates.includes(number)) {
                             cell.setNextCandidates(
                                 candidates.filter(
@@ -400,7 +400,7 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
             Object.keys(mapping.column).forEach((blockIndex) => {
                 if (columnIndex !== Number(blockIndex)) {
                     mapping.column[blockIndex].forEach((cell) => {
-                        const candidates = cell.latestCandidates();
+                        const candidates = cell.latestCandidates;
                         if (candidates.includes(number)) {
                             cell.setNextCandidates(
                                 candidates.filter(
@@ -472,9 +472,9 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
                     const id = cell.identifier;
 
                     if (!visitedCells.includes(id)) {
-                        const counter = _.countBy(cell.candidates());
-                        const row = cell.row();
-                        const column = cell.column();
+                        const counter = _.countBy(cell.candidates);
+                        const row = cell.row;
+                        const column = cell.column;
 
                         if (!counters.row[row]) {
                             counters.row[row] = {};
@@ -525,15 +525,15 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
         const mapping = {row: {}, column: {}};
 
         cells.forEach((cell) => {
-            if (!mapping.row[cell.row()]) {
-                mapping.row[cell.row()] = [];
+            if (!mapping.row[cell.row]) {
+                mapping.row[cell.row] = [];
             }
-            mapping.row[cell.row()].push(cell);
+            mapping.row[cell.row].push(cell);
 
-            if (!mapping.column[cell.column()]) {
-                mapping.column[cell.column()] = [];
+            if (!mapping.column[cell.column]) {
+                mapping.column[cell.column] = [];
             }
-            mapping.column[cell.column()].push(cell);
+            mapping.column[cell.column].push(cell);
         });
 
         return mapping;
@@ -568,7 +568,7 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
 
         Object.keys(mapping.row).forEach((rowIndex) => {
             const candidatesList = mapping.row[rowIndex]
-                .map((cell) => cell.candidates());
+                .map((cell) => cell.candidates);
             const counter = _.countBy(Array.from(chain(...candidatesList)));
 
             const numbers = Object.keys(counter)
@@ -586,7 +586,7 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
 
         Object.keys(mapping.column).forEach((columnIndex) => {
             const candidatesList = mapping.column[columnIndex]
-                .map((cell) => cell.candidates());
+                .map((cell) => cell.candidates);
             const counter = _.countBy(Array.from(chain(...candidatesList)));
 
             const numbers = Object.keys(counter)

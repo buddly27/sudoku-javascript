@@ -38,7 +38,7 @@ describe("SudokuGrid", () => {
             _cell.SudokuCell = jest.fn(
                 (value, rowIndex, columnIndex) => (
                     {
-                        value: () => value,
+                        value,
                         isSolved: () => value !== 0,
                     }
                 )
@@ -77,7 +77,7 @@ describe("SudokuGrid", () => {
             _.range(grid.rowSize).forEach((rowIndex) => {
                 _.range(grid.columnSize).forEach((columnIndex) => {
                     const cell = grid.cell(rowIndex, columnIndex);
-                    expect(cell.value()).toEqual(0);
+                    expect(cell.value).toEqual(0);
                 });
             });
         });
@@ -85,7 +85,7 @@ describe("SudokuGrid", () => {
         it("should have correct cell in row values", () => {
             _.range(grid.rowSize).forEach((rowIndex) => {
                 const values = grid.cellsInRow(rowIndex).map(
-                    (cell) => cell.value()
+                    (cell) => cell.value
                 );
                 expect(values).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0]);
             });
@@ -94,7 +94,7 @@ describe("SudokuGrid", () => {
         it("should have correct cell in column values", () => {
             _.range(grid.columnSize).forEach((columnIndex) => {
                 const values = grid.cellsInColumn(columnIndex).map(
-                    (cell) => cell.value()
+                    (cell) => cell.value
                 );
                 expect(values).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0]);
             });
@@ -109,7 +109,7 @@ describe("SudokuGrid", () => {
             rows.forEach((rowIndex) => {
                 columns.forEach((columnIndex) => {
                     const values = grid.cellsInBlock(rowIndex, columnIndex).map(
-                        (cell) => cell.value()
+                        (cell) => cell.value
                     );
                     expect(values).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0]);
                 });
@@ -167,7 +167,7 @@ describe("SudokuGrid", () => {
             _cell.SudokuCell = jest.fn(
                 (value, rowIndex, columnIndex) => (
                     {
-                        value: () => value,
+                        value,
                         isSolved: () => value !== 0,
                     }
                 )
@@ -216,7 +216,7 @@ describe("SudokuGrid", () => {
             _.range(grid.rowSize).forEach((rowIndex) => {
                 _.range(grid.columnSize).forEach((columnIndex) => {
                     const cell = grid.cell(rowIndex, columnIndex);
-                    expect(cell.value())
+                    expect(cell.value)
                         .toEqual(expectedRows[rowIndex][columnIndex]);
                 });
             });
@@ -225,7 +225,7 @@ describe("SudokuGrid", () => {
         it("should have correct cell in row values", () => {
             _.range(grid.rowSize).forEach((rowIndex) => {
                 const values = grid.cellsInRow(rowIndex).map(
-                    (cell) => cell.value()
+                    (cell) => cell.value
                 );
                 expect(values).toEqual(expectedRows[rowIndex]);
             });
@@ -234,7 +234,7 @@ describe("SudokuGrid", () => {
         it("should have correct cell in column values", () => {
             _.range(grid.columnSize).forEach((columnIndex) => {
                 const values = grid.cellsInColumn(columnIndex).map(
-                    (cell) => cell.value()
+                    (cell) => cell.value
                 );
                 expect(values).toEqual(expectedColumns[columnIndex]);
             });
@@ -250,7 +250,7 @@ describe("SudokuGrid", () => {
             rows.forEach((rowIndex) => {
                 columns.forEach((columnIndex) => {
                     const values = grid.cellsInBlock(rowIndex, columnIndex).map(
-                        (cell) => cell.value()
+                        (cell) => cell.value
                     );
                     expect(values).toEqual(expectedBlocks[index]);
                     index += 1;
@@ -310,7 +310,7 @@ describe("SudokuGrid", () => {
             _cell.SudokuCell = jest.fn(
                 (value, rowIndex, columnIndex) => (
                     {
-                        value: () => value,
+                        value,
                         isSolved: () => value !== 0,
                     }
                 )
@@ -368,7 +368,7 @@ describe("SudokuGrid", () => {
             _.range(grid.rowSize).forEach((rowIndex) => {
                 _.range(grid.columnSize).forEach((columnIndex) => {
                     const cell = grid.cell(rowIndex, columnIndex);
-                    expect(cell.value())
+                    expect(cell.value)
                         .toEqual(expectedRows[rowIndex][columnIndex]);
                 });
             });
@@ -377,7 +377,7 @@ describe("SudokuGrid", () => {
         it("should have correct cell in row values", () => {
             _.range(grid.rowSize).forEach((rowIndex) => {
                 const values = grid.cellsInRow(rowIndex).map(
-                    (cell) => cell.value()
+                    (cell) => cell.value
                 );
                 expect(values).toEqual(expectedRows[rowIndex]);
             });
@@ -386,7 +386,7 @@ describe("SudokuGrid", () => {
         it("should have correct cell in column values", () => {
             _.range(grid.columnSize).forEach((columnIndex) => {
                 const values = grid.cellsInColumn(columnIndex).map(
-                    (cell) => cell.value()
+                    (cell) => cell.value
                 );
                 expect(values).toEqual(expectedColumns[columnIndex]);
             });
@@ -402,7 +402,7 @@ describe("SudokuGrid", () => {
             rows.forEach((rowIndex) => {
                 columns.forEach((columnIndex) => {
                     const values = grid.cellsInBlock(rowIndex, columnIndex).map(
-                        (cell) => cell.value()
+                        (cell) => cell.value
                     );
                     expect(values).toEqual(expectedBlocks[index]);
                     index += 1;
@@ -520,9 +520,9 @@ describe("SudokuGrid", () => {
                 .mockImplementation((rowIndex) =>
                     _.range(9).map((index) => (
                         {
-                            value: () => 0,
-                            row: () => rowIndex,
-                            column: () => index,
+                            value: 0,
+                            row: rowIndex,
+                            column: index,
                             applyNextCandidates: applyNextCandidatesSpy,
                             updateCandidates: updateCandidatesSpy,
                         }
@@ -533,9 +533,9 @@ describe("SudokuGrid", () => {
                 .mockImplementation((columnIndex) =>
                     _.range(9).map((index) => (
                         {
-                            value: () => 0,
-                            row: () => index,
-                            column: () => columnIndex,
+                            value: 0,
+                            row: index,
+                            column: columnIndex,
                             applyNextCandidates: applyNextCandidatesSpy,
                             updateCandidates: updateCandidatesSpy,
                         }
@@ -549,9 +549,9 @@ describe("SudokuGrid", () => {
                     _.range(3).forEach((rowIndex) =>
                         _.range(3).forEach((columnIndex) =>
                             cells.push({
-                                value: () => 0,
-                                row: () => rowIndex,
-                                column: () => columnIndex,
+                                value: 0,
+                                row: rowIndex,
+                                column: columnIndex,
                                 applyNextCandidates: applyNextCandidatesSpy,
                                 updateCandidates: updateCandidatesSpy,
                             })
@@ -628,7 +628,7 @@ describe("SudokuGrid", () => {
             cell.SudokuCell = jest.fn(
                 (value, rowIndex, columnIndex) => (
                     {
-                        value: () => value,
+                        value,
                         identifier: `c${rowIndex}${columnIndex}`,
                     }
                 )
@@ -666,7 +666,7 @@ describe("SudokuGrid", () => {
             cell.SudokuCell = jest.fn(
                 (value, rowIndex, columnIndex) => (
                     {
-                        value: () => value,
+                        value,
                         identifier: `c${rowIndex}${columnIndex}`,
                     }
                 )
