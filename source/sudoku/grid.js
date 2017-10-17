@@ -234,8 +234,8 @@ export class SudokuGrid {
                     }
                     else {
                         const updated = cell.updateCandidates(
-                            valuesInRows[cell.row],
-                            valuesInColumns[cell.column],
+                            valuesInRows[cell.rowIndex],
+                            valuesInColumns[cell.columnIndex],
                             blockValues,
                         );
                         if (updated) {

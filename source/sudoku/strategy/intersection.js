@@ -73,8 +73,8 @@ export class IntersectionStrategy {
                 rowCells.forEach((rowCell) => {
                     columnCells.forEach((columnCell) => {
                         if (
-                            rowCell.row === columnCell.row &&
-                            rowCell.column === columnCell.column
+                            rowCell.rowIndex === columnCell.rowIndex &&
+                            rowCell.columnIndex === columnCell.columnIndex
                         ) {
                             cells.push(rowCell);
                         }
@@ -195,15 +195,15 @@ export class PointingStrategy extends IntersectionStrategy {
         cells.forEach((cell) => {
             const counter = _.countBy(cell.candidates);
 
-            if (!counters.row[cell.row]) {
-                counters.row[cell.row] = {};
+            if (!counters.row[cell.rowIndex]) {
+                counters.row[cell.rowIndex] = {};
             }
-            if (!counters.column[cell.column]) {
-                counters.column[cell.column] = {};
+            if (!counters.column[cell.columnIndex]) {
+                counters.column[cell.columnIndex] = {};
             }
 
-            _.mergeWith(counters.row[cell.row], counter, sum);
-            _.mergeWith(counters.column[cell.column], counter, sum);
+            _.mergeWith(counters.row[cell.rowIndex], counter, sum);
+            _.mergeWith(counters.column[cell.columnIndex], counter, sum);
             _.mergeWith(counters.global, counter, sum);
         });
 
@@ -250,17 +250,19 @@ export class PointingStrategy extends IntersectionStrategy {
         const mapping = {row: {}, column: {}};
 
         // Get all rows and columns within block
-        const blockRows = new Set(cellsInBlock.map((cell) => cell.row));
-        const blockColumns = new Set(cellsInBlock.map((cell) => cell.column));
+        const blockRows = new Set(cellsInBlock.map((cell) => cell.rowIndex));
+        const blockColumns = new Set(
+            cellsInBlock.map((cell) => cell.columnIndex)
+        );
 
         // Map all cells per row
         cellsInRows.forEach((_cells) => {
             _cells.forEach((cell) => {
-                if (!blockColumns.has(cell.column)) {
-                    if (!mapping.row[cell.row]) {
-                        mapping.row[cell.row] = [];
+                if (!blockColumns.has(cell.columnIndex)) {
+                    if (!mapping.row[cell.rowIndex]) {
+                        mapping.row[cell.rowIndex] = [];
                     }
-                    mapping.row[cell.row].push(cell);
+                    mapping.row[cell.rowIndex].push(cell);
                 }
             });
         });
@@ -268,11 +270,11 @@ export class PointingStrategy extends IntersectionStrategy {
         // Map all cells per column
         cellsInColumns.forEach((_cells) => {
             _cells.forEach((cell) => {
-                if (!blockRows.has(cell.row)) {
-                    if (!mapping.column[cell.column]) {
-                        mapping.column[cell.column] = [];
+                if (!blockRows.has(cell.rowIndex)) {
+                    if (!mapping.column[cell.columnIndex]) {
+                        mapping.column[cell.columnIndex] = [];
                     }
-                    mapping.column[cell.column].push(cell);
+                    mapping.column[cell.columnIndex].push(cell);
                 }
             });
         });
@@ -472,8 +474,8 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
 
                     if (!visitedCells.includes(id)) {
                         const counter = _.countBy(cell.candidates);
-                        const row = cell.row;
-                        const column = cell.column;
+                        const row = cell.rowIndex;
+                        const column = cell.columnIndex;
 
                         if (!counters.row[row]) {
                             counters.row[row] = {};
@@ -524,15 +526,15 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
         const mapping = {row: {}, column: {}};
 
         cells.forEach((cell) => {
-            if (!mapping.row[cell.row]) {
-                mapping.row[cell.row] = [];
+            if (!mapping.row[cell.rowIndex]) {
+                mapping.row[cell.rowIndex] = [];
             }
-            mapping.row[cell.row].push(cell);
+            mapping.row[cell.rowIndex].push(cell);
 
-            if (!mapping.column[cell.column]) {
-                mapping.column[cell.column] = [];
+            if (!mapping.column[cell.columnIndex]) {
+                mapping.column[cell.columnIndex] = [];
             }
-            mapping.column[cell.column].push(cell);
+            mapping.column[cell.columnIndex].push(cell);
         });
 
         return mapping;

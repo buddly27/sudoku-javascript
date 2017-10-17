@@ -26,16 +26,26 @@ export class SudokuCell {
      *     >>> const cell2 = new SudokuCell(4, 0, 0);
      *     >>> cell2.candidates;
      *     []
+     *
+     * A custom list of *candidates* can be given.
+     *
+     * .. warning ::
+     *
+     *      An Error will be raised if the custom list of candidates is
+     *      incoherent with the cell value.
      */
-    constructor(value, rowIndex, columnIndex) {
+    constructor(value, rowIndex, columnIndex, candidates = null) {
         this._identifier = `c${rowIndex}${columnIndex}`;
 
         this._value = value;
         this._rowIndex = rowIndex;
         this._columnIndex = columnIndex;
 
-        // Initiate candidates
         this._candidates = (!value) ? [1, 2, 3, 4, 5, 6, 7, 8, 9] : [];
+
+        if (candidates) {
+            this.candidates = candidates;
+        }
 
         // Next candidates awaiting for update
         this._nextCandidates = null;
@@ -46,31 +56,62 @@ export class SudokuCell {
         return this._identifier;
     }
 
+    /** Return row index of the cell. */
+    get rowIndex() {
+        return this._rowIndex;
+    }
+
+    /** Return column index of the cell. */
+    get columnIndex() {
+        return this._columnIndex;
+    }
+
     /** Return value of the cell. */
     get value() {
         return this._value;
     }
 
-    /** Set a new value for the cell and empty the list of candidates. */
+    /**
+     * Set a new value for the cell.
+     *
+     * .. warning::
+     *
+     *     The list of candidates will be emptied in the process.
+     */
     set value(value) {
         this._value = value;
         this._candidates = [];
         this._nextCandidates = null;
     }
 
-    /** Return row index of the cell. */
-    get row() {
-        return this._rowIndex;
-    }
-
-    /** Return column index of the cell. */
-    get column() {
-        return this._columnIndex;
-    }
-
     /** Return list of candidate numbers of the cell. */
     get candidates() {
         return this._candidates;
+    }
+
+    /**
+     * Set a new list of *candidates* to replace the current cell candidates.
+     *
+     * .. warning ::
+     *
+     *      An Error will be raised if the new list of candidates is incoherent
+     *      with the cell value.
+     */
+    set candidates(candidates) {
+        if (candidates.length > 0 && this.isSolved()) {
+            throw Error(
+                "A non-empty list of candidates can not be set for a " +
+                "solved cell."
+            );
+        }
+        else if (candidates.length === 0 && !this.isSolved()) {
+            throw Error(
+                "A empty list of candidates can not be set for an " +
+                "unsolved cell."
+            );
+        }
+
+        this._candidates = Array.from(new Set(candidates)).sort();
     }
 
     /**
@@ -164,5 +205,16 @@ export class SudokuCell {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Return a new cell instance cloning the current instance.
+     *
+     * A new list of *candidates* can be given. Otherwise the current list of
+     * candidates will be passed to the cloned instance.
+     */
+    clone(candidates = null) {
+        const _candidates = candidates || this.candidates;
+        return new SudokuCell(this.value, this.row, this.column, _candidates);
     }
 }

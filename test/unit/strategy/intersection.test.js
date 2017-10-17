@@ -75,12 +75,12 @@ describe("IntersectionStrategy", () => {
 
     describe("cellsInIntersection", () => {
         it("should return the centered intersection cells", () => {
-            const cellsInRows = _.range(3).map((row) =>
-                _.range(9).map((column) => ({row, column}))
+            const cellsInRows = _.range(3).map((rowIndex) =>
+                _.range(9).map((columnIndex) => ({rowIndex, columnIndex}))
             );
 
-            const cellsInColumns = _.range(3, 6).map((column) =>
-                _.range(9).map((row) => ({row, column}))
+            const cellsInColumns = _.range(3, 6).map((columnIndex) =>
+                _.range(9).map((rowIndex) => ({rowIndex, columnIndex}))
             );
 
             const cells = IntersectionStrategy.cellsInIntersection(
@@ -102,12 +102,12 @@ describe("IntersectionStrategy", () => {
         });
 
         it("should return the top-left intersection cells", () => {
-            const cellsInRows = _.range(3).map((row) =>
-                _.range(9).map((column) => ({row, column}))
+            const cellsInRows = _.range(3).map((rowIndex) =>
+                _.range(9).map((columnIndex) => ({rowIndex, columnIndex}))
             );
 
-            const cellsInColumns = _.range(3).map((column) =>
-                _.range(9).map((row) => ({row, column}))
+            const cellsInColumns = _.range(3).map((columnIndex) =>
+                _.range(9).map((rowIndex) => ({rowIndex, columnIndex}))
             );
 
             const cells = IntersectionStrategy.cellsInIntersection(
@@ -146,20 +146,20 @@ describe("PointingStrategy", () => {
         let getMatchingCandidatesSpy;
 
         beforeEach(() => {
-            cellsInRows = _.range(3).map((row) =>
-                _.range(9).map((column) => ({
-                    row, column,
-                    identifier: `c${row}${column}`,
+            cellsInRows = _.range(3).map((rowIndex) =>
+                _.range(9).map((columnIndex) => ({
+                    rowIndex, columnIndex,
+                    identifier: `c${rowIndex}${columnIndex}`,
                     candidates: [],
                     latestCandidates: [],
                     setNextCandidates: jest.fn(null),
                 })),
             );
 
-            cellsInColumns = _.range(3).map((column) =>
-                _.range(9).map((row) => ({
-                    row, column,
-                    identifier: `c${column}${row}`,
+            cellsInColumns = _.range(3).map((columnIndex) =>
+                _.range(9).map((rowIndex) => ({
+                    rowIndex, columnIndex,
+                    identifier: `c${columnIndex}${rowIndex}`,
                     candidates: [],
                     latestCandidates: [],
                     setNextCandidates: jest.fn(null),
@@ -392,9 +392,9 @@ describe("PointingStrategy", () => {
         beforeEach(() => {
             cellsInBlock = [];
 
-            _.range(3).forEach((row) =>
-                _.range(3).forEach((column) => (
-                    cellsInBlock.push({row, column, candidates: []})
+            _.range(3).forEach((rowIndex) =>
+                _.range(3).forEach((columnIndex) => (
+                    cellsInBlock.push({rowIndex, columnIndex, candidates: []})
                 )),
             );
         });
@@ -431,23 +431,23 @@ describe("PointingStrategy", () => {
     describe("getNonBlockCellsMapping", () => {
         it("should return the mapping per row and column indices", () => {
             const cellsInBlock = [
-                {row: 3, column: 0},
-                {row: 3, column: 1},
-                {row: 3, column: 2},
-                {row: 4, column: 0},
-                {row: 4, column: 1},
-                {row: 4, column: 2},
-                {row: 5, column: 0},
-                {row: 5, column: 1},
-                {row: 5, column: 2},
+                {rowIndex: 3, columnIndex: 0},
+                {rowIndex: 3, columnIndex: 1},
+                {rowIndex: 3, columnIndex: 2},
+                {rowIndex: 4, columnIndex: 0},
+                {rowIndex: 4, columnIndex: 1},
+                {rowIndex: 4, columnIndex: 2},
+                {rowIndex: 5, columnIndex: 0},
+                {rowIndex: 5, columnIndex: 1},
+                {rowIndex: 5, columnIndex: 2},
             ];
 
-            const cellsInRows = _.range(3, 6).map((row) =>
-                _.range(9).map((column) => ({row, column}))
+            const cellsInRows = _.range(3, 6).map((rowIndex) =>
+                _.range(9).map((columnIndex) => ({rowIndex, columnIndex}))
             );
 
-            const cellsInColumns = _.range(3).map((column) =>
-                _.range(9).map((row) => ({row, column}))
+            const cellsInColumns = _.range(3).map((columnIndex) =>
+                _.range(9).map((rowIndex) => ({rowIndex, columnIndex}))
             );
 
             const expected = {
@@ -512,20 +512,20 @@ describe("BoxLineReductionStrategy", () => {
         let getMatchingCandidatesSpy;
 
         beforeEach(() => {
-            cellsInRows = _.range(3).map((row) =>
-                _.range(9).map((column) => ({
-                    row, column,
-                    identifier: `c${row}${column}`,
+            cellsInRows = _.range(3).map((rowIndex) =>
+                _.range(9).map((columnIndex) => ({
+                    rowIndex, columnIndex,
+                    identifier: `c${rowIndex}${columnIndex}`,
                     candidates: [],
                     latestCandidates: [],
                     setNextCandidates: jest.fn(null),
                 }))
             );
 
-            cellsInColumns = _.range(3).map((column) =>
-                _.range(9).map((row) => ({
-                    row, column,
-                    identifier: `c${row}${column}`,
+            cellsInColumns = _.range(3).map((columnIndex) =>
+                _.range(9).map((rowIndex) => ({
+                    rowIndex, columnIndex,
+                    identifier: `c${rowIndex}${columnIndex}`,
                     candidates: [],
                     latestCandidates: [],
                     setNextCandidates: jest.fn(null),
@@ -770,19 +770,19 @@ describe("BoxLineReductionStrategy", () => {
         let cellsInColumns = [];
 
         beforeEach(() => {
-            cellsInRows = _.range(3).map((row) =>
-                _.range(9).map((column) => ({
-                    row, column,
-                    identifier: `c${row}${column}`,
+            cellsInRows = _.range(3).map((rowIndex) =>
+                _.range(9).map((columnIndex) => ({
+                    rowIndex, columnIndex,
+                    identifier: `c${rowIndex}${columnIndex}`,
                     candidates: [],
                     setNextCandidates: jest.fn(null),
                 }))
             );
 
-            cellsInColumns = _.range(3).map((column) =>
-                _.range(9).map((row) => ({
-                    row, column,
-                    identifier: `c${row}${column}`,
+            cellsInColumns = _.range(3).map((columnIndex) =>
+                _.range(9).map((rowIndex) => ({
+                    rowIndex, columnIndex,
+                    identifier: `c${rowIndex}${columnIndex}`,
                     candidates: [],
                 }))
             );
@@ -883,15 +883,15 @@ describe("BoxLineReductionStrategy", () => {
     describe("getCellsMapping", () => {
         it("should return the mapping per row and column indices", () => {
             const cellsInBlock = [
-                {row: 3, column: 0},
-                {row: 3, column: 1},
-                {row: 3, column: 2},
-                {row: 4, column: 0},
-                {row: 4, column: 1},
-                {row: 4, column: 2},
-                {row: 5, column: 0},
-                {row: 5, column: 1},
-                {row: 5, column: 2},
+                {rowIndex: 3, columnIndex: 0},
+                {rowIndex: 3, columnIndex: 1},
+                {rowIndex: 3, columnIndex: 2},
+                {rowIndex: 4, columnIndex: 0},
+                {rowIndex: 4, columnIndex: 1},
+                {rowIndex: 4, columnIndex: 2},
+                {rowIndex: 5, columnIndex: 0},
+                {rowIndex: 5, columnIndex: 1},
+                {rowIndex: 5, columnIndex: 2},
             ];
 
             const expected = {

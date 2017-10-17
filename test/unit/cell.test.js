@@ -10,11 +10,11 @@ describe("SudokuCell", () => {
         });
 
         it("should have a correct row value", () => {
-            expect(cell.row).toEqual(3);
+            expect(cell.rowIndex).toEqual(3);
         });
 
         it("should have a correct column value", () => {
-            expect(cell.column).toEqual(5);
+            expect(cell.columnIndex).toEqual(5);
         });
 
         it("should have a correct list of candidates", () => {
@@ -34,11 +34,11 @@ describe("SudokuCell", () => {
         });
 
         it("should have a correct row value", () => {
-            expect(cell.row).toEqual(1);
+            expect(cell.rowIndex).toEqual(1);
         });
 
         it("should have a correct column value", () => {
-            expect(cell.column).toEqual(9);
+            expect(cell.columnIndex).toEqual(9);
         });
 
         it("should have an empty list of candidates", () => {

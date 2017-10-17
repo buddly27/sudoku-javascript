@@ -518,11 +518,11 @@ describe("SudokuGrid", () => {
 
             jest.spyOn(grid, "cellsInRow")
                 .mockImplementation((rowIndex) =>
-                    _.range(9).map((index) => (
+                    _.range(9).map((columnIndex) => (
                         {
                             value: 0,
-                            row: rowIndex,
-                            column: index,
+                            rowIndex,
+                            columnIndex,
                             applyNextCandidates: applyNextCandidatesSpy,
                             updateCandidates: updateCandidatesSpy,
                         }
@@ -531,11 +531,11 @@ describe("SudokuGrid", () => {
 
             jest.spyOn(grid, "cellsInColumn")
                 .mockImplementation((columnIndex) =>
-                    _.range(9).map((index) => (
+                    _.range(9).map((rowIndex) => (
                         {
                             value: 0,
-                            row: index,
-                            column: columnIndex,
+                            rowIndex,
+                            columnIndex,
                             applyNextCandidates: applyNextCandidatesSpy,
                             updateCandidates: updateCandidatesSpy,
                         }
@@ -550,8 +550,8 @@ describe("SudokuGrid", () => {
                         _.range(3).forEach((columnIndex) =>
                             cells.push({
                                 value: 0,
-                                row: rowIndex,
-                                column: columnIndex,
+                                rowIndex,
+                                columnIndex,
                                 applyNextCandidates: applyNextCandidatesSpy,
                                 updateCandidates: updateCandidatesSpy,
                             })
