@@ -56,34 +56,21 @@ export class SudokuSolver {
      *
      * *grid* must be a :class:`sudoku.grid.SudokuGrid` instance.
      *
-     * Return a mapping of each modified :class:`sudoku.cell.SudokuCell`
-     * instances organized per identifier.
-     *
-     * Example::
-     *
-     *     >>> solver.resolve(grid)
-     *     {
-     *         "c15": [SudokuCell],
-     *         "c16": [SudokuCell],
-     *         "c18": [SudokuCell],
-     *         "c40": [SudokuCell],
-     *         "c43": [SudokuCell],
-     *     }
+     * Return whether the grid has been successfully solved.
      */
     resolve(grid) {
-        let mapping = {};
+        let solved = false;
 
         while (grid.update()) {
-            const solved = grid.isSolved();
+            solved = grid.isSolved();
             if (solved) {
                 break;
             }
 
-            const _mapping = this.applyStrategiesUntilFirstResult(grid);
-            mapping = Object.assign({}, mapping, _mapping);
+            this.applyStrategiesUntilFirstResult(grid);
         }
 
-        return mapping;
+        return solved;
     }
 
     /**

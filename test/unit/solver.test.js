@@ -42,11 +42,7 @@ describe("SudokuSolver", () => {
                 .mockReturnValueOnce(true)
                 .mockReturnValueOnce(true);
 
-            expect(solver.resolve(grid)).toEqual({
-                c10: "CELL", c11: "CELL", c18: "CELL",
-                c30: "CELL",
-                c65: "CELL", c66: "CELL",
-            });
+            expect(solver.resolve(grid)).toEqual(false);
             expect(applyStrategiesUntilFirstResultSpy.mock.calls)
                 .toEqual([[grid], [grid], [grid], [grid]]);
             expect(isSolvedSpy).toHaveBeenCalledTimes(4);
@@ -66,10 +62,7 @@ describe("SudokuSolver", () => {
                 .mockReturnValueOnce(true)
                 .mockReturnValueOnce(true);
 
-            expect(solver.resolve(grid)).toEqual({
-                c10: "CELL", c11: "CELL",
-                c30: "CELL",
-            });
+            expect(solver.resolve(grid)).toEqual(true);
             expect(applyStrategiesUntilFirstResultSpy.mock.calls)
                 .toEqual([[grid], [grid]]);
             expect(isSolvedSpy).toHaveBeenCalledTimes(3);
