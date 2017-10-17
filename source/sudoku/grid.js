@@ -47,56 +47,25 @@ export class SudokuGrid {
         this._rowSize = this._blockRowSize * 3;
         this._columnSize = this._blockColumnSize * 3;
 
-        const {
-            c00 = 0, c01 = 0, c02 = 0, c03 = 0, c04 = 0,
-            c05 = 0, c06 = 0, c07 = 0, c08 = 0,
-            c10 = 0, c11 = 0, c12 = 0, c13 = 0, c14 = 0,
-            c15 = 0, c16 = 0, c17 = 0, c18 = 0,
-            c20 = 0, c21 = 0, c22 = 0, c23 = 0, c24 = 0,
-            c25 = 0, c26 = 0, c27 = 0, c28 = 0,
-            c30 = 0, c31 = 0, c32 = 0, c33 = 0, c34 = 0,
-            c35 = 0, c36 = 0, c37 = 0, c38 = 0,
-            c40 = 0, c41 = 0, c42 = 0, c43 = 0, c44 = 0,
-            c45 = 0, c46 = 0, c47 = 0, c48 = 0,
-            c50 = 0, c51 = 0, c52 = 0, c53 = 0, c54 = 0,
-            c55 = 0, c56 = 0, c57 = 0, c58 = 0,
-            c60 = 0, c61 = 0, c62 = 0, c63 = 0, c64 = 0,
-            c65 = 0, c66 = 0, c67 = 0, c68 = 0,
-            c70 = 0, c71 = 0, c72 = 0, c73 = 0, c74 = 0,
-            c75 = 0, c76 = 0, c77 = 0, c78 = 0,
-            c80 = 0, c81 = 0, c82 = 0, c83 = 0, c84 = 0,
-            c85 = 0, c86 = 0, c87 = 0, c88 = 0,
-        } = cellMapping;
-
-        this._grid = [
-            [c00, c01, c02, c03, c04, c05, c06, c07, c08].map(
-                (value, index) => new SudokuCell(value, 0, index)
-            ),
-            [c10, c11, c12, c13, c14, c15, c16, c17, c18].map(
-                (value, index) => new SudokuCell(value, 1, index)
-            ),
-            [c20, c21, c22, c23, c24, c25, c26, c27, c28].map(
-                (value, index) => new SudokuCell(value, 2, index)
-            ),
-            [c30, c31, c32, c33, c34, c35, c36, c37, c38].map(
-                (value, index) => new SudokuCell(value, 3, index)
-            ),
-            [c40, c41, c42, c43, c44, c45, c46, c47, c48].map(
-                (value, index) => new SudokuCell(value, 4, index)
-            ),
-            [c50, c51, c52, c53, c54, c55, c56, c57, c58].map(
-                (value, index) => new SudokuCell(value, 5, index)
-            ),
-            [c60, c61, c62, c63, c64, c65, c66, c67, c68].map(
-                (value, index) => new SudokuCell(value, 6, index)
-            ),
-            [c70, c71, c72, c73, c74, c75, c76, c77, c78].map(
-                (value, index) => new SudokuCell(value, 7, index)
-            ),
-            [c80, c81, c82, c83, c84, c85, c86, c87, c88].map(
-                (value, index) => new SudokuCell(value, 8, index)
-            ),
+        const gridIdentifiers = [
+            ["c00", "c01", "c02", "c03", "c04", "c05", "c06", "c07", "c08"],
+            ["c10", "c11", "c12", "c13", "c14", "c15", "c16", "c17", "c18"],
+            ["c20", "c21", "c22", "c23", "c24", "c25", "c26", "c27", "c28"],
+            ["c30", "c31", "c32", "c33", "c34", "c35", "c36", "c37", "c38"],
+            ["c40", "c41", "c42", "c43", "c44", "c45", "c46", "c47", "c48"],
+            ["c50", "c51", "c52", "c53", "c54", "c55", "c56", "c57", "c58"],
+            ["c60", "c61", "c62", "c63", "c64", "c65", "c66", "c67", "c68"],
+            ["c70", "c71", "c72", "c73", "c74", "c75", "c76", "c77", "c78"],
+            ["c80", "c81", "c82", "c83", "c84", "c85", "c86", "c87", "c88"],
         ];
+
+        this._grid = gridIdentifiers.map((rowIdentifiers, rowIndex) =>
+            rowIdentifiers.map((identifier, columnIndex) =>
+                new SudokuCell(
+                    cellMapping[identifier] || 0, rowIndex, columnIndex
+                )
+            )
+        );
     }
 
     /** Return the number of rows. */
