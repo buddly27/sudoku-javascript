@@ -15,7 +15,7 @@ import {
 
 describe("BasicStrategy", () => {
     describe("processGrid", () => {
-        const grid = jest.fn();
+        const grid = jest.fn(null);
         grid.rowSize = 9;
         grid.columnSize = 9;
         grid.blockRowSize = 3;
@@ -24,7 +24,7 @@ describe("BasicStrategy", () => {
         let processCellsSpy;
 
         beforeEach(() => {
-            processCellsSpy = jest.fn();
+            processCellsSpy = jest.fn(null);
             BasicStrategy.processCells = processCellsSpy;
 
             grid.cellsInRow = jest.fn(() =>
@@ -97,15 +97,15 @@ describe("BasicStrategy", () => {
 
         beforeEach(() => {
             cells = [
-                {identifier: "c00", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c01", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c02", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c03", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c04", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c05", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c06", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c07", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c08", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c00", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c01", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c02", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c03", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c04", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c05", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c06", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c07", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c08", candidates: [], setNextCandidates: jest.fn(null)},
             ];
         });
 
@@ -158,15 +158,15 @@ describe("BasicStrategy", () => {
 
         beforeEach(() => {
             cells = [
-                {identifier: "c00", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c01", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c02", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c03", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c04", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c05", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c06", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c07", candidates: [], setNextCandidates: jest.fn()},
-                {identifier: "c08", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c00", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c01", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c02", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c03", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c04", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c05", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c06", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c07", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c08", candidates: [], setNextCandidates: jest.fn(null)},
             ];
         });
 

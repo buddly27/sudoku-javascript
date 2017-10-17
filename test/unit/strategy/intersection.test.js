@@ -518,7 +518,7 @@ describe("BoxLineReductionStrategy", () => {
                     identifier: `c${row}${column}`,
                     candidates: [],
                     latestCandidates: [],
-                    setNextCandidates: jest.fn(),
+                    setNextCandidates: jest.fn(null),
                 }))
             );
 
@@ -528,7 +528,7 @@ describe("BoxLineReductionStrategy", () => {
                     identifier: `c${row}${column}`,
                     candidates: [],
                     latestCandidates: [],
-                    setNextCandidates: jest.fn(),
+                    setNextCandidates: jest.fn(null),
                 }))
             );
 
@@ -775,7 +775,7 @@ describe("BoxLineReductionStrategy", () => {
                     row, column,
                     identifier: `c${row}${column}`,
                     candidates: [],
-                    setNextCandidates: jest.fn(),
+                    setNextCandidates: jest.fn(null),
                 }))
             );
 

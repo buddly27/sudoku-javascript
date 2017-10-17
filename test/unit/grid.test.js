@@ -422,8 +422,8 @@ describe("SudokuGrid", () => {
 
         beforeEach(() => {
             grid = new SudokuGrid();
-            updateSolvedCellsSpy = jest.fn();
-            updateCandidatesSpy = jest.fn();
+            updateSolvedCellsSpy = jest.fn(null);
+            updateCandidatesSpy = jest.fn(null);
 
             grid.updateSolvedCells = updateSolvedCellsSpy;
             grid.updateCandidates = updateCandidatesSpy;
@@ -467,7 +467,7 @@ describe("SudokuGrid", () => {
 
         beforeEach(() => {
             const _cell = require("sudoku/cell");
-            resolveSpy = jest.fn();
+            resolveSpy = jest.fn(null);
 
             _cell.SudokuCell = jest.fn(
                 (value, rowIndex, columnIndex) => (
@@ -511,8 +511,8 @@ describe("SudokuGrid", () => {
         let grid;
 
         beforeEach(() => {
-            applyNextCandidatesSpy = jest.fn();
-            updateCandidatesSpy = jest.fn();
+            applyNextCandidatesSpy = jest.fn(null);
+            updateCandidatesSpy = jest.fn(null);
 
             grid = new SudokuGrid();
 

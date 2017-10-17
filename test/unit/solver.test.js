@@ -6,7 +6,7 @@ jest.mock("sudoku/strategy");
 
 
 describe("SudokuSolver", () => {
-    const grid = jest.fn();
+    const grid = jest.fn(null);
     let strategies;
 
     let solver;
@@ -17,9 +17,9 @@ describe("SudokuSolver", () => {
         let applyStrategiesUntilFirstResultSpy;
 
         beforeEach(() => {
-            updateSpy = jest.fn();
-            isSolvedSpy = jest.fn();
-            applyStrategiesUntilFirstResultSpy = jest.fn()
+            updateSpy = jest.fn(null);
+            isSolvedSpy = jest.fn(null);
+            applyStrategiesUntilFirstResultSpy = jest.fn(null)
                 .mockReturnValueOnce({c10: "CELL", c11: "CELL"})
                 .mockReturnValueOnce({c30: "CELL"})
                 .mockReturnValueOnce({c10: "CELL", c18: "CELL"})
@@ -75,10 +75,10 @@ describe("SudokuSolver", () => {
 
         beforeEach(() => {
             strategies = [
-                {identifier: "test1", processGrid: jest.fn()},
-                {identifier: "test2", processGrid: jest.fn()},
-                {identifier: "test3", processGrid: jest.fn()},
-                {identifier: "test4", processGrid: jest.fn()},
+                {identifier: "test1", processGrid: jest.fn(null)},
+                {identifier: "test2", processGrid: jest.fn(null)},
+                {identifier: "test3", processGrid: jest.fn(null)},
+                {identifier: "test4", processGrid: jest.fn(null)},
             ];
 
             solver = new SudokuSolver();
