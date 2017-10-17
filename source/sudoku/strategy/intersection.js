@@ -13,19 +13,20 @@ import chain from "iter-tools/lib/chain";
  */
 export class IntersectionStrategy {
     /**
-     * Attempt to resolve *grid* and return a list of all modified cells.
+     * Attempt to resolve *grid*.
      *
      * Call *processCells* method for each group of cells in row and column
      * intersecting with each block.
      *
-     * Return list of modified :class:`sudoku.cell.SudokuCell` instances.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` clone instances with
+     * updated candidates list per cell identifier.
      *
      * the *processCells* method must be a function which takes two collections
      * of :class:`sudoku.cell.SudokuCell` instances lists, for rows and columns
      * intersections.
      */
     static processGrid(grid) {
-        const modifiedCells = [];
+        let updatedCells = {};
 
         // Gather all cells per row
         const cellsPerRows = _.range(grid.rowSize).map(
@@ -43,17 +44,17 @@ export class IntersectionStrategy {
 
         rows.forEach((rowIndex) => {
             columns.forEach((columnIndex) => {
-                const _modifiedCells = this.processCells(
+                const _updatedCells = this.processCells(
                     cellsPerRows.slice(rowIndex, rowIndex + grid.blockRowSize),
                     cellsPerColumns.slice(
                         columnIndex, columnIndex + grid.blockColumnSize
                     ),
                 );
-                modifiedCells.push(..._modifiedCells);
+                updatedCells = Object.assign({}, updatedCells, _updatedCells);
             });
         });
 
-        return modifiedCells.sort();
+        return updatedCells;
     }
 
     /**
@@ -102,14 +103,13 @@ export class PointingStrategy extends IntersectionStrategy {
     static identifier = "Pointing Strategy";
 
     /**
-     * Attempt to resolve cells and return a list of all modified cells.
+     * Attempt to resolve cells.
      *
      * *cellsInRows* and *cellsInColumns* are collections of
      * :class:`sudoku.cell.SudokuCell` instance lists.
      *
-     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
-     * returned are modified with the new candidate numbers and will be applied
-     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * updated candidates list per cell identifier.
      */
     static processCells(cellsInRows, cellsInColumns) {
         const cells = this.cellsInIntersection(cellsInRows, cellsInColumns);
@@ -129,7 +129,7 @@ export class PointingStrategy extends IntersectionStrategy {
         // Try to remove numbers matching cell candidates in block from each
         // remaining rows or columns
 
-        const modifiedCells = [];
+        const updatedCells = {};
 
         matched.row.forEach(([rowIndex, number]) => {
             mapping.row[rowIndex].forEach((cell) => {
@@ -139,7 +139,7 @@ export class PointingStrategy extends IntersectionStrategy {
                     cell.setNextCandidates(
                         candidates.filter((candidate) => candidate !== number)
                     );
-                    modifiedCells.push(cell);
+                    updatedCells[cell.identifier] = cell;
                 }
             });
         });
@@ -152,12 +152,12 @@ export class PointingStrategy extends IntersectionStrategy {
                     cell.setNextCandidates(
                         candidates.filter((candidate) => candidate !== number)
                     );
-                    modifiedCells.push(cell);
+                    updatedCells[cell.identifier] = cell;
                 }
             });
         });
 
-        return modifiedCells;
+        return updatedCells;
     }
 
     /**
@@ -353,14 +353,13 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
     static identifier = "Box Line Reduction Strategy";
 
     /**
-     * Attempt to resolve cells and return a list of all modified cells.
+     * Attempt to resolve cells.
      *
      * *cellsInRows* and *cellsInColumns* are collections of
      * :class:`sudoku.cell.SudokuCell` instance lists.
      *
-     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
-     * returned are modified with the new candidate numbers and will be applied
-     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` clone instances with
+     * updated candidates list per cell identifier.
      */
     static processCells(cellsInRows, cellsInColumns) {
         const cells = this.cellsInIntersection(cellsInRows, cellsInColumns);
@@ -376,7 +375,7 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
 
         // Try to remove numbers matched from the rest of the block
 
-        const modifiedCells = [];
+        const updatedCells = {};
 
         matched.row.forEach(([rowIndex, number]) => {
             Object.keys(mapping.row).forEach((blockIndex) => {
@@ -389,7 +388,7 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
                                     (candidate) => candidate !== number
                                 )
                             );
-                            modifiedCells.push(cell);
+                            updatedCells[cell.identifier] = cell;
                         }
                     });
                 }
@@ -407,14 +406,14 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
                                     (candidate) => candidate !== number
                                 )
                             );
-                            modifiedCells.push(cell);
+                            updatedCells[cell.identifier] = cell;
                         }
                     });
                 }
             });
         });
 
-        return modifiedCells;
+        return updatedCells;
     }
 
     /**

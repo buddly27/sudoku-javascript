@@ -94,7 +94,7 @@ describe("SudokuSolver", () => {
             strategies[0].processGrid.mockReturnValue(cells);
 
             expect(solver.applyStrategiesUntilFirstResult(grid))
-                .toEqual({c10: cells[0], c11: cells[1]});
+                .toEqual([cells[0], cells[1]]);
             expect(strategies[0].processGrid).toHaveBeenLastCalledWith(grid);
             expect(strategies[1].processGrid).toHaveBeenCalledTimes(0);
             expect(strategies[2].processGrid).toHaveBeenCalledTimes(0);
@@ -108,7 +108,7 @@ describe("SudokuSolver", () => {
             strategies[2].processGrid.mockReturnValue(cells);
 
             expect(solver.applyStrategiesUntilFirstResult(grid))
-                .toEqual({c10: cells[0], c11: cells[1]});
+                .toEqual([cells[0], cells[1]]);
             expect(strategies[0].processGrid).toHaveBeenLastCalledWith(grid);
             expect(strategies[1].processGrid).toHaveBeenLastCalledWith(grid);
             expect(strategies[2].processGrid).toHaveBeenLastCalledWith(grid);
@@ -120,7 +120,7 @@ describe("SudokuSolver", () => {
             strategies[0].processGrid.mockReturnValue(cells);
             solver._strategiesUsed = ["test1"];
             expect(solver.applyStrategiesUntilFirstResult(grid))
-                .toEqual({c10: cells[0], c11: cells[1]});
+                .toEqual([cells[0], cells[1]]);
             expect(solver.strategiesUsed).toEqual(["test1"]);
         });
 
@@ -129,7 +129,7 @@ describe("SudokuSolver", () => {
             strategies[1].processGrid.mockReturnValue(cells);
 
             expect(solver.applyStrategiesUntilFirstResult(grid))
-                .toEqual({c10: cells[0], c11: cells[1]});
+                .toEqual([cells[0], cells[1]]);
             expect(strategies[1].processGrid).toHaveBeenLastCalledWith(grid);
             expect(strategies[2].processGrid).toHaveBeenCalledTimes(0);
             expect(strategies[3].processGrid).toHaveBeenCalledTimes(0);

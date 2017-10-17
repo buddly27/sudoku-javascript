@@ -1,3 +1,5 @@
+/* eslint-disable object-property-newline */
+
 import _ from "lodash";
 
 import {
@@ -37,8 +39,8 @@ describe("BasicStrategy", () => {
         });
 
         it("should process a grid with no result", () => {
-            processCellsSpy.mockReturnValue([]);
-            expect(BasicStrategy.processGrid(grid)).toEqual([]);
+            processCellsSpy.mockReturnValue({});
+            expect(BasicStrategy.processGrid(grid)).toEqual({});
             expect(grid.cellsInRow.mock.calls)
                 .toEqual([[0], [1], [2], [3], [4], [5], [6], [7], [8]]);
             expect(grid.cellsInColumn.mock.calls)
@@ -53,16 +55,18 @@ describe("BasicStrategy", () => {
         });
 
         it("should process a grid with a few results", () => {
-            processCellsSpy.mockReturnValue([])
-                .mockReturnValueOnce(["CELL1", "CELL2"])
-                .mockReturnValueOnce(["CELL3"])
-                .mockReturnValueOnce(["CELL4", "CELL5"])
-                .mockReturnValueOnce(["CELL6", "CELL7", "CELL8"]);
+            processCellsSpy.mockReturnValue({})
+                .mockReturnValueOnce({c01: "CELL1", c11: "CELL2"})
+                .mockReturnValueOnce({c03: "CELL3"})
+                .mockReturnValueOnce({c01: "CELL4", c31: "CELL5"})
+                .mockReturnValueOnce({c50: "CELL6", c58: "CELL8"});
             expect(BasicStrategy.processGrid(grid))
-                .toEqual([
-                    "CELL1", "CELL2", "CELL3", "CELL4",
-                    "CELL5", "CELL6", "CELL7", "CELL8",
-                ]);
+                .toEqual({
+                    c01: "CELL4", c03: "CELL3",
+                    c11: "CELL2",
+                    c31: "CELL5",
+                    c50: "CELL6", c58: "CELL8",
+                });
             expect(processCellsSpy.mock.calls)
                 .toEqual(
                     _.range(9).map(() => [[
@@ -93,21 +97,21 @@ describe("BasicStrategy", () => {
 
         beforeEach(() => {
             cells = [
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c00", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c01", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c02", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c03", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c04", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c05", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c06", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c07", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c08", candidates: [], setNextCandidates: jest.fn()},
             ];
         });
 
         it("should not match any candidates", () => {
             expect(BasicStrategy.updateFromIntersection(cells, [[3, 5]]))
-                .toEqual([]);
+                .toEqual({});
 
             expect(cells[0].setNextCandidates).toHaveBeenCalledTimes(0);
             expect(cells[1].setNextCandidates).toHaveBeenCalledTimes(0);
@@ -132,7 +136,10 @@ describe("BasicStrategy", () => {
             cells[8].candidates = [];
 
             expect(BasicStrategy.updateFromIntersection(cells, [[2], [4]]))
-                .toEqual([cells[5], cells[6]]);
+                .toEqual({
+                    c05: cells[5],
+                    c06: cells[6],
+                });
 
             expect(cells[0].setNextCandidates).toHaveBeenCalledTimes(0);
             expect(cells[1].setNextCandidates).toHaveBeenCalledTimes(0);
@@ -151,21 +158,21 @@ describe("BasicStrategy", () => {
 
         beforeEach(() => {
             cells = [
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
-                {candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c00", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c01", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c02", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c03", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c04", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c05", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c06", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c07", candidates: [], setNextCandidates: jest.fn()},
+                {identifier: "c08", candidates: [], setNextCandidates: jest.fn()},
             ];
         });
 
         it("should not match any candidates", () => {
             expect(BasicStrategy.updateFromDifference(cells, [[3, 5]]))
-                .toEqual([]);
+                .toEqual({});
 
             expect(cells[0].setNextCandidates).toHaveBeenCalledTimes(0);
             expect(cells[1].setNextCandidates).toHaveBeenCalledTimes(0);
@@ -190,7 +197,11 @@ describe("BasicStrategy", () => {
             cells[8].candidates = [];
 
             expect(BasicStrategy.updateFromDifference(cells, [[1, 2], [5, 8]]))
-                .toEqual([cells[0], cells[2], cells[4]]);
+                .toEqual({
+                    c00: cells[0],
+                    c02: cells[2],
+                    c04: cells[4],
+                });
 
             expect(cells[0].setNextCandidates).toHaveBeenLastCalledWith([3, 4]);
             expect(cells[1].setNextCandidates).toHaveBeenCalledTimes(0);

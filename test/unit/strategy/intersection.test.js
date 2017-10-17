@@ -12,7 +12,7 @@ import {
 
 describe("IntersectionStrategy", () => {
     describe("processGrid", () => {
-        const grid = jest.fn();
+        const grid = jest.fn(null);
         grid.rowSize = 9;
         grid.columnSize = 9;
         grid.blockRowSize = 3;
@@ -21,7 +21,7 @@ describe("IntersectionStrategy", () => {
         let processCellsSpy;
 
         beforeEach(() => {
-            processCellsSpy = jest.fn();
+            processCellsSpy = jest.fn(null);
             IntersectionStrategy.processCells = processCellsSpy;
 
             grid.cellsInRow = jest.fn(() =>
@@ -30,12 +30,12 @@ describe("IntersectionStrategy", () => {
             grid.cellsInColumn = jest.fn(() =>
                 ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"]
             );
-            grid.cellsInBlock = jest.fn();
+            grid.cellsInBlock = jest.fn(null);
         });
 
         it("should process a grid with no result", () => {
-            processCellsSpy.mockReturnValue([]);
-            expect(IntersectionStrategy.processGrid(grid)).toEqual([]);
+            processCellsSpy.mockReturnValue({});
+            expect(IntersectionStrategy.processGrid(grid)).toEqual({});
             expect(grid.cellsInRow.mock.calls)
                 .toEqual([[0], [1], [2], [3], [4], [5], [6], [7], [8]]);
             expect(grid.cellsInColumn.mock.calls)
@@ -45,15 +45,17 @@ describe("IntersectionStrategy", () => {
         });
 
         it("should process a grid with a few results", () => {
-            processCellsSpy.mockReturnValue([])
-                .mockReturnValueOnce(["CELL1", "CELL2"])
-                .mockReturnValueOnce(["CELL3"])
-                .mockReturnValueOnce(["CELL4", "CELL5"])
-                .mockReturnValueOnce(["CELL6", "CELL7", "CELL8"]);
-            expect(IntersectionStrategy.processGrid(grid)).toEqual([
-                "CELL1", "CELL2", "CELL3", "CELL4",
-                "CELL5", "CELL6", "CELL7", "CELL8",
-            ]);
+            processCellsSpy.mockReturnValue({})
+                .mockReturnValueOnce({c01: "CELL1", c11: "CELL2"})
+                .mockReturnValueOnce({c03: "CELL3"})
+                .mockReturnValueOnce({c01: "CELL4", c31: "CELL5"})
+                .mockReturnValueOnce({c50: "CELL6", c55: "CELL7", c58: "CELL8"});
+            expect(IntersectionStrategy.processGrid(grid)).toEqual({
+                c01: "CELL4", c03: "CELL3",
+                c11: "CELL2",
+                c31: "CELL5",
+                c50: "CELL6", c55: "CELL7", c58: "CELL8",
+            });
             expect(processCellsSpy.mock.calls).toEqual(
                 _.range(9).map(() => [
                     [
@@ -147,18 +149,20 @@ describe("PointingStrategy", () => {
             cellsInRows = _.range(3).map((row) =>
                 _.range(9).map((column) => ({
                     row, column,
+                    identifier: `c${row}${column}`,
                     candidates: [],
                     latestCandidates: [],
-                    setNextCandidates: jest.fn(),
+                    setNextCandidates: jest.fn(null),
                 })),
             );
 
             cellsInColumns = _.range(3).map((column) =>
                 _.range(9).map((row) => ({
                     row, column,
+                    identifier: `c${column}${row}`,
                     candidates: [],
                     latestCandidates: [],
-                    setNextCandidates: jest.fn(),
+                    setNextCandidates: jest.fn(null),
                 })),
             );
 
@@ -178,7 +182,7 @@ describe("PointingStrategy", () => {
 
         it("should not match any candidates", () => {
             expect(PointingStrategy.processCells(cellsInRows, cellsInColumns))
-                .toEqual([]);
+                .toEqual({});
 
             expect(cellsInIntersectionSpy)
                 .toHaveBeenLastCalledWith(cellsInRows, cellsInColumns);
@@ -272,11 +276,11 @@ describe("PointingStrategy", () => {
             );
 
             expect(PointingStrategy.processCells(cellsInRows, cellsInColumns))
-                .toEqual([
-                    cellsInRows[1][3],
-                    cellsInRows[1][4],
-                    cellsInRows[1][5],
-                ]);
+                .toEqual({
+                    c13: cellsInRows[1][3],
+                    c14: cellsInRows[1][4],
+                    c15: cellsInRows[1][5],
+                });
 
             expect(getMatchingCandidatesSpy)
                 .toHaveBeenLastCalledWith({
@@ -355,10 +359,10 @@ describe("PointingStrategy", () => {
             );
 
             expect(PointingStrategy.processCells(cellsInRows, cellsInColumns))
-                .toEqual([
-                    cellsInColumns[1][5],
-                    cellsInColumns[2][6],
-                ]);
+                .toEqual({
+                    c15: cellsInColumns[1][5],
+                    c26: cellsInColumns[2][6],
+                });
 
             expect(getMatchingCandidatesSpy)
                 .toHaveBeenLastCalledWith({
@@ -546,7 +550,7 @@ describe("BoxLineReductionStrategy", () => {
             expect(
                 BoxLineReductionStrategy
                     .processCells(cellsInRows, cellsInColumns)
-            ).toEqual([]);
+            ).toEqual({});
 
             expect(cellsInIntersectionSpy)
                 .toHaveBeenLastCalledWith(cellsInRows, cellsInColumns);
@@ -673,11 +677,11 @@ describe("BoxLineReductionStrategy", () => {
             expect(
                 BoxLineReductionStrategy
                     .processCells(cellsInRows, cellsInColumns)
-            ).toEqual([
-                cellsInRows[1][1],
-                cellsInRows[2][0],
-                cellsInRows[2][1],
-            ]);
+            ).toEqual({
+                c11: cellsInRows[1][1],
+                c20: cellsInRows[2][0],
+                c21: cellsInRows[2][1],
+            });
 
             expect(cellsInRows[1][1].setNextCandidates)
                 .toHaveBeenLastCalledWith([3, 4, 5, 6]);
@@ -743,12 +747,12 @@ describe("BoxLineReductionStrategy", () => {
             expect(
                 BoxLineReductionStrategy
                     .processCells(cellsInRows, cellsInColumns)
-            ).toEqual([
-                cellsInRows[1][0],
-                cellsInRows[2][0],
-                cellsInRows[1][2],
-                cellsInRows[2][2],
-            ]);
+            ).toEqual({
+                c10: cellsInRows[1][0],
+                c20: cellsInRows[2][0],
+                c12: cellsInRows[1][2],
+                c22: cellsInRows[2][2],
+            });
 
             expect(cellsInRows[1][0].setNextCandidates)
                 .toHaveBeenLastCalledWith([1, 2, 7]);

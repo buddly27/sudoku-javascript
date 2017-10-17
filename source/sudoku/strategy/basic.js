@@ -14,32 +14,33 @@ import combinations from "iter-tools/lib/combinations";
  */
 export class BasicStrategy {
     /**
-     * Attempt to resolve *grid* and return a list of all modified cells.
+     * Attempt to resolve *grid*.
      *
      * Call the *processCells* method for the group of cells within each row,
      * column and block.
      *
-     * Return list of modified :class:`sudoku.cell.SudokuCell` instances.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * updated candidates list per cell identifier.
      *
      * the *processCells* method must be a function which takes a list of
      * :class:`sudoku.cell.SudokuCell` instances and return a list
      * of modified :class:`sudoku.cell.SudokuCell` instances.
      */
     static processGrid(grid) {
-        const modifiedCells = [];
+        let updatedCells = {};
 
         // Process Rows
         _.range(grid.rowSize).forEach((rowIndex) => {
-            const _modifiedCells = this.processCells(grid.cellsInRow(rowIndex));
-            modifiedCells.push(..._modifiedCells);
+            const _updatedCells = this.processCells(grid.cellsInRow(rowIndex));
+            updatedCells = Object.assign({}, updatedCells, _updatedCells);
         });
 
         // Process Columns
         _.range(grid.columnSize).forEach((columnIndex) => {
-            const _modifiedCells = this.processCells(
+            const _updatedCells = this.processCells(
                 grid.cellsInColumn(columnIndex)
             );
-            modifiedCells.push(..._modifiedCells);
+            updatedCells = Object.assign({}, updatedCells, _updatedCells);
         });
 
         // Process Blocks
@@ -48,14 +49,14 @@ export class BasicStrategy {
 
         rows.forEach((rowIndex) => {
             columns.forEach((columnIndex) => {
-                const _modifiedCells = this.processCells(
+                const _updatedCells = this.processCells(
                     grid.cellsInBlock(rowIndex, columnIndex)
                 );
-                modifiedCells.push(..._modifiedCells);
+                updatedCells = Object.assign({}, updatedCells, _updatedCells);
             });
         });
 
-        return modifiedCells.sort();
+        return updatedCells;
     }
 
     /**
@@ -64,11 +65,8 @@ export class BasicStrategy {
      *
      * *hiddenCandidates* should be a collections of hidden candidates lists.
      *
-     * Return a list of :class:`sudoku.cell.SudokuCell` instances modified.
-     *
-     * The first occurrence of hidden candidates within a cell is set as its
-     * 'next' candidates and will be applied next time the grid is
-     * :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * updated candidates list per cell identifier.
      *
      * Example::
      *
@@ -80,7 +78,7 @@ export class BasicStrategy {
      *     [3, 4]
      */
     static updateFromIntersection(cells, hiddenCandidates) {
-        const modifiedCells = [];
+        const updatedCells = {};
 
         cells.forEach((cell) => {
             // eslint-disable-next-line no-restricted-syntax
@@ -95,13 +93,13 @@ export class BasicStrategy {
                     !_.isEqual(intersection, cellCandidates)
                 ) {
                     cell.setNextCandidates(Array.from(intersection).sort());
-                    modifiedCells.push(cell);
+                    updatedCells[cell.identifier] = cell;
                     break;
                 }
             }
         });
 
-        return modifiedCells;
+        return updatedCells;
     }
 
     /**
@@ -110,11 +108,8 @@ export class BasicStrategy {
      *
      * *nakedCandidates* should be a collections of naked candidates lists.
      *
-     * Return a list of :class:`sudoku.cell.SudokuCell` instances modified.
-     *
-     * The first occurrence of numbers different than the naked candidates found
-     * within a cell is set as its 'next' candidates and will be applied next
-     * time the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * updated candidates list per cell identifier.
      *
      * Example::
      *
@@ -126,7 +121,7 @@ export class BasicStrategy {
      *     [1, 2, 5, 6, 7, 8, 9]
      */
     static updateFromDifference(cells, nakedCandidates) {
-        const modifiedCells = [];
+        const updatedCells = {};
 
         cells.forEach((cell) => {
             // eslint-disable-next-line no-restricted-syntax
@@ -142,13 +137,13 @@ export class BasicStrategy {
                     !_.isEqual(difference, new Set(cell.candidates))
                 ) {
                     cell.setNextCandidates(Array.from(difference).sort());
-                    modifiedCells.push(cell);
+                    updatedCells[cell.identifier] = cell;
                     break;
                 }
             }
         });
 
-        return modifiedCells;
+        return updatedCells;
     }
 }
 
@@ -168,13 +163,12 @@ export class HiddenSingleStrategy extends BasicStrategy {
     static identifier = "Hidden Single Strategy";
 
     /**
-     * Attempt to resolve *cells* and return a list of all modified cells.
+     * Attempt to resolve *cells*.
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
-     * returned are modified with the new candidate number and will be applied
-     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * updated candidates list per cell identifier.
      */
     static processCells(cells) {
         const candidatesList = cells.map((cell) => cell.candidates);
@@ -209,13 +203,12 @@ export class HiddenPairStrategy extends BasicStrategy {
     static identifier = "Hidden Pair Strategy";
 
     /**
-     * Attempt to resolve *cells* and return a list of all modified cells.
+     * Attempt to resolve *cells*.
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
-     * returned are modified with the new candidate numbers and will be applied
-     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * updated candidates list per cell identifier.
      */
     static processCells(cells) {
         const candidatesList = cells.map((cell) => cell.candidates);
@@ -266,13 +259,12 @@ export class HiddenTripleStrategy extends BasicStrategy {
     static identifier = "Hidden Triple Strategy";
 
     /**
-     * Attempt to resolve *cells* and return a list of all modified cells.
+     * Attempt to resolve *cells*.
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
-     * returned are modified with the new candidate numbers and will be applied
-     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * updated candidates list per cell identifier.
      */
     static processCells(cells) {
         const hiddenCandidates = [];
@@ -319,13 +311,12 @@ export class HiddenQuadStrategy extends BasicStrategy {
     static identifier = "Hidden Quad Strategy";
 
     /**
-     * Attempt to resolve *cells* and return a list of all modified cells.
+     * Attempt to resolve *cells*.
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
-     * returned are modified with the new candidate numbers and will be applied
-     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * updated candidates list per cell identifier.
      */
     static processCells(cells) {
         const hiddenCandidates = [];
@@ -371,13 +362,12 @@ export class NakedPairStrategy extends BasicStrategy {
     static identifier = "Naked Pair Strategy";
 
     /**
-     * Attempt to resolve *cells* and return a list of all modified cells.
+     * Attempt to resolve *cells*.
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
-     * returned are modified with the new candidate numbers and will be applied
-     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * updated candidates list per cell identifier.
      */
     static processCells(cells) {
         const candidatesList = cells.map((cell) => cell.candidates);
@@ -423,13 +413,12 @@ export class NakedTripleStrategy extends BasicStrategy {
     static identifier = "Naked Triple Strategy";
 
     /**
-     * Attempt to resolve *cells* and return a list of all modified cells.
+     * Attempt to resolve *cells*.
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * The 'next' candidates of the :class:`~sudoku.cell.SudokuCell` instances
-     * returned are modified with the new candidate numbers and will be applied
-     * when the grid is :meth:`updated <sudoku.grid.SudokuGrid.update>`.
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * updated candidates list per cell identifier.
      */
     static processCells(cells) {
         const nakedCandidates = [];

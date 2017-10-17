@@ -90,21 +90,17 @@ export class SudokuSolver {
      *     }
      */
     applyStrategiesUntilFirstResult(grid) {
-        const mapping = {};
+        let mapping = {};
 
         // eslint-disable-next-line no-restricted-syntax
         for (const strategy of this.strategies) {
             if (strategy.processGrid) {
-                const modifiedCells = strategy.processGrid(grid);
-                if (modifiedCells.length > 0) {
+                mapping = strategy.processGrid(grid);
+                if (Object.keys(mapping).length > 0) {
                     const id = strategy.identifier;
                     if (this._strategiesUsed.indexOf(id) === -1) {
                         this._strategiesUsed.push(id);
                     }
-
-                    modifiedCells.forEach((cell) => {
-                        mapping[cell.identifier] = cell;
-                    });
                     break;
                 }
             }
