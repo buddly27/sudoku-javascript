@@ -95,19 +95,6 @@ export class SudokuCell {
         return this._value;
     }
 
-    /**
-     * Set a new value for the cell.
-     *
-     * .. warning::
-     *
-     *     The list of candidates will be emptied in the process.
-     */
-    set value(value) {
-        this._value = value;
-        this._candidates = [];
-        this._nextCandidates = null;
-    }
-
     /** Return list of candidate numbers of the cell. */
     get candidates() {
         return this._candidates;
