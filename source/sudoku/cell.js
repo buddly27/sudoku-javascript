@@ -41,14 +41,38 @@ export class SudokuCell {
         this._rowIndex = rowIndex;
         this._columnIndex = columnIndex;
 
-        this._candidates = (!value) ? [1, 2, 3, 4, 5, 6, 7, 8, 9] : [];
-
         if (candidates) {
-            this.candidates = candidates;
+            this.validateCandidates(candidates);
+            this._candidates = candidates;
+        }
+        else {
+            this._candidates = (!value) ? [1, 2, 3, 4, 5, 6, 7, 8, 9] : [];
         }
 
         // Next candidates awaiting for update
         this._nextCandidates = null;
+    }
+
+    /**
+     * Validate *candidates* and throw an error if invalid.
+     *
+     * An error is raised if the candidates list is not empty while the cell
+     * already has a non-zero value, or if the candidates list is empty while
+     * the cell do not has a non-zero value yet.
+     */
+    validateCandidates(candidates) {
+        if (candidates.length > 0 && this.isSolved()) {
+            throw Error(
+                "A non-empty list of candidates can not be set for a " +
+                "solved cell."
+            );
+        }
+        else if (candidates.length === 0 && !this.isSolved()) {
+            throw Error(
+                "A empty list of candidates can not be set for an " +
+                "unsolved cell."
+            );
+        }
     }
 
     /** Return cell identifier. */
@@ -98,19 +122,7 @@ export class SudokuCell {
      *      with the cell value.
      */
     set candidates(candidates) {
-        if (candidates.length > 0 && this.isSolved()) {
-            throw Error(
-                "A non-empty list of candidates can not be set for a " +
-                "solved cell."
-            );
-        }
-        else if (candidates.length === 0 && !this.isSolved()) {
-            throw Error(
-                "A empty list of candidates can not be set for an " +
-                "unsolved cell."
-            );
-        }
-
+        this.validateCandidates(candidates);
         this._candidates = Array.from(new Set(candidates)).sort();
     }
 
@@ -215,6 +227,8 @@ export class SudokuCell {
      */
     clone(candidates = null) {
         const _candidates = candidates || this.candidates;
-        return new SudokuCell(this.value, this.row, this.column, _candidates);
+        return new SudokuCell(
+            this.value, this.rowIndex, this.columnIndex, _candidates
+        );
     }
 }
