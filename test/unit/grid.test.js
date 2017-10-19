@@ -26,6 +26,30 @@ describe("SudokuGrid", () => {
         it("should have the correct block column size value", () => {
             expect(grid.blockColumnSize).toEqual(3);
         });
+
+        it("should get a cell from its identifier", () => {
+            expect(grid.cellFromId("c53")).toBe(grid.cell(5, 3));
+        });
+
+        it("should throw an error when cell identifier is incorrect", () => {
+            expect(
+                () => grid.cellFromId("23")
+            ).toThrow(
+                Error("Impossible to find the cell identified as '23'")
+            );
+
+            expect(
+                () => grid.cellFromId("rr")
+            ).toThrow(
+                Error("Impossible to find the cell identified as 'rr'")
+            );
+
+            expect(
+                () => grid.cellFromId("c124")
+            ).toThrow(
+                Error("Impossible to find the cell identified as 'c124'")
+            );
+        });
     });
 
     describe("instance with no values", () => {
@@ -78,6 +102,15 @@ describe("SudokuGrid", () => {
                 _.range(grid.columnSize).forEach((columnIndex) => {
                     const cell = grid.cell(rowIndex, columnIndex);
                     expect(cell.value).toEqual(0);
+                });
+            });
+        });
+
+        it("should get the correct cell from its identifier", () => {
+            _.range(grid.rowSize).forEach((rowIndex) => {
+                _.range(grid.columnSize).forEach((columnIndex) => {
+                    const cell = grid.cellFromId(`c${rowIndex}${columnIndex}`);
+                    expect(cell).toBe(grid.cell(rowIndex, columnIndex));
                 });
             });
         });
@@ -218,6 +251,15 @@ describe("SudokuGrid", () => {
                     const cell = grid.cell(rowIndex, columnIndex);
                     expect(cell.value)
                         .toEqual(expectedRows[rowIndex][columnIndex]);
+                });
+            });
+        });
+
+        it("should get the correct cell from its identifier", () => {
+            _.range(grid.rowSize).forEach((rowIndex) => {
+                _.range(grid.columnSize).forEach((columnIndex) => {
+                    const cell = grid.cellFromId(`c${rowIndex}${columnIndex}`);
+                    expect(cell).toBe(grid.cell(rowIndex, columnIndex));
                 });
             });
         });
@@ -370,6 +412,15 @@ describe("SudokuGrid", () => {
                     const cell = grid.cell(rowIndex, columnIndex);
                     expect(cell.value)
                         .toEqual(expectedRows[rowIndex][columnIndex]);
+                });
+            });
+        });
+
+        it("should get the correct cell from its identifier", () => {
+            _.range(grid.rowSize).forEach((rowIndex) => {
+                _.range(grid.columnSize).forEach((columnIndex) => {
+                    const cell = grid.cellFromId(`c${rowIndex}${columnIndex}`);
+                    expect(cell).toBe(grid.cell(rowIndex, columnIndex));
                 });
             });
         });

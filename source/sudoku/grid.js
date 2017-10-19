@@ -96,6 +96,22 @@ export class SudokuGrid {
     }
 
     /**
+     * Return the cell from its *identifier*.
+     *
+     * Throw an error if the identifier is incorrect.
+     */
+    cellFromId(identifier) {
+        const matched = /^c(\d)(\d)$/.exec(identifier);
+        if (!matched) {
+            throw Error(
+                `Impossible to find the cell identified as '${identifier}'`
+            );
+        }
+
+        return this._grid[Number(matched[1])][Number(matched[2])];
+    }
+
+    /**
      * Return list of values from all cells in row from *rowIndex*.
      */
     cellsInRow(rowIndex) {
