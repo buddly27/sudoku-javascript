@@ -4,6 +4,66 @@
 Release Notes
 *************
 
+.. release:: 0.3.0
+
+    .. change:: changed
+
+        Added optional argument to set initial candidates to a
+        :class:`~sudoku.cell.SudokuCell`.
+
+    .. change:: changed
+
+        Changed the logic which leads to the modification of cell candidate
+        numbers when a strategy have been successfully applied:
+
+        Instead of storing new candidate numbers in a 'next' buffer list
+        attribute within the :class:`~sudoku.cell.SudokuCell` instance and
+        updating the cell candidates list only when
+        :meth:`sudoku.grid.SudokuGrid.updateCandidates` is called, each
+        strategy's 'processGrid' method should return a mapping of
+        :meth:`cloned instances <sudoku.cell.SudokuCell.clone>` which contain
+        the updated candidates.
+
+        Changed :meth:`sudoku.solver.SudokuSolver.resolve` so to take care of
+        the update of each cell candidates.
+
+    .. change:: fixed
+
+        The assumption that setting a new value to a cell should automatically
+        empty the candidate list was incorrect as a value of zero should bring
+        back a list of possible candidate numbers, which is impossible to
+        guess from the scope of the cell as it should be computed relatively to
+        the entire grid (see :meth:`sudoku.grid.SudokuGrid.updateCandidates`).
+
+        Therefore, the setter to manually change the value of a
+        :class:`~sudoku.cell.SudokuCell` has been removed in favor of a setter
+        to manually change its candidate numbers. It is safer to rely on a
+        candidates setter and on the :meth:`sudoku.cell.SudokuCell.resolve`
+        method to update a cell value::
+
+            >>> cell = new SudokuCell(0, 0, 0, [1, 2, 3])
+            >>> cell.candidates = [3]
+            >>> cell.resolve()
+            >>> cell.value
+            3
+
+    .. change:: new
+
+        Added :meth:`sudoku.cell.SudokuCell.validateCandidates` to throw
+        an error when the list of candidate numbers set to a
+        :class:`~sudoku.cell.SudokuCell` is incoherent with its value.
+
+    .. change:: new
+
+        Added :meth:`sudoku.grid.SudokuGrid.cellFromId` to retrieve a specific
+        :class:`~sudoku.cell.SudokuCell` instance from a
+        :class:`~sudoku.grid.SudokuGrid` using its identifier::
+
+            >>> const grid = new SudokuGrid({c36: 7})
+            >>> const cell = grid.cellFromId("c36")
+            >>> cell.value
+            7
+
 .. release:: 0.2.0
 
     .. change:: new
