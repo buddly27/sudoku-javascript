@@ -60,8 +60,8 @@ describe("SudokuGrid", () => {
             _cell = require("sudoku/cell");
 
             _cell.SudokuCell = jest.fn(
-                (value, rowIndex, columnIndex) => ({
-                    value, isSolved: () => value !== 0,
+                (value, rowIndex, columnIndex, candidates = null) => ({
+                    value, candidates, isSolved: () => value !== 0,
                 })
             );
 
@@ -72,33 +72,61 @@ describe("SudokuGrid", () => {
             expect(_cell.SudokuCell.mock.calls)
                 .toEqual(
                     [
-                        [0, 0, 0], [0, 0, 1], [0, 0, 2], [0, 0, 3], [0, 0, 4],
-                        [0, 0, 5], [0, 0, 6], [0, 0, 7], [0, 0, 8],
-                        [0, 1, 0], [0, 1, 1], [0, 1, 2], [0, 1, 3], [0, 1, 4],
-                        [0, 1, 5], [0, 1, 6], [0, 1, 7], [0, 1, 8],
-                        [0, 2, 0], [0, 2, 1], [0, 2, 2], [0, 2, 3], [0, 2, 4],
-                        [0, 2, 5], [0, 2, 6], [0, 2, 7], [0, 2, 8],
-                        [0, 3, 0], [0, 3, 1], [0, 3, 2], [0, 3, 3], [0, 3, 4],
-                        [0, 3, 5], [0, 3, 6], [0, 3, 7], [0, 3, 8],
-                        [0, 4, 0], [0, 4, 1], [0, 4, 2], [0, 4, 3], [0, 4, 4],
-                        [0, 4, 5], [0, 4, 6], [0, 4, 7], [0, 4, 8],
-                        [0, 5, 0], [0, 5, 1], [0, 5, 2], [0, 5, 3], [0, 5, 4],
-                        [0, 5, 5], [0, 5, 6], [0, 5, 7], [0, 5, 8],
-                        [0, 6, 0], [0, 6, 1], [0, 6, 2], [0, 6, 3], [0, 6, 4],
-                        [0, 6, 5], [0, 6, 6], [0, 6, 7], [0, 6, 8],
-                        [0, 7, 0], [0, 7, 1], [0, 7, 2], [0, 7, 3], [0, 7, 4],
-                        [0, 7, 5], [0, 7, 6], [0, 7, 7], [0, 7, 8],
-                        [0, 8, 0], [0, 8, 1], [0, 8, 2], [0, 8, 3], [0, 8, 4],
-                        [0, 8, 5], [0, 8, 6], [0, 8, 7], [0, 8, 8],
+                        [0, 0, 0, undefined], [0, 0, 1, undefined],
+                        [0, 0, 2, undefined], [0, 0, 3, undefined],
+                        [0, 0, 4, undefined], [0, 0, 5, undefined],
+                        [0, 0, 6, undefined], [0, 0, 7, undefined],
+                        [0, 0, 8, undefined],
+                        [0, 1, 0, undefined], [0, 1, 1, undefined],
+                        [0, 1, 2, undefined], [0, 1, 3, undefined],
+                        [0, 1, 4, undefined], [0, 1, 5, undefined],
+                        [0, 1, 6, undefined], [0, 1, 7, undefined],
+                        [0, 1, 8, undefined],
+                        [0, 2, 0, undefined], [0, 2, 1, undefined],
+                        [0, 2, 2, undefined], [0, 2, 3, undefined],
+                        [0, 2, 4, undefined], [0, 2, 5, undefined],
+                        [0, 2, 6, undefined], [0, 2, 7, undefined],
+                        [0, 2, 8, undefined],
+                        [0, 3, 0, undefined], [0, 3, 1, undefined],
+                        [0, 3, 2, undefined], [0, 3, 3, undefined],
+                        [0, 3, 4, undefined], [0, 3, 5, undefined],
+                        [0, 3, 6, undefined], [0, 3, 7, undefined],
+                        [0, 3, 8, undefined],
+                        [0, 4, 0, undefined], [0, 4, 1, undefined],
+                        [0, 4, 2, undefined], [0, 4, 3, undefined],
+                        [0, 4, 4, undefined], [0, 4, 5, undefined],
+                        [0, 4, 6, undefined], [0, 4, 7, undefined],
+                        [0, 4, 8, undefined],
+                        [0, 5, 0, undefined], [0, 5, 1, undefined],
+                        [0, 5, 2, undefined], [0, 5, 3, undefined],
+                        [0, 5, 4, undefined], [0, 5, 5, undefined],
+                        [0, 5, 6, undefined], [0, 5, 7, undefined],
+                        [0, 5, 8, undefined],
+                        [0, 6, 0, undefined], [0, 6, 1, undefined],
+                        [0, 6, 2, undefined], [0, 6, 3, undefined],
+                        [0, 6, 4, undefined], [0, 6, 5, undefined],
+                        [0, 6, 6, undefined], [0, 6, 7, undefined],
+                        [0, 6, 8, undefined],
+                        [0, 7, 0, undefined], [0, 7, 1, undefined],
+                        [0, 7, 2, undefined], [0, 7, 3, undefined],
+                        [0, 7, 4, undefined], [0, 7, 5, undefined],
+                        [0, 7, 6, undefined], [0, 7, 7, undefined],
+                        [0, 7, 8, undefined],
+                        [0, 8, 0, undefined], [0, 8, 1, undefined],
+                        [0, 8, 2, undefined], [0, 8, 3, undefined],
+                        [0, 8, 4, undefined], [0, 8, 5, undefined],
+                        [0, 8, 6, undefined], [0, 8, 7, undefined],
+                        [0, 8, 8, undefined],
                     ]
                 );
         });
 
-        it("should have correct cell values", () => {
+        it("should have correct cell values and candidates", () => {
             _.range(grid.rowSize).forEach((rowIndex) => {
                 _.range(grid.columnSize).forEach((columnIndex) => {
                     const cell = grid.cell(rowIndex, columnIndex);
                     expect(cell.value).toEqual(0);
+                    expect(cell.candidates).toEqual(null);
                 });
             });
         });
@@ -195,12 +223,9 @@ describe("SudokuGrid", () => {
             _cell = require("sudoku/cell");
 
             _cell.SudokuCell = jest.fn(
-                (value, rowIndex, columnIndex) => (
-                    {
-                        value,
-                        isSolved: () => value !== 0,
-                    }
-                )
+                (value, rowIndex, columnIndex, candidates = null) => ({
+                    value, candidates, isSolved: () => value !== 0,
+                })
             );
 
             grid = new SudokuGrid({
@@ -220,34 +245,62 @@ describe("SudokuGrid", () => {
             expect(_cell.SudokuCell.mock.calls)
                 .toEqual(
                     [
-                        [0, 0, 0], [0, 0, 1], [0, 0, 2], [1, 0, 3], [0, 0, 4],
-                        [5, 0, 5], [0, 0, 6], [0, 0, 7], [0, 0, 8],
-                        [1, 1, 0], [4, 1, 1], [0, 1, 2], [0, 1, 3], [0, 1, 4],
-                        [0, 1, 5], [6, 1, 6], [7, 1, 7], [0, 1, 8],
-                        [0, 2, 0], [8, 2, 1], [0, 2, 2], [0, 2, 3], [0, 2, 4],
-                        [2, 2, 5], [4, 2, 6], [0, 2, 7], [0, 2, 8],
-                        [0, 3, 0], [6, 3, 1], [3, 3, 2], [0, 3, 3], [7, 3, 4],
-                        [0, 3, 5], [0, 3, 6], [1, 3, 7], [0, 3, 8],
-                        [9, 4, 0], [0, 4, 1], [0, 4, 2], [0, 4, 3], [0, 4, 4],
-                        [0, 4, 5], [0, 4, 6], [0, 4, 7], [3, 4, 8],
-                        [0, 5, 0], [1, 5, 1], [0, 5, 2], [0, 5, 3], [9, 5, 4],
-                        [0, 5, 5], [5, 5, 6], [2, 5, 7], [0, 5, 8],
-                        [0, 6, 0], [0, 6, 1], [7, 6, 2], [2, 6, 3], [0, 6, 4],
-                        [0, 6, 5], [0, 6, 6], [8, 6, 7], [0, 6, 8],
-                        [0, 7, 0], [2, 7, 1], [6, 7, 2], [0, 7, 3], [0, 7, 4],
-                        [0, 7, 5], [0, 7, 6], [3, 7, 7], [5, 7, 8],
-                        [0, 8, 0], [0, 8, 1], [0, 8, 2], [4, 8, 3], [0, 8, 4],
-                        [9, 8, 5], [0, 8, 6], [0, 8, 7], [0, 8, 8],
+                        [0, 0, 0, undefined], [0, 0, 1, undefined],
+                        [0, 0, 2, undefined], [1, 0, 3, undefined],
+                        [0, 0, 4, undefined], [5, 0, 5, undefined],
+                        [0, 0, 6, undefined], [0, 0, 7, undefined],
+                        [0, 0, 8, undefined],
+                        [1, 1, 0, undefined], [4, 1, 1, undefined],
+                        [0, 1, 2, undefined], [0, 1, 3, undefined],
+                        [0, 1, 4, undefined], [0, 1, 5, undefined],
+                        [6, 1, 6, undefined], [7, 1, 7, undefined],
+                        [0, 1, 8, undefined],
+                        [0, 2, 0, undefined], [8, 2, 1, undefined],
+                        [0, 2, 2, undefined], [0, 2, 3, undefined],
+                        [0, 2, 4, undefined], [2, 2, 5, undefined],
+                        [4, 2, 6, undefined], [0, 2, 7, undefined],
+                        [0, 2, 8, undefined],
+                        [0, 3, 0, undefined], [6, 3, 1, undefined],
+                        [3, 3, 2, undefined], [0, 3, 3, undefined],
+                        [7, 3, 4, undefined], [0, 3, 5, undefined],
+                        [0, 3, 6, undefined], [1, 3, 7, undefined],
+                        [0, 3, 8, undefined],
+                        [9, 4, 0, undefined], [0, 4, 1, undefined],
+                        [0, 4, 2, undefined], [0, 4, 3, undefined],
+                        [0, 4, 4, undefined], [0, 4, 5, undefined],
+                        [0, 4, 6, undefined], [0, 4, 7, undefined],
+                        [3, 4, 8, undefined],
+                        [0, 5, 0, undefined], [1, 5, 1, undefined],
+                        [0, 5, 2, undefined], [0, 5, 3, undefined],
+                        [9, 5, 4, undefined], [0, 5, 5, undefined],
+                        [5, 5, 6, undefined], [2, 5, 7, undefined],
+                        [0, 5, 8, undefined],
+                        [0, 6, 0, undefined], [0, 6, 1, undefined],
+                        [7, 6, 2, undefined], [2, 6, 3, undefined],
+                        [0, 6, 4, undefined], [0, 6, 5, undefined],
+                        [0, 6, 6, undefined], [8, 6, 7, undefined],
+                        [0, 6, 8, undefined],
+                        [0, 7, 0, undefined], [2, 7, 1, undefined],
+                        [6, 7, 2, undefined], [0, 7, 3, undefined],
+                        [0, 7, 4, undefined], [0, 7, 5, undefined],
+                        [0, 7, 6, undefined], [3, 7, 7, undefined],
+                        [5, 7, 8, undefined],
+                        [0, 8, 0, undefined], [0, 8, 1, undefined],
+                        [0, 8, 2, undefined], [4, 8, 3, undefined],
+                        [0, 8, 4, undefined], [9, 8, 5, undefined],
+                        [0, 8, 6, undefined], [0, 8, 7, undefined],
+                        [0, 8, 8, undefined],
                     ]
                 );
         });
 
-        it("should have correct cell values", () => {
+        it("should have correct cell values and candidates", () => {
             _.range(grid.rowSize).forEach((rowIndex) => {
                 _.range(grid.columnSize).forEach((columnIndex) => {
                     const cell = grid.cell(rowIndex, columnIndex);
                     expect(cell.value)
                         .toEqual(expectedRows[rowIndex][columnIndex]);
+                    expect(cell.candidates).toEqual(null);
                 });
             });
         });
@@ -347,12 +400,9 @@ describe("SudokuGrid", () => {
             _cell = require("sudoku/cell");
 
             _cell.SudokuCell = jest.fn(
-                (value, rowIndex, columnIndex) => (
-                    {
-                        value,
-                        isSolved: () => value !== 0,
-                    }
-                )
+                (value, rowIndex, columnIndex, candidates = null) => ({
+                    value, candidates, isSolved: () => value !== 0,
+                })
             );
 
             grid = new SudokuGrid({
@@ -381,34 +431,62 @@ describe("SudokuGrid", () => {
             expect(_cell.SudokuCell.mock.calls)
                 .toEqual(
                     [
-                        [6, 0, 0], [7, 0, 1], [2, 0, 2], [1, 0, 3], [4, 0, 4],
-                        [5, 0, 5], [3, 0, 6], [9, 0, 7], [8, 0, 8],
-                        [1, 1, 0], [4, 1, 1], [5, 1, 2], [9, 1, 3], [8, 1, 4],
-                        [3, 1, 5], [6, 1, 6], [7, 1, 7], [2, 1, 8],
-                        [3, 2, 0], [8, 2, 1], [9, 2, 2], [7, 2, 3], [6, 2, 4],
-                        [2, 2, 5], [4, 2, 6], [5, 2, 7], [1, 2, 8],
-                        [2, 3, 0], [6, 3, 1], [3, 3, 2], [5, 3, 3], [7, 3, 4],
-                        [4, 3, 5], [8, 3, 6], [1, 3, 7], [9, 3, 8],
-                        [9, 4, 0], [5, 4, 1], [8, 4, 2], [6, 4, 3], [2, 4, 4],
-                        [1, 4, 5], [7, 4, 6], [4, 4, 7], [3, 4, 8],
-                        [7, 5, 0], [1, 5, 1], [4, 5, 2], [3, 5, 3], [9, 5, 4],
-                        [8, 5, 5], [5, 5, 6], [2, 5, 7], [6, 5, 8],
-                        [5, 6, 0], [9, 6, 1], [7, 6, 2], [2, 6, 3], [3, 6, 4],
-                        [6, 6, 5], [1, 6, 6], [8, 6, 7], [4, 6, 8],
-                        [4, 7, 0], [2, 7, 1], [6, 7, 2], [8, 7, 3], [1, 7, 4],
-                        [7, 7, 5], [9, 7, 6], [3, 7, 7], [5, 7, 8],
-                        [8, 8, 0], [3, 8, 1], [1, 8, 2], [4, 8, 3], [5, 8, 4],
-                        [9, 8, 5], [2, 8, 6], [6, 8, 7], [7, 8, 8],
+                        [6, 0, 0, undefined], [7, 0, 1, undefined],
+                        [2, 0, 2, undefined], [1, 0, 3, undefined],
+                        [4, 0, 4, undefined], [5, 0, 5, undefined],
+                        [3, 0, 6, undefined], [9, 0, 7, undefined],
+                        [8, 0, 8, undefined],
+                        [1, 1, 0, undefined], [4, 1, 1, undefined],
+                        [5, 1, 2, undefined], [9, 1, 3, undefined],
+                        [8, 1, 4, undefined], [3, 1, 5, undefined],
+                        [6, 1, 6, undefined], [7, 1, 7, undefined],
+                        [2, 1, 8, undefined],
+                        [3, 2, 0, undefined], [8, 2, 1, undefined],
+                        [9, 2, 2, undefined], [7, 2, 3, undefined],
+                        [6, 2, 4, undefined], [2, 2, 5, undefined],
+                        [4, 2, 6, undefined], [5, 2, 7, undefined],
+                        [1, 2, 8, undefined],
+                        [2, 3, 0, undefined], [6, 3, 1, undefined],
+                        [3, 3, 2, undefined], [5, 3, 3, undefined],
+                        [7, 3, 4, undefined], [4, 3, 5, undefined],
+                        [8, 3, 6, undefined], [1, 3, 7, undefined],
+                        [9, 3, 8, undefined],
+                        [9, 4, 0, undefined], [5, 4, 1, undefined],
+                        [8, 4, 2, undefined], [6, 4, 3, undefined],
+                        [2, 4, 4, undefined], [1, 4, 5, undefined],
+                        [7, 4, 6, undefined], [4, 4, 7, undefined],
+                        [3, 4, 8, undefined],
+                        [7, 5, 0, undefined], [1, 5, 1, undefined],
+                        [4, 5, 2, undefined], [3, 5, 3, undefined],
+                        [9, 5, 4, undefined], [8, 5, 5, undefined],
+                        [5, 5, 6, undefined], [2, 5, 7, undefined],
+                        [6, 5, 8, undefined],
+                        [5, 6, 0, undefined], [9, 6, 1, undefined],
+                        [7, 6, 2, undefined], [2, 6, 3, undefined],
+                        [3, 6, 4, undefined], [6, 6, 5, undefined],
+                        [1, 6, 6, undefined], [8, 6, 7, undefined],
+                        [4, 6, 8, undefined],
+                        [4, 7, 0, undefined], [2, 7, 1, undefined],
+                        [6, 7, 2, undefined], [8, 7, 3, undefined],
+                        [1, 7, 4, undefined], [7, 7, 5, undefined],
+                        [9, 7, 6, undefined], [3, 7, 7, undefined],
+                        [5, 7, 8, undefined],
+                        [8, 8, 0, undefined], [3, 8, 1, undefined],
+                        [1, 8, 2, undefined], [4, 8, 3, undefined],
+                        [5, 8, 4, undefined], [9, 8, 5, undefined],
+                        [2, 8, 6, undefined], [6, 8, 7, undefined],
+                        [7, 8, 8, undefined],
                     ]
                 );
         });
 
-        it("should have correct cell values", () => {
+        it("should have correct cell values and candidates", () => {
             _.range(grid.rowSize).forEach((rowIndex) => {
                 _.range(grid.columnSize).forEach((columnIndex) => {
                     const cell = grid.cell(rowIndex, columnIndex);
                     expect(cell.value)
                         .toEqual(expectedRows[rowIndex][columnIndex]);
+                    expect(cell.candidates).toEqual(null);
                 });
             });
         });
@@ -460,6 +538,150 @@ describe("SudokuGrid", () => {
 
         it("should be a solved grid", () => {
             expect(grid.isSolved()).toEqual(true);
+        });
+    });
+
+    describe("instance with initial candidates", () => {
+        let grid;
+        let _cell;
+
+        beforeAll(() => {
+            _cell = require("sudoku/cell");
+
+            _cell.SudokuCell = jest.fn(
+                (value, rowIndex, columnIndex, candidates = null) => ({
+                    value, candidates, isSolved: () => value !== 0,
+                })
+            );
+
+            grid = new SudokuGrid(
+                {
+                    c00: 3,
+                    c10: 9, c11: 7, c13: 2, c14: 1,
+                    c20: 6, c23: 5, c24: 8, c25: 3,
+                    c30: 2, c36: 9,
+                    c40: 5, c43: 6, c44: 2, c45: 1, c48: 3,
+                    c52: 8, c58: 5,
+                    c63: 4, c64: 3, c65: 5, c68: 2,
+                    c74: 9, c77: 5, c78: 6,
+                    c88: 1,
+                },
+                {
+                    c01: [1, 2, 4, 5, 8], c02: [1, 2, 4, 5], c03: [2, 7, 9],
+                    c04: [4, 6, 7], c05: [2, 4, 6, 7, 9],
+                    c06: [1, 2, 4, 5, 6, 7, 8], c07: [1, 2, 4, 6, 7, 8, 9],
+                    c08: [4, 7, 8, 9],
+                    c12: [2, 4, 5], c15: [2, 4, 6], c16: [2, 3, 4, 5, 6, 8],
+                    c17: [2, 3, 4, 6, 8], c18: [4, 8],
+                    c21: [1, 2, 4], c22: [1, 2, 4], c26: [1, 2, 4, 7],
+                    c27: [1, 2, 4, 7, 9], c28: [4, 7, 9],
+                    c31: [1, 3, 4, 6], c32: [1, 3, 4, 6, 7], c33: [3, 7, 8],
+                    c34: [4, 5, 7], c35: [4, 7, 8], c37: [1, 4, 6, 7, 8],
+                    c38: [4, 7, 8],
+                    c41: [4, 9], c42: [4, 7, 9], c46: [4, 7, 8], c47: [4, 7, 8],
+                    c50: [1, 4, 7], c51: [1, 3, 4, 6, 9], c53: [3, 7, 9],
+                    c54: [4, 7], c55: [4, 7, 9], c56: [1, 2, 4, 6, 7],
+                    c57: [1, 2, 4, 6, 7],
+                    c60: [1, 7, 8], c61: [1, 6, 8, 9], c62: [1, 6, 7, 9],
+                    c66: [7, 8], c67: [7, 8, 9],
+                    c70: [1, 4, 7, 8], c71: [1, 2, 3, 4, 8],
+                    c72: [1, 2, 3, 4, 7], c73: [1, 2, 7, 8], c75: [2, 7, 8],
+                    c76: [3, 4, 7, 8],
+                    c80: [4, 7, 8], c81: [2, 3, 4, 5, 6, 8, 9],
+                    c82: [2, 3, 4, 5, 6, 7, 9], c83: [2, 7, 8], c84: [6, 7],
+                    c85: [2, 6, 7, 8], c86: [3, 4, 7, 8, 9],
+                    c87: [3, 4, 7, 8, 9],
+                }
+            );
+        });
+
+        it("should initiate all cells", () => {
+            expect(_cell.SudokuCell.mock.calls)
+                .toEqual(
+                    [
+                        [3, 0, 0, undefined],
+                        [0, 0, 1, [1, 2, 4, 5, 8]],
+                        [0, 0, 2, [1, 2, 4, 5]],
+                        [0, 0, 3, [2, 7, 9]],
+                        [0, 0, 4, [4, 6, 7]],
+                        [0, 0, 5, [2, 4, 6, 7, 9]],
+                        [0, 0, 6, [1, 2, 4, 5, 6, 7, 8]],
+                        [0, 0, 7, [1, 2, 4, 6, 7, 8, 9]],
+                        [0, 0, 8, [4, 7, 8, 9]],
+                        [9, 1, 0, undefined],
+                        [7, 1, 1, undefined],
+                        [0, 1, 2, [2, 4, 5]],
+                        [2, 1, 3, undefined],
+                        [1, 1, 4, undefined],
+                        [0, 1, 5, [2, 4, 6]],
+                        [0, 1, 6, [2, 3, 4, 5, 6, 8]],
+                        [0, 1, 7, [2, 3, 4, 6, 8]],
+                        [0, 1, 8, [4, 8]],
+                        [6, 2, 0, undefined],
+                        [0, 2, 1, [1, 2, 4]],
+                        [0, 2, 2, [1, 2, 4]],
+                        [5, 2, 3, undefined],
+                        [8, 2, 4, undefined],
+                        [3, 2, 5, undefined],
+                        [0, 2, 6, [1, 2, 4, 7]],
+                        [0, 2, 7, [1, 2, 4, 7, 9]],
+                        [0, 2, 8, [4, 7, 9]],
+                        [2, 3, 0, undefined],
+                        [0, 3, 1, [1, 3, 4, 6]],
+                        [0, 3, 2, [1, 3, 4, 6, 7]],
+                        [0, 3, 3, [3, 7, 8]],
+                        [0, 3, 4, [4, 5, 7]],
+                        [0, 3, 5, [4, 7, 8]],
+                        [9, 3, 6, undefined],
+                        [0, 3, 7, [1, 4, 6, 7, 8]],
+                        [0, 3, 8, [4, 7, 8]],
+                        [5, 4, 0, undefined],
+                        [0, 4, 1, [4, 9]],
+                        [0, 4, 2, [4, 7, 9]],
+                        [6, 4, 3, undefined],
+                        [2, 4, 4, undefined],
+                        [1, 4, 5, undefined],
+                        [0, 4, 6, [4, 7, 8]],
+                        [0, 4, 7, [4, 7, 8]],
+                        [3, 4, 8, undefined],
+                        [0, 5, 0, [1, 4, 7]],
+                        [0, 5, 1, [1, 3, 4, 6, 9]],
+                        [8, 5, 2, undefined],
+                        [0, 5, 3, [3, 7, 9]],
+                        [0, 5, 4, [4, 7]],
+                        [0, 5, 5, [4, 7, 9]],
+                        [0, 5, 6, [1, 2, 4, 6, 7]],
+                        [0, 5, 7, [1, 2, 4, 6, 7]],
+                        [5, 5, 8, undefined],
+                        [0, 6, 0, [1, 7, 8]],
+                        [0, 6, 1, [1, 6, 8, 9]],
+                        [0, 6, 2, [1, 6, 7, 9]],
+                        [4, 6, 3, undefined],
+                        [3, 6, 4, undefined],
+                        [5, 6, 5, undefined],
+                        [0, 6, 6, [7, 8]],
+                        [0, 6, 7, [7, 8, 9]],
+                        [2, 6, 8, undefined],
+                        [0, 7, 0, [1, 4, 7, 8]],
+                        [0, 7, 1, [1, 2, 3, 4, 8]],
+                        [0, 7, 2, [1, 2, 3, 4, 7]],
+                        [0, 7, 3, [1, 2, 7, 8]],
+                        [9, 7, 4, undefined],
+                        [0, 7, 5, [2, 7, 8]],
+                        [0, 7, 6, [3, 4, 7, 8]],
+                        [5, 7, 7, undefined],
+                        [6, 7, 8, undefined],
+                        [0, 8, 0, [4, 7, 8]],
+                        [0, 8, 1, [2, 3, 4, 5, 6, 8, 9]],
+                        [0, 8, 2, [2, 3, 4, 5, 6, 7, 9]],
+                        [0, 8, 3, [2, 7, 8]],
+                        [0, 8, 4, [6, 7]],
+                        [0, 8, 5, [2, 6, 7, 8]],
+                        [0, 8, 6, [3, 4, 7, 8, 9]],
+                        [0, 8, 7, [3, 4, 7, 8, 9]],
+                        [1, 8, 8, undefined],
+                    ]
+                );
         });
     });
 
