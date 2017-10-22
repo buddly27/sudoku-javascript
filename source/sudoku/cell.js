@@ -48,9 +48,6 @@ export class SudokuCell {
         else {
             this._candidates = (!value) ? [1, 2, 3, 4, 5, 6, 7, 8, 9] : [];
         }
-
-        // Next candidates awaiting for update
-        this._nextCandidates = null;
     }
 
     /**
@@ -114,50 +111,10 @@ export class SudokuCell {
     }
 
     /**
-     * Return list of latest candidate numbers of the cell.
-     *
-     * Return the non applied 'next' candidates if available, otherwise
-     * return the actual candidate numbers of the cell.
-     */
-    get latestCandidates() {
-        return this._nextCandidates || this._candidates;
-    }
-
-    /**
      * Indicate whether the cell is solved.
      */
     isSolved() {
         return (this._value !== 0);
-    }
-
-    /**
-     * Set a list of 'next' *candidates* to replace the current cell candidates.
-     *
-     * These 'next' candidates are generally found when applying a strategy to
-     * resolve a sudoku grid. It does not replace the current list of candidates
-     * until the method
-     * :meth:`~sudoku.cell.SudokuCell.applyNextCandidates` is called.
-     */
-    setNextCandidates(candidates) {
-        this._nextCandidates = Array.from(new Set(candidates)).sort();
-    }
-
-    /**
-     * Replace cell candidates with list of 'next' *candidates* previously set.
-     *
-     * A list of 'next' candidates must have been previously set with the
-     * :meth:`~sudoku.cell.SudokuCell.setNextCandidates` method.
-     *
-     * Return whether a list of 'next' candidates has been applied.
-     */
-    applyNextCandidates() {
-        if (!this._nextCandidates) {
-            return false;
-        }
-
-        this._candidates = this._nextCandidates;
-        this._nextCandidates = null;
-        return true;
     }
 
     /**

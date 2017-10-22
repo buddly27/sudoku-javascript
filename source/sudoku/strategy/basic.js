@@ -65,19 +65,19 @@ export class BasicStrategy {
      *
      * *hiddenCandidates* should be a collections of hidden candidates lists.
      *
-     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` cloned instances with
      * updated candidates list per cell identifier.
      *
      * Example::
      *
      *     >>> const cell = new SudokuCell(0, 0, 0);
-     *     >>> BasicStrategy.updateFromIntersection([cell], [[3, 4],]);
-     *     [[SudokuCell], [SudokuCell]]
-     *     >>> cell.setNextCandidates();
-     *     >>> cell.candidates;
+     *     >>> const mapping = BasicStrategy.getMatchingCellsFromIntersection(
+     *     ...     [cell], [[3, 4],]
+     *     ... );
+     *     >>> mapping.c00.candidates;
      *     [3, 4]
      */
-    static updateFromIntersection(cells, hiddenCandidates) {
+    static getMatchingCellsFromIntersection(cells, hiddenCandidates) {
         const updatedCells = {};
 
         cells.forEach((cell) => {
@@ -92,8 +92,9 @@ export class BasicStrategy {
                     intersection.size &&
                     !_.isEqual(intersection, cellCandidates)
                 ) {
-                    cell.setNextCandidates(Array.from(intersection).sort());
-                    updatedCells[cell.identifier] = cell;
+                    updatedCells[cell.identifier] = cell.clone(
+                        Array.from(intersection).sort()
+                    );
                     break;
                 }
             }
@@ -108,19 +109,19 @@ export class BasicStrategy {
      *
      * *nakedCandidates* should be a collections of naked candidates lists.
      *
-     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` cloned instances with
      * updated candidates list per cell identifier.
      *
      * Example::
      *
      *     >>> const cell = new SudokuCell(0, 0, 0);
-     *     >>> BasicStrategy.updateFromDifference([cell], [[3, 4],]);
-     *     [[SudokuCell], [SudokuCell]]
-     *     >>> cell.setNextCandidates();
-     *     >>> cell.candidates;
+     *     >>> const mapping = BasicStrategy.getMatchingCellsFromDifference(
+     *     ...     [cell], [[3, 4],]
+     *     ... );
+     *     >>> mapping.c00.candidates;
      *     [1, 2, 5, 6, 7, 8, 9]
      */
-    static updateFromDifference(cells, nakedCandidates) {
+    static getMatchingCellsFromDifference(cells, nakedCandidates) {
         const updatedCells = {};
 
         cells.forEach((cell) => {
@@ -136,8 +137,9 @@ export class BasicStrategy {
                     difference.size &&
                     !_.isEqual(difference, new Set(cell.candidates))
                 ) {
-                    cell.setNextCandidates(Array.from(difference).sort());
-                    updatedCells[cell.identifier] = cell;
+                    updatedCells[cell.identifier] = cell.clone(
+                        Array.from(difference).sort()
+                    );
                     break;
                 }
             }
@@ -167,7 +169,7 @@ export class HiddenSingleStrategy extends BasicStrategy {
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` cloned instances with
      * updated candidates list per cell identifier.
      */
     static processCells(cells) {
@@ -183,7 +185,7 @@ export class HiddenSingleStrategy extends BasicStrategy {
             .map((single) => [Number(single)])
             .sort();
 
-        return this.updateFromIntersection(cells, hiddenCandidates);
+        return this.getMatchingCellsFromIntersection(cells, hiddenCandidates);
     }
 }
 
@@ -207,7 +209,7 @@ export class HiddenPairStrategy extends BasicStrategy {
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` cloned instances with
      * updated candidates list per cell identifier.
      */
     static processCells(cells) {
@@ -239,7 +241,7 @@ export class HiddenPairStrategy extends BasicStrategy {
             .map((pair) => pair.split(",").map(Number))
             .sort();
 
-        return this.updateFromIntersection(cells, hiddenCandidates);
+        return this.getMatchingCellsFromIntersection(cells, hiddenCandidates);
     }
 }
 
@@ -263,7 +265,7 @@ export class HiddenTripleStrategy extends BasicStrategy {
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` cloned instances with
      * updated candidates list per cell identifier.
      */
     static processCells(cells) {
@@ -291,7 +293,7 @@ export class HiddenTripleStrategy extends BasicStrategy {
             }
         });
 
-        return this.updateFromIntersection(cells, hiddenCandidates);
+        return this.getMatchingCellsFromIntersection(cells, hiddenCandidates);
     }
 }
 
@@ -315,7 +317,7 @@ export class HiddenQuadStrategy extends BasicStrategy {
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` cloned instances with
      * updated candidates list per cell identifier.
      */
     static processCells(cells) {
@@ -343,7 +345,7 @@ export class HiddenQuadStrategy extends BasicStrategy {
             }
         });
 
-        return this.updateFromIntersection(cells, hiddenCandidates);
+        return this.getMatchingCellsFromIntersection(cells, hiddenCandidates);
     }
 }
 
@@ -366,7 +368,7 @@ export class NakedPairStrategy extends BasicStrategy {
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` cloned instances with
      * updated candidates list per cell identifier.
      */
     static processCells(cells) {
@@ -394,7 +396,7 @@ export class NakedPairStrategy extends BasicStrategy {
             .map((pair) => pair.split(",").map(Number))
             .sort();
 
-        return this.updateFromDifference(cells, nakedCandidates);
+        return this.getMatchingCellsFromDifference(cells, nakedCandidates);
     }
 }
 
@@ -417,7 +419,7 @@ export class NakedTripleStrategy extends BasicStrategy {
      *
      * *cells* must be a list of :class:`~sudoku.cell.SudokuCell` instances.
      *
-     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` cloned instances with
      * updated candidates list per cell identifier.
      */
     static processCells(cells) {
@@ -471,6 +473,6 @@ export class NakedTripleStrategy extends BasicStrategy {
             });
         }
 
-        return this.updateFromDifference(cells, nakedCandidates);
+        return this.getMatchingCellsFromDifference(cells, nakedCandidates);
     }
 }

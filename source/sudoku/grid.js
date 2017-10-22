@@ -212,20 +212,18 @@ export class SudokuGrid {
      * contained in the neighbor block, row and column. If a number from the
      * cell candidates list is matching values from neighbors, it is removed
      * from the cell candidates list.
-     *
-     * For each cell containing a 'next' list of new candidates found while
-     * applying a strategy, this list is simply replacing the old candidate
-     * list.
      */
     updateCandidates() {
         let candidatesChanged = false;
 
+        // Get all positive values from all rows
         const valuesInRows = _.range(this.rowSize).map((rowIndex) =>
             this.cellsInRow(rowIndex)
                 .map((cell) => cell.value)
                 .filter((value) => value !== 0)
         );
 
+        // Get all positive values from all columns
         const valuesInColumns = _.range(this.columnSize).map((columnIndex) =>
             this.cellsInColumn(columnIndex)
                 .map((cell) => cell.value)
@@ -245,18 +243,13 @@ export class SudokuGrid {
                     .filter((value) => value !== 0);
 
                 cells.forEach((cell) => {
-                    if (cell.applyNextCandidates()) {
+                    const updated = cell.updateCandidates(
+                        valuesInRows[cell.rowIndex],
+                        valuesInColumns[cell.columnIndex],
+                        blockValues,
+                    );
+                    if (updated) {
                         candidatesChanged = true;
-                    }
-                    else {
-                        const updated = cell.updateCandidates(
-                            valuesInRows[cell.rowIndex],
-                            valuesInColumns[cell.columnIndex],
-                            blockValues,
-                        );
-                        if (updated) {
-                            candidatesChanged = true;
-                        }
                     }
                 });
             });

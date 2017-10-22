@@ -18,11 +18,8 @@ describe("IntersectionStrategy", () => {
         grid.blockRowSize = 3;
         grid.blockColumnSize = 3;
 
-        let processCellsSpy;
-
         beforeEach(() => {
-            processCellsSpy = jest.fn(null);
-            IntersectionStrategy.processCells = processCellsSpy;
+            IntersectionStrategy.processCells = jest.fn(null);
 
             grid.cellsInRow = jest.fn(() =>
                 ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9"]
@@ -34,18 +31,19 @@ describe("IntersectionStrategy", () => {
         });
 
         it("should process a grid with no result", () => {
-            processCellsSpy.mockReturnValue({});
+            IntersectionStrategy.processCells.mockReturnValue({});
             expect(IntersectionStrategy.processGrid(grid)).toEqual({});
             expect(grid.cellsInRow.mock.calls)
                 .toEqual([[0], [1], [2], [3], [4], [5], [6], [7], [8]]);
             expect(grid.cellsInColumn.mock.calls)
                 .toEqual([[0], [1], [2], [3], [4], [5], [6], [7], [8]]);
             expect(grid.cellsInBlock.mock.calls.length).toEqual(0);
-            expect(processCellsSpy.mock.calls.length).toEqual(9);
+            expect(IntersectionStrategy.processCells.mock.calls.length)
+                .toEqual(9);
         });
 
         it("should process a grid with a few results", () => {
-            processCellsSpy.mockReturnValue({})
+            IntersectionStrategy.processCells.mockReturnValue({})
                 .mockReturnValueOnce({c01: "CELL1", c11: "CELL2"})
                 .mockReturnValueOnce({c03: "CELL3"})
                 .mockReturnValueOnce({c01: "CELL4", c31: "CELL5"})
@@ -56,7 +54,7 @@ describe("IntersectionStrategy", () => {
                 c31: "CELL5",
                 c50: "CELL6", c55: "CELL7", c58: "CELL8",
             });
-            expect(processCellsSpy.mock.calls).toEqual(
+            expect(IntersectionStrategy.processCells.mock.calls).toEqual(
                 _.range(9).map(() => [
                     [
                         ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9"],
@@ -144,6 +142,7 @@ describe("PointingStrategy", () => {
         let getBlockCountersSpy;
         let getNonBlockCellsMappingSpy;
         let getMatchingCandidatesSpy;
+        let getMatchingCellsSpy;
 
         beforeEach(() => {
             cellsInRows = _.range(3).map((rowIndex) =>
@@ -151,18 +150,16 @@ describe("PointingStrategy", () => {
                     rowIndex, columnIndex,
                     identifier: `c${rowIndex}${columnIndex}`,
                     candidates: [],
-                    latestCandidates: [],
-                    setNextCandidates: jest.fn(null),
+                    clone: jest.fn((candidates) => ({candidates})),
                 })),
             );
 
             cellsInColumns = _.range(3).map((columnIndex) =>
                 _.range(9).map((rowIndex) => ({
                     rowIndex, columnIndex,
-                    identifier: `c${columnIndex}${rowIndex}`,
+                    identifier: `c${rowIndex}${columnIndex}`,
                     candidates: [],
-                    latestCandidates: [],
-                    setNextCandidates: jest.fn(null),
+                    clone: jest.fn((candidates) => ({candidates})),
                 })),
             );
 
@@ -177,6 +174,9 @@ describe("PointingStrategy", () => {
             );
             getMatchingCandidatesSpy = jest.spyOn(
                 PointingStrategy, "getMatchingCandidates"
+            );
+            getMatchingCellsSpy = jest.spyOn(
+                PointingStrategy, "getMatchingCells"
             );
         });
 
@@ -220,66 +220,133 @@ describe("PointingStrategy", () => {
                     row: {0: {}, 1: {}, 2: {}},
                     column: {0: {}, 1: {}, 2: {}},
                 });
+
+            expect(getMatchingCellsSpy)
+                .toHaveBeenLastCalledWith(
+                    {row: [], column: []},
+                    {
+                        row: {
+                            0: [
+                                cellsInRows[0][3],
+                                cellsInRows[0][4],
+                                cellsInRows[0][5],
+                                cellsInRows[0][6],
+                                cellsInRows[0][7],
+                                cellsInRows[0][8],
+                            ],
+                            1: [
+                                cellsInRows[1][3],
+                                cellsInRows[1][4],
+                                cellsInRows[1][5],
+                                cellsInRows[1][6],
+                                cellsInRows[1][7],
+                                cellsInRows[1][8],
+                            ],
+                            2: [
+                                cellsInRows[2][3],
+                                cellsInRows[2][4],
+                                cellsInRows[2][5],
+                                cellsInRows[2][6],
+                                cellsInRows[2][7],
+                                cellsInRows[2][8],
+                            ],
+                        },
+                        column: {
+                            0: [
+                                cellsInColumns[0][3],
+                                cellsInColumns[0][4],
+                                cellsInColumns[0][5],
+                                cellsInColumns[0][6],
+                                cellsInColumns[0][7],
+                                cellsInColumns[0][8],
+                            ],
+                            1: [
+                                cellsInColumns[1][3],
+                                cellsInColumns[1][4],
+                                cellsInColumns[1][5],
+                                cellsInColumns[1][6],
+                                cellsInColumns[1][7],
+                                cellsInColumns[1][8],
+                            ],
+                            2: [
+                                cellsInColumns[2][3],
+                                cellsInColumns[2][4],
+                                cellsInColumns[2][5],
+                                cellsInColumns[2][6],
+                                cellsInColumns[2][7],
+                                cellsInColumns[2][8],
+                            ],
+                        },
+                    }
+                );
         });
 
         it("should updates matching candidates in rows", () => {
-            const rowsCandidates = [
-                [
-                    [], [4, 8], [2, 4, 8],
-                    [2, 4, 5, 8], [], [],
-                    [], [2, 4, 5], [],
-                ],
-                [
-                    [1, 3, 9], [1, 4, 9], [1, 2, 3, 4, 9],
-                    [2, 3, 4, 5, 6], [2, 3, 4, 5], [3, 6],
-                    [1, 2, 5, 7], [], [5, 7],
-                ],
-                [
-                    [], [1, 4, 8], [],
-                    [], [2, 3, 4, 8], [3, 6, 8],
-                    [1, 2], [2, 4, 6], [4, 6],
-                ],
-            ];
+            cellsInRows[0][0].candidates = [];
+            cellsInRows[0][1].candidates = [4, 8];
+            cellsInRows[0][2].candidates = [2, 4, 8];
+            cellsInRows[0][3].candidates = [2, 4, 5, 8];
+            cellsInRows[0][4].candidates = [];
+            cellsInRows[0][5].candidates = [];
+            cellsInRows[0][6].candidates = [];
+            cellsInRows[0][7].candidates = [2, 4, 5];
+            cellsInRows[0][8].candidates = [];
 
-            _.range(3).forEach((row) =>
-                _.range(9).forEach((column) => {
-                    const candidates = rowsCandidates[row][column];
-                    cellsInRows[row][column].candidates = candidates;
-                    cellsInRows[row][column].latestCandidates = candidates;
-                }),
-            );
+            cellsInRows[1][0].candidates = [1, 3, 9];
+            cellsInRows[1][1].candidates = [1, 4, 9];
+            cellsInRows[1][2].candidates = [1, 2, 3, 4, 9];
+            cellsInRows[1][3].candidates = [2, 3, 4, 5, 6];
+            cellsInRows[1][4].candidates = [2, 3, 4, 5];
+            cellsInRows[1][5].candidates = [3, 6];
+            cellsInRows[1][6].candidates = [1, 2, 5, 7];
+            cellsInRows[1][7].candidates = [];
+            cellsInRows[1][8].candidates = [5, 7];
 
-            const columnsCandidates = [
-                [
-                    [], [1, 3, 9], [],
-                    [], [1, 8, 9], [],
-                    [3, 8, 9], [1, 8, 9], [],
-                ],
-                [
-                    [4, 8], [1, 4, 9], [1, 4, 8],
-                    [], [], [],
-                    [], [1, 4, 8, 9], [],
-                ],
-                [
-                    [2, 4, 8], [1, 2, 3, 4, 9], [],
-                    [6, 9], [1, 6, 8, 9], [1, 8, 9],
-                    [], [1, 4, 8, 9], [3, 4, 8, 9],
-                ],
-            ];
+            cellsInRows[2][0].candidates = [];
+            cellsInRows[2][1].candidates = [1, 4, 8];
+            cellsInRows[2][2].candidates = [];
+            cellsInRows[2][3].candidates = [];
+            cellsInRows[2][4].candidates = [2, 3, 4, 8];
+            cellsInRows[2][5].candidates = [3, 6, 8];
+            cellsInRows[2][6].candidates = [1, 2];
+            cellsInRows[2][7].candidates = [2, 4, 6];
+            cellsInRows[2][8].candidates = [4, 6];
 
-            _.range(3).forEach((row) =>
-                _.range(9).forEach((column) => {
-                    const candidates = columnsCandidates[row][column];
-                    cellsInColumns[row][column].candidates = candidates;
-                    cellsInColumns[row][column].latestCandidates = candidates;
-                }),
-            );
+            cellsInColumns[0][0].candidates = [];
+            cellsInColumns[0][1].candidates = [1, 3, 9];
+            cellsInColumns[0][2].candidates = [];
+            cellsInColumns[0][3].candidates = [];
+            cellsInColumns[0][4].candidates = [1, 8, 9];
+            cellsInColumns[0][5].candidates = [];
+            cellsInColumns[0][6].candidates = [3, 8, 9];
+            cellsInColumns[0][7].candidates = [1, 8, 9];
+            cellsInColumns[0][8].candidates = [];
+
+            cellsInColumns[1][0].candidates = [4, 8];
+            cellsInColumns[1][1].candidates = [1, 4, 9];
+            cellsInColumns[1][2].candidates = [1, 4, 8];
+            cellsInColumns[1][3].candidates = [];
+            cellsInColumns[1][4].candidates = [];
+            cellsInColumns[1][5].candidates = [];
+            cellsInColumns[1][6].candidates = [];
+            cellsInColumns[1][7].candidates = [1, 4, 8, 9];
+            cellsInColumns[1][8].candidates = [];
+
+            cellsInColumns[2][0].candidates = [2, 4, 8];
+            cellsInColumns[2][1].candidates = [1, 2, 3, 4, 9];
+            cellsInColumns[2][2].candidates = [];
+            cellsInColumns[2][3].candidates = [6, 9];
+            cellsInColumns[2][4].candidates = [1, 6, 8, 9];
+            cellsInColumns[2][5].candidates = [1, 8, 9];
+            cellsInColumns[2][6].candidates = [];
+            cellsInColumns[2][7].candidates = [1, 4, 8, 9];
+            cellsInColumns[2][8].candidates = [3, 4, 8, 9];
 
             expect(PointingStrategy.processCells(cellsInRows, cellsInColumns))
                 .toEqual({
-                    c13: cellsInRows[1][3],
-                    c14: cellsInRows[1][4],
-                    c15: cellsInRows[1][5],
+                    c13: {candidates: [2, 4, 5, 6]},
+                    c14: {candidates: [2, 4, 5]},
+                    c15: {candidates: [6]},
                 });
 
             expect(getMatchingCandidatesSpy)
@@ -297,71 +364,131 @@ describe("PointingStrategy", () => {
                     },
                 });
 
-            expect(cellsInRows[1][3].setNextCandidates)
-                .toHaveBeenLastCalledWith([2, 4, 5, 6]);
-            expect(cellsInRows[1][4].setNextCandidates)
-                .toHaveBeenLastCalledWith([2, 4, 5]);
-            expect(cellsInRows[1][5].setNextCandidates)
-                .toHaveBeenLastCalledWith([6]);
+            expect(getMatchingCellsSpy)
+                .toHaveBeenLastCalledWith(
+                    {row: [[1, 3], [1, 9]], column: [[2, 2]]},
+                    {
+                        row: {
+                            0: [
+                                cellsInRows[0][3],
+                                cellsInRows[0][4],
+                                cellsInRows[0][5],
+                                cellsInRows[0][6],
+                                cellsInRows[0][7],
+                                cellsInRows[0][8],
+                            ],
+                            1: [
+                                cellsInRows[1][3],
+                                cellsInRows[1][4],
+                                cellsInRows[1][5],
+                                cellsInRows[1][6],
+                                cellsInRows[1][7],
+                                cellsInRows[1][8],
+                            ],
+                            2: [
+                                cellsInRows[2][3],
+                                cellsInRows[2][4],
+                                cellsInRows[2][5],
+                                cellsInRows[2][6],
+                                cellsInRows[2][7],
+                                cellsInRows[2][8],
+                            ],
+                        },
+                        column: {
+                            0: [
+                                cellsInColumns[0][3],
+                                cellsInColumns[0][4],
+                                cellsInColumns[0][5],
+                                cellsInColumns[0][6],
+                                cellsInColumns[0][7],
+                                cellsInColumns[0][8],
+                            ],
+                            1: [
+                                cellsInColumns[1][3],
+                                cellsInColumns[1][4],
+                                cellsInColumns[1][5],
+                                cellsInColumns[1][6],
+                                cellsInColumns[1][7],
+                                cellsInColumns[1][8],
+                            ],
+                            2: [
+                                cellsInColumns[2][3],
+                                cellsInColumns[2][4],
+                                cellsInColumns[2][5],
+                                cellsInColumns[2][6],
+                                cellsInColumns[2][7],
+                                cellsInColumns[2][8],
+                            ],
+                        },
+                    }
+                );
         });
 
         it("should updates matching candidates in columns", () => {
-            const rowsCandidates = [
-                [
-                    [], [2, 7, 8], [1, 8],
-                    [1, 6], [], [3, 7],
-                    [2, 3, 6], [2, 3, 8], [],
-                ],
-                [
-                    [2, 8, 9], [], [4, 8, 9],
-                    [3, 4, 8], [3, 4, 5, 8], [3, 4, 5],
-                    [2, 3, 9], [], [],
-                ],
-                [
-                    [], [4, 7, 8, 9], [1, 4, 8, 9],
-                    [1, 6], [], [4, 7],
-                    [6, 9], [8, 9], [],
-                ],
-            ];
+            cellsInRows[0][0].candidates = [];
+            cellsInRows[0][1].candidates = [2, 7, 8];
+            cellsInRows[0][2].candidates = [1, 8];
+            cellsInRows[0][3].candidates = [1, 6];
+            cellsInRows[0][4].candidates = [];
+            cellsInRows[0][5].candidates = [3, 7];
+            cellsInRows[0][6].candidates = [2, 3, 6];
+            cellsInRows[0][7].candidates = [2, 3, 8];
+            cellsInRows[0][8].candidates = [];
 
-            _.range(3).forEach((row) =>
-                _.range(9).forEach((column) => {
-                    const candidates = rowsCandidates[row][column];
-                    cellsInRows[row][column].candidates = candidates;
-                    cellsInRows[row][column].latestCandidates = candidates;
-                }),
-            );
+            cellsInRows[1][0].candidates = [2, 8, 9];
+            cellsInRows[1][1].candidates = [];
+            cellsInRows[1][2].candidates = [4, 8, 9];
+            cellsInRows[1][3].candidates = [3, 4, 8];
+            cellsInRows[1][4].candidates = [3, 4, 5, 8];
+            cellsInRows[1][5].candidates = [3, 4, 5];
+            cellsInRows[1][6].candidates = [2, 3, 9];
+            cellsInRows[1][7].candidates = [];
+            cellsInRows[1][8].candidates = [];
 
-            const columnsCandidates = [
-                [
-                    [], [2, 8, 9], [],
-                    [7, 8, 9], [], [6, 7, 8],
-                    [1, 2, 6, 9], [2, 6, 8], [1, 2],
-                ],
-                [
-                    [2, 7, 8], [], [4, 7, 8, 9],
-                    [], [], [7, 8],
-                    [2, 4, 9], [2, 4, 8], [],
-                ],
-                [
-                    [1, 8], [4, 8, 9], [1, 4, 8, 9],
-                    [], [5, 6, 8, 9], [5, 6, 8],
-                    [1, 3, 4, 6, 9], [3, 4, 6, 8], [],
-                ],
-            ];
+            cellsInRows[2][0].candidates = [];
+            cellsInRows[2][1].candidates = [4, 7, 8, 9];
+            cellsInRows[2][2].candidates = [1, 4, 8, 9];
+            cellsInRows[2][3].candidates = [1, 6];
+            cellsInRows[2][4].candidates = [];
+            cellsInRows[2][5].candidates = [4, 7];
+            cellsInRows[2][6].candidates = [6, 9];
+            cellsInRows[2][7].candidates = [8, 9];
+            cellsInRows[2][8].candidates = [];
 
-            _.range(3).forEach((row) =>
-                _.range(9).forEach((column) => {
-                    const candidates = columnsCandidates[row][column];
-                    cellsInColumns[row][column].candidates = candidates;
-                    cellsInColumns[row][column].latestCandidates = candidates;
-                }),
-            );
+            cellsInColumns[0][0].candidates = [];
+            cellsInColumns[0][1].candidates = [2, 8, 9];
+            cellsInColumns[0][2].candidates = [];
+            cellsInColumns[0][3].candidates = [7, 8, 9];
+            cellsInColumns[0][4].candidates = [];
+            cellsInColumns[0][5].candidates = [6, 7, 8];
+            cellsInColumns[0][6].candidates = [1, 2, 6, 9];
+            cellsInColumns[0][7].candidates = [2, 6, 8];
+            cellsInColumns[0][8].candidates = [1, 2];
+
+            cellsInColumns[1][0].candidates = [2, 7, 8];
+            cellsInColumns[1][1].candidates = [];
+            cellsInColumns[1][2].candidates = [4, 7, 8, 9];
+            cellsInColumns[1][3].candidates = [];
+            cellsInColumns[1][4].candidates = [];
+            cellsInColumns[1][5].candidates = [7, 8];
+            cellsInColumns[1][6].candidates = [2, 4, 9];
+            cellsInColumns[1][7].candidates = [2, 4, 8];
+            cellsInColumns[1][8].candidates = [];
+
+            cellsInColumns[2][0].candidates = [1, 8];
+            cellsInColumns[2][1].candidates = [4, 8, 9];
+            cellsInColumns[2][2].candidates = [1, 4, 8, 9];
+            cellsInColumns[2][3].candidates = [];
+            cellsInColumns[2][4].candidates = [5, 6, 8, 9];
+            cellsInColumns[2][5].candidates = [5, 6, 8];
+            cellsInColumns[2][6].candidates = [1, 3, 4, 6, 9];
+            cellsInColumns[2][7].candidates = [3, 4, 6, 8];
+            cellsInColumns[2][8].candidates = [];
 
             expect(PointingStrategy.processCells(cellsInRows, cellsInColumns))
                 .toEqual({
-                    c15: cellsInColumns[1][5],
-                    c26: cellsInColumns[2][6],
+                    c51: {candidates: [8]},
+                    c62: {candidates: [3, 4, 6, 9]},
                 });
 
             expect(getMatchingCandidatesSpy)
@@ -379,10 +506,64 @@ describe("PointingStrategy", () => {
                     },
                 });
 
-            expect(cellsInColumns[1][5].setNextCandidates)
-                .toHaveBeenLastCalledWith([8]);
-            expect(cellsInColumns[2][6].setNextCandidates)
-                .toHaveBeenLastCalledWith([3, 4, 6, 9]);
+            expect(getMatchingCellsSpy)
+                .toHaveBeenLastCalledWith(
+                    {row: [], column: [[1, 7], [2, 1]]},
+                    {
+                        row: {
+                            0: [
+                                cellsInRows[0][3],
+                                cellsInRows[0][4],
+                                cellsInRows[0][5],
+                                cellsInRows[0][6],
+                                cellsInRows[0][7],
+                                cellsInRows[0][8],
+                            ],
+                            1: [
+                                cellsInRows[1][3],
+                                cellsInRows[1][4],
+                                cellsInRows[1][5],
+                                cellsInRows[1][6],
+                                cellsInRows[1][7],
+                                cellsInRows[1][8],
+                            ],
+                            2: [
+                                cellsInRows[2][3],
+                                cellsInRows[2][4],
+                                cellsInRows[2][5],
+                                cellsInRows[2][6],
+                                cellsInRows[2][7],
+                                cellsInRows[2][8],
+                            ],
+                        },
+                        column: {
+                            0: [
+                                cellsInColumns[0][3],
+                                cellsInColumns[0][4],
+                                cellsInColumns[0][5],
+                                cellsInColumns[0][6],
+                                cellsInColumns[0][7],
+                                cellsInColumns[0][8],
+                            ],
+                            1: [
+                                cellsInColumns[1][3],
+                                cellsInColumns[1][4],
+                                cellsInColumns[1][5],
+                                cellsInColumns[1][6],
+                                cellsInColumns[1][7],
+                                cellsInColumns[1][8],
+                            ],
+                            2: [
+                                cellsInColumns[2][3],
+                                cellsInColumns[2][4],
+                                cellsInColumns[2][5],
+                                cellsInColumns[2][6],
+                                cellsInColumns[2][7],
+                                cellsInColumns[2][8],
+                            ],
+                        },
+                    }
+                );
         });
     });
 
@@ -494,6 +675,65 @@ describe("PointingStrategy", () => {
                 .toEqual({row: [[6, 2], [8, 4]], column: [[4, 9]]});
         });
     });
+
+    describe("getMatchingCells", () => {
+        it("should return list of cells with updated candidates", () => {
+            const clone = (candidates) => ({candidates});
+
+            const candidatesMapping = {
+                row: [[1, 5], [1, 4]],
+                column: [[1, 4]],
+            };
+
+            const cellsMapping = {
+                row: {
+                    0: [
+                        {identifier: "c00", candidates: [], clone},
+                        {identifier: "c01", candidates: [4, 9], clone},
+                        {identifier: "c02", candidates: [], clone},
+                    ],
+                    1: [
+                        {identifier: "c10", candidates: [1, 2, 4, 7], clone},
+                        {identifier: "c11", candidates: [4, 7], clone},
+                        {identifier: "c12", candidates: [1, 4, 5, 7], clone},
+                    ],
+                    2: [
+                        {identifier: "c20", candidates: [2, 4], clone},
+                        {identifier: "c21", candidates: [], clone},
+                        {identifier: "c22", candidates: [4, 5, 9], clone},
+                    ],
+                },
+                column: {
+                    0: [
+                        {identifier: "c00", candidates: [], clone},
+                        {identifier: "c10", candidates: [1, 2, 4, 7], clone},
+                        {identifier: "c20", candidates: [2, 4], clone},
+                    ],
+                    1: [
+                        {identifier: "c01", candidates: [4, 9], clone},
+                        {identifier: "c11", candidates: [4, 7], clone},
+                        {identifier: "c21", candidates: [], clone},
+                    ],
+                    2: [
+                        {identifier: "c02", candidates: [], clone},
+                        {identifier: "c12", candidates: [1, 4, 5, 7], clone},
+                        {identifier: "c22", candidates: [4, 5, 9], clone},
+                    ],
+                },
+            };
+
+            expect(
+                PointingStrategy.getMatchingCells(
+                    candidatesMapping, cellsMapping
+                )
+            ).toEqual({
+                c01: {candidates: [9]},
+                c10: {candidates: [1, 2, 7]},
+                c11: {candidates: [7]},
+                c12: {candidates: [1, 7]},
+            });
+        });
+    });
 });
 
 describe("BoxLineReductionStrategy", () => {
@@ -510,6 +750,7 @@ describe("BoxLineReductionStrategy", () => {
         let getCountersSpy;
         let getCellsMappingSpy;
         let getMatchingCandidatesSpy;
+        let getMatchingCellsSpy;
 
         beforeEach(() => {
             cellsInRows = _.range(3).map((rowIndex) =>
@@ -517,8 +758,7 @@ describe("BoxLineReductionStrategy", () => {
                     rowIndex, columnIndex,
                     identifier: `c${rowIndex}${columnIndex}`,
                     candidates: [],
-                    latestCandidates: [],
-                    setNextCandidates: jest.fn(null),
+                    clone: jest.fn((candidates) => ({candidates})),
                 }))
             );
 
@@ -527,8 +767,7 @@ describe("BoxLineReductionStrategy", () => {
                     rowIndex, columnIndex,
                     identifier: `c${rowIndex}${columnIndex}`,
                     candidates: [],
-                    latestCandidates: [],
-                    setNextCandidates: jest.fn(null),
+                    clone: jest.fn((candidates) => ({candidates})),
                 }))
             );
 
@@ -543,6 +782,9 @@ describe("BoxLineReductionStrategy", () => {
             );
             getMatchingCandidatesSpy = jest.spyOn(
                 BoxLineReductionStrategy, "getMatchingCandidates"
+            );
+            getMatchingCellsSpy = jest.spyOn(
+                BoxLineReductionStrategy, "getMatchingCells"
             );
         });
 
@@ -619,149 +861,272 @@ describe("BoxLineReductionStrategy", () => {
                         },
                     }
                 );
+
+            expect(getMatchingCellsSpy)
+                .toHaveBeenLastCalledWith(
+                    {row: [], column: []},
+                    {
+                        row: {
+                            0: [
+                                cellsInRows[0][0],
+                                cellsInRows[0][1],
+                                cellsInRows[0][2],
+                            ],
+                            1: [
+                                cellsInRows[1][0],
+                                cellsInRows[1][1],
+                                cellsInRows[1][2],
+                            ],
+                            2: [
+                                cellsInRows[2][0],
+                                cellsInRows[2][1],
+                                cellsInRows[2][2],
+                            ],
+                        },
+                        column: {
+                            0: [
+                                cellsInRows[0][0],
+                                cellsInRows[1][0],
+                                cellsInRows[2][0],
+                            ],
+                            1: [
+                                cellsInRows[0][1],
+                                cellsInRows[1][1],
+                                cellsInRows[2][1],
+                            ],
+                            2: [
+                                cellsInRows[0][2],
+                                cellsInRows[1][2],
+                                cellsInRows[2][2],
+                            ],
+                        },
+                    }
+                );
         });
 
         it("should updates matching candidates in rows", () => {
-            const rowsCandidates = [
-                [
-                    [2, 4, 5], [2, 4, 5, 9], [],
-                    [4, 5], [], [],
-                    [], [4, 9], [],
-                ],
-                [
-                    [], [2, 3, 4, 5, 6], [3, 4, 5, 6],
-                    [3, 4, 5], [], [2, 3, 5],
-                    [1, 2, 4, 7], [4, 7], [1, 4, 5, 7],
-                ],
-                [
-                    [2, 3, 4, 5], [2, 3, 4, 5, 9], [],
-                    [], [], [2, 3, 5],
-                    [2, 4], [], [4, 5, 9],
-                ],
-            ];
+            cellsInRows[0][0].candidates = [2, 4, 5];
+            cellsInRows[0][1].candidates = [2, 4, 5, 9];
+            cellsInRows[0][2].candidates = [];
+            cellsInRows[0][3].candidates = [4, 5];
+            cellsInRows[0][4].candidates = [];
+            cellsInRows[0][5].candidates = [];
+            cellsInRows[0][6].candidates = [];
+            cellsInRows[0][7].candidates = [4, 9];
+            cellsInRows[0][8].candidates = [];
 
-            _.range(3).forEach((row) =>
-                _.range(9).forEach((column) => {
-                    const candidates = rowsCandidates[row][column];
-                    cellsInRows[row][column].candidates = candidates;
-                    cellsInRows[row][column].latestCandidates = candidates;
-                }),
-            );
+            cellsInRows[1][0].candidates = [];
+            cellsInRows[1][1].candidates = [2, 3, 4, 5, 6];
+            cellsInRows[1][2].candidates = [3, 4, 5, 6];
+            cellsInRows[1][3].candidates = [3, 4, 5];
+            cellsInRows[1][4].candidates = [];
+            cellsInRows[1][5].candidates = [2, 3, 5];
+            cellsInRows[1][6].candidates = [1, 2, 4, 7];
+            cellsInRows[1][7].candidates = [4, 7];
+            cellsInRows[1][8].candidates = [1, 4, 5, 7];
 
-            const columnsCandidates = [
-                [
-                    [2, 4, 5], [], [2, 3, 4, 5],
-                    [1, 2, 5, 7], [1, 3, 4, 7], [1, 2, 4, 7],
-                    [], [1, 4, 5, 7], [],
-                ],
-                [
-                    [2, 4, 5, 9], [2, 3, 4, 5, 6], [2, 3, 4, 5, 9],
-                    [1, 2, 5, 6, 7], [1, 3, 4, 7], [1, 2, 4, 7, 8],
-                    [1, 5, 7, 8], [1, 4, 5, 7], [3, 7, 8],
-                ],
-                [
-                    [], [3, 4, 5, 6], [],
-                    [5, 6], [], [4, 8],
-                    [5, 8], [], [3, 8],
-                ],
-            ];
+            cellsInRows[2][0].candidates = [2, 3, 4, 5];
+            cellsInRows[2][1].candidates = [2, 3, 4, 5, 9];
+            cellsInRows[2][2].candidates = [];
+            cellsInRows[2][3].candidates = [];
+            cellsInRows[2][4].candidates = [];
+            cellsInRows[2][5].candidates = [2, 3, 5];
+            cellsInRows[2][6].candidates = [2, 4];
+            cellsInRows[2][7].candidates = [];
+            cellsInRows[2][8].candidates = [4, 5, 9];
 
-            _.range(3).forEach((row) =>
-                _.range(9).forEach((column) => {
-                    const candidates = columnsCandidates[row][column];
-                    cellsInColumns[row][column].candidates = candidates;
-                    cellsInColumns[row][column].latestCandidates = candidates;
-                }),
-            );
+            cellsInColumns[0][0].candidates = [2, 4, 5];
+            cellsInColumns[0][1].candidates = [];
+            cellsInColumns[0][2].candidates = [2, 3, 4, 5];
+            cellsInColumns[0][3].candidates = [1, 2, 5, 7];
+            cellsInColumns[0][4].candidates = [1, 3, 4, 7];
+            cellsInColumns[0][5].candidates = [1, 2, 4, 7];
+            cellsInColumns[0][6].candidates = [];
+            cellsInColumns[0][7].candidates = [1, 4, 5, 7];
+            cellsInColumns[0][8].candidates = [];
+
+            cellsInColumns[1][0].candidates = [2, 4, 5, 9];
+            cellsInColumns[1][1].candidates = [2, 3, 4, 5, 6];
+            cellsInColumns[1][2].candidates = [2, 3, 4, 5, 9];
+            cellsInColumns[1][3].candidates = [1, 2, 5, 6, 7];
+            cellsInColumns[1][4].candidates = [1, 3, 4, 7];
+            cellsInColumns[1][5].candidates = [1, 2, 4, 7, 8];
+            cellsInColumns[1][6].candidates = [1, 5, 7, 8];
+            cellsInColumns[1][7].candidates = [1, 4, 5, 7];
+            cellsInColumns[1][8].candidates = [3, 7, 8];
+
+            cellsInColumns[2][0].candidates = [];
+            cellsInColumns[2][1].candidates = [3, 4, 5, 6];
+            cellsInColumns[2][2].candidates = [];
+            cellsInColumns[2][3].candidates = [5, 6];
+            cellsInColumns[2][4].candidates = [];
+            cellsInColumns[2][5].candidates = [4, 8];
+            cellsInColumns[2][6].candidates = [5, 8];
+            cellsInColumns[2][7].candidates = [];
+            cellsInColumns[2][8].candidates = [3, 8];
 
             expect(
                 BoxLineReductionStrategy
                     .processCells(cellsInRows, cellsInColumns)
             ).toEqual({
-                c11: cellsInRows[1][1],
-                c20: cellsInRows[2][0],
-                c21: cellsInRows[2][1],
+                c11: {candidates: [3, 4, 5, 6]},
+                c20: {candidates: [3, 4, 5]},
+                c21: {candidates: [3, 4, 5, 9]},
             });
 
-            expect(cellsInRows[1][1].setNextCandidates)
-                .toHaveBeenLastCalledWith([3, 4, 5, 6]);
-            expect(cellsInRows[2][0].setNextCandidates)
-                .toHaveBeenLastCalledWith([3, 4, 5]);
-            expect(cellsInRows[2][1].setNextCandidates)
-                .toHaveBeenLastCalledWith([3, 4, 5, 9]);
+            expect(getMatchingCellsSpy)
+                .toHaveBeenLastCalledWith(
+                    {row: [[0, 2], [1, 6]], column: [[1, 9]]},
+                    {
+                        row: {
+                            0: [
+                                cellsInRows[0][0],
+                                cellsInRows[0][1],
+                                cellsInRows[0][2],
+                            ],
+                            1: [
+                                cellsInRows[1][0],
+                                cellsInRows[1][1],
+                                cellsInRows[1][2],
+                            ],
+                            2: [
+                                cellsInRows[2][0],
+                                cellsInRows[2][1],
+                                cellsInRows[2][2],
+                            ],
+                        },
+                        column: {
+                            0: [
+                                cellsInRows[0][0],
+                                cellsInRows[1][0],
+                                cellsInRows[2][0],
+                            ],
+                            1: [
+                                cellsInRows[0][1],
+                                cellsInRows[1][1],
+                                cellsInRows[2][1],
+                            ],
+                            2: [
+                                cellsInRows[0][2],
+                                cellsInRows[1][2],
+                                cellsInRows[2][2],
+                            ],
+                        },
+                    }
+                );
         });
 
         it("should updates matching candidates in columns", () => {
-            const rowsCandidates = [
-                [
-                    [], [4, 9], [],
-                    [4, 5], [], [],
-                    [2, 4, 5], [2, 4, 5, 9], [],
-                ],
-                [
-                    [1, 2, 4, 7], [4, 7], [1, 4, 5, 7],
-                    [3, 4, 5], [], [2, 3, 5],
-                    [], [3, 4, 5, 6], [3, 4, 5, 6],
-                ],
-                [
-                    [2, 4], [], [4, 5, 9],
-                    [], [], [2, 3, 5],
-                    [3, 4, 5], [3, 4, 5, 9], [],
-                ],
-            ];
+            cellsInRows[0][0].candidates = [];
+            cellsInRows[0][1].candidates = [4, 9];
+            cellsInRows[0][2].candidates = [];
+            cellsInRows[0][3].candidates = [4, 5];
+            cellsInRows[0][4].candidates = [];
+            cellsInRows[0][5].candidates = [];
+            cellsInRows[0][6].candidates = [2, 4, 5];
+            cellsInRows[0][7].candidates = [2, 4, 5, 9];
+            cellsInRows[0][8].candidates = [];
 
-            _.range(3).forEach((row) =>
-                _.range(9).forEach((column) => {
-                    const candidates = rowsCandidates[row][column];
-                    cellsInRows[row][column].candidates = candidates;
-                    cellsInRows[row][column].latestCandidates = candidates;
-                }),
-            );
+            cellsInRows[1][0].candidates = [1, 2, 4, 7];
+            cellsInRows[1][1].candidates = [4, 7];
+            cellsInRows[1][2].candidates = [1, 4, 5, 7];
+            cellsInRows[1][3].candidates = [3, 4, 5];
+            cellsInRows[1][4].candidates = [];
+            cellsInRows[1][5].candidates = [2, 3, 5];
+            cellsInRows[1][6].candidates = [];
+            cellsInRows[1][7].candidates = [3, 4, 5, 6];
+            cellsInRows[1][8].candidates = [3, 4, 5, 6];
 
-            const columnsCandidates = [
-                [
-                    [], [1, 2, 4, 7], [2, 4],
-                    [], [1, 4, 7], [],
-                    [4, 7], [], [],
-                ],
-                [
-                    [4, 9], [4, 7], [],
-                    [7, 9], [], [],
-                    [], [], [],
-                ],
-                [
-                    [], [1, 4, 5, 7], [4, 5, 9],
-                    [1, 7, 9], [], [1, 4, 7],
-                    [4, 7, 8], [], [7, 8],
-                ],
-            ];
+            cellsInRows[2][0].candidates = [2, 4];
+            cellsInRows[2][1].candidates = [];
+            cellsInRows[2][2].candidates = [4, 5, 9];
+            cellsInRows[2][3].candidates = [];
+            cellsInRows[2][4].candidates = [];
+            cellsInRows[2][5].candidates = [2, 3, 5];
+            cellsInRows[2][6].candidates = [3, 4, 5];
+            cellsInRows[2][7].candidates = [3, 4, 5, 9];
+            cellsInRows[2][8].candidates = [];
 
-            _.range(3).forEach((row) =>
-                _.range(9).forEach((column) => {
-                    const candidates = columnsCandidates[row][column];
-                    cellsInColumns[row][column].candidates = candidates;
-                    cellsInColumns[row][column].latestCandidates = candidates;
-                }),
-            );
+            cellsInColumns[0][0].candidates = [];
+            cellsInColumns[0][1].candidates = [1, 2, 4, 7];
+            cellsInColumns[0][2].candidates = [2, 4];
+            cellsInColumns[0][3].candidates = [];
+            cellsInColumns[0][4].candidates = [1, 4, 7];
+            cellsInColumns[0][5].candidates = [];
+            cellsInColumns[0][6].candidates = [4, 7];
+            cellsInColumns[0][7].candidates = [];
+            cellsInColumns[0][8].candidates = [];
+
+            cellsInColumns[1][0].candidates = [4, 9];
+            cellsInColumns[1][1].candidates = [4, 7];
+            cellsInColumns[1][2].candidates = [];
+            cellsInColumns[1][3].candidates = [7, 9];
+            cellsInColumns[1][4].candidates = [];
+            cellsInColumns[1][5].candidates = [];
+            cellsInColumns[1][6].candidates = [];
+            cellsInColumns[1][7].candidates = [];
+            cellsInColumns[1][8].candidates = [];
+
+            cellsInColumns[2][0].candidates = [];
+            cellsInColumns[2][1].candidates = [1, 4, 5, 7];
+            cellsInColumns[2][2].candidates = [4, 5, 9];
+            cellsInColumns[2][3].candidates = [1, 7, 9];
+            cellsInColumns[2][4].candidates = [];
+            cellsInColumns[2][5].candidates = [1, 4, 7];
+            cellsInColumns[2][6].candidates = [4, 7, 8];
+            cellsInColumns[2][7].candidates = [];
+            cellsInColumns[2][8].candidates = [7, 8];
 
             expect(
                 BoxLineReductionStrategy
                     .processCells(cellsInRows, cellsInColumns)
             ).toEqual({
-                c10: cellsInRows[1][0],
-                c20: cellsInRows[2][0],
-                c12: cellsInRows[1][2],
-                c22: cellsInRows[2][2],
+                c10: {candidates: [1, 2, 7]},
+                c20: {candidates: [2]},
+                c12: {candidates: [1, 5, 7]},
+                c22: {candidates: [5, 9]},
             });
 
-            expect(cellsInRows[1][0].setNextCandidates)
-                .toHaveBeenLastCalledWith([1, 2, 7]);
-            expect(cellsInRows[2][0].setNextCandidates)
-                .toHaveBeenLastCalledWith([2]);
-            expect(cellsInRows[1][2].setNextCandidates)
-                .toHaveBeenLastCalledWith([1, 5, 7]);
-            expect(cellsInRows[2][2].setNextCandidates)
-                .toHaveBeenLastCalledWith([5, 9]);
+            expect(getMatchingCellsSpy)
+                .toHaveBeenLastCalledWith(
+                    {row: [[1, 1], [1, 7]], column: [[0, 2], [1, 4], [2, 5]]},
+                    {
+                        row: {
+                            0: [
+                                cellsInRows[0][0],
+                                cellsInRows[0][1],
+                                cellsInRows[0][2],
+                            ],
+                            1: [
+                                cellsInRows[1][0],
+                                cellsInRows[1][1],
+                                cellsInRows[1][2],
+                            ],
+                            2: [
+                                cellsInRows[2][0],
+                                cellsInRows[2][1],
+                                cellsInRows[2][2],
+                            ],
+                        },
+                        column: {
+                            0: [
+                                cellsInRows[0][0],
+                                cellsInRows[1][0],
+                                cellsInRows[2][0],
+                            ],
+                            1: [
+                                cellsInRows[0][1],
+                                cellsInRows[1][1],
+                                cellsInRows[2][1],
+                            ],
+                            2: [
+                                cellsInRows[0][2],
+                                cellsInRows[1][2],
+                                cellsInRows[2][2],
+                            ],
+                        },
+                    }
+                );
         });
     });
 
@@ -775,7 +1140,6 @@ describe("BoxLineReductionStrategy", () => {
                     rowIndex, columnIndex,
                     identifier: `c${rowIndex}${columnIndex}`,
                     candidates: [],
-                    setNextCandidates: jest.fn(null),
                 }))
             );
 
@@ -969,6 +1333,65 @@ describe("BoxLineReductionStrategy", () => {
                 BoxLineReductionStrategy
                     .getMatchingCandidates(mapping, counters)
             ).toEqual({row: [[0, 2], [1, 6]], column: [[4, 9]]});
+        });
+    });
+
+    describe("getMatchingCells", () => {
+        it("should return list of cells with updated candidates", () => {
+            const clone = (candidates) => ({candidates});
+
+            const candidatesMapping = {
+                row: [[1, 5]],
+                column: [[1, 4]],
+            };
+
+            const cellsMapping = {
+                row: {
+                    0: [
+                        {identifier: "c00", candidates: [], clone},
+                        {identifier: "c01", candidates: [4, 9], clone},
+                        {identifier: "c02", candidates: [], clone},
+                    ],
+                    1: [
+                        {identifier: "c10", candidates: [1, 2, 4, 7], clone},
+                        {identifier: "c11", candidates: [4, 7], clone},
+                        {identifier: "c12", candidates: [1, 4, 5, 7], clone},
+                    ],
+                    2: [
+                        {identifier: "c20", candidates: [2, 4], clone},
+                        {identifier: "c21", candidates: [], clone},
+                        {identifier: "c22", candidates: [4, 5, 9], clone},
+                    ],
+                },
+                column: {
+                    0: [
+                        {identifier: "c00", candidates: [], clone},
+                        {identifier: "c10", candidates: [1, 2, 4, 7], clone},
+                        {identifier: "c20", candidates: [2, 4], clone},
+                    ],
+                    1: [
+                        {identifier: "c01", candidates: [4, 9], clone},
+                        {identifier: "c11", candidates: [4, 7], clone},
+                        {identifier: "c21", candidates: [], clone},
+                    ],
+                    2: [
+                        {identifier: "c02", candidates: [], clone},
+                        {identifier: "c12", candidates: [1, 4, 5, 7], clone},
+                        {identifier: "c22", candidates: [4, 5, 9], clone},
+                    ],
+                },
+            };
+
+            expect(
+                BoxLineReductionStrategy.getMatchingCells(
+                    candidatesMapping, cellsMapping
+                )
+            ).toEqual({
+                c10: {candidates: [1, 2, 7]},
+                c12: {candidates: [1, 5, 7]},
+                c20: {candidates: [2]},
+                c22: {candidates: [9]},
+            });
         });
     });
 });

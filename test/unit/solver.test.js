@@ -12,61 +12,41 @@ describe("SudokuSolver", () => {
     let solver;
 
     describe("resolve", () => {
-        let updateSpy;
-        let isSolvedSpy;
-        let applyStrategiesUntilFirstResultSpy;
-
         beforeEach(() => {
-            updateSpy = jest.fn(null);
-            isSolvedSpy = jest.fn(null);
-            applyStrategiesUntilFirstResultSpy = jest.fn(null)
+            grid.update = jest.fn(null);
+            grid.isSolved = jest.fn(null);
+            grid.cellFromId = jest.fn((identifier) => ({candidates: []}));
+
+            solver = new SudokuSolver();
+            solver.applyStrategiesUntilFirstResult = jest.fn(null)
+                .mockReturnValue({})
                 .mockReturnValueOnce({c10: "CELL", c11: "CELL"})
                 .mockReturnValueOnce({c30: "CELL"})
                 .mockReturnValueOnce({c10: "CELL", c18: "CELL"})
                 .mockReturnValueOnce({c65: "CELL", c66: "CELL"});
-
-            grid.update = updateSpy;
-            grid.isSolved = isSolvedSpy;
-
-            solver = new SudokuSolver();
-            solver.applyStrategiesUntilFirstResult =
-                applyStrategiesUntilFirstResultSpy;
         });
 
-        it("should resolve the grid as long as 'update' is true", () => {
-            isSolvedSpy.mockReturnValue(false);
-            updateSpy
-                .mockReturnValue(false)
-                .mockReturnValueOnce(true)
-                .mockReturnValueOnce(true)
-                .mockReturnValueOnce(true)
-                .mockReturnValueOnce(true);
+        it("should resolve the grid as long as solutions are found", () => {
+            grid.isSolved.mockReturnValue(false);
 
             expect(solver.resolve(grid)).toEqual(false);
-            expect(applyStrategiesUntilFirstResultSpy.mock.calls)
-                .toEqual([[grid], [grid], [grid], [grid]]);
-            expect(isSolvedSpy).toHaveBeenCalledTimes(4);
-            expect(updateSpy).toHaveBeenCalledTimes(5);
+            expect(solver.applyStrategiesUntilFirstResult.mock.calls)
+                .toEqual([[grid], [grid], [grid], [grid], [grid]]);
+            expect(grid.isSolved).toHaveBeenCalledTimes(5);
+            expect(grid.update).toHaveBeenCalledTimes(5);
         });
 
         it("should stop resolving the grid when it is solved", () => {
-            isSolvedSpy
+            grid.isSolved
                 .mockReturnValue(true)
                 .mockReturnValueOnce(false)
                 .mockReturnValueOnce(false);
 
-            updateSpy
-                .mockReturnValue(false)
-                .mockReturnValueOnce(true)
-                .mockReturnValueOnce(true)
-                .mockReturnValueOnce(true)
-                .mockReturnValueOnce(true);
-
             expect(solver.resolve(grid)).toEqual(true);
-            expect(applyStrategiesUntilFirstResultSpy.mock.calls)
+            expect(solver.applyStrategiesUntilFirstResult.mock.calls)
                 .toEqual([[grid], [grid]]);
-            expect(isSolvedSpy).toHaveBeenCalledTimes(3);
-            expect(updateSpy).toHaveBeenCalledTimes(3);
+            expect(grid.isSolved).toHaveBeenCalledTimes(3);
+            expect(grid.update).toHaveBeenCalledTimes(3);
         });
     });
 

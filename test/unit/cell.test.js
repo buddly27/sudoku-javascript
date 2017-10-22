@@ -154,27 +154,6 @@ describe("SudokuCell", () => {
         });
     });
 
-    describe("set and apply next candidates", () => {
-        it("should apply a list of non existing next candidates", () => {
-            const cell = new SudokuCell(0, 1, 9);
-            expect(cell.candidates).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-            expect(cell.applyNextCandidates()).toEqual(false);
-            expect(cell.candidates).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-        });
-
-        it("should set and apply a list of next candidates", () => {
-            const cell = new SudokuCell(0, 1, 9);
-            expect(cell.latestCandidates)
-                .toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-            cell.setNextCandidates([8, 2, 2, 1, 5, 7]);
-            expect(cell.latestCandidates)
-                .toEqual([1, 2, 5, 7, 8]);
-            expect(cell.candidates).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-            expect(cell.applyNextCandidates()).toEqual(true);
-            expect(cell.candidates).toEqual([1, 2, 5, 7, 8]);
-        });
-    });
-
     describe("update candidates from row, column and block values", () => {
         const cell = new SudokuCell(0, 1, 9);
 
@@ -210,9 +189,7 @@ describe("SudokuCell", () => {
         });
 
         it("should solve a cell with only one candidate left", () => {
-            const cell = new SudokuCell(0, 1, 9);
-            cell.setNextCandidates([8]);
-            cell.applyNextCandidates();
+            const cell = new SudokuCell(0, 1, 9, [8]);
             expect(cell.resolve()).toEqual(true);
             expect(cell.isSolved()).toEqual(true);
             expect(cell.value).toEqual(8);

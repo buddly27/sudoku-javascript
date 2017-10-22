@@ -60,12 +60,9 @@ describe("SudokuGrid", () => {
             _cell = require("sudoku/cell");
 
             _cell.SudokuCell = jest.fn(
-                (value, rowIndex, columnIndex) => (
-                    {
-                        value,
-                        isSolved: () => value !== 0,
-                    }
-                )
+                (value, rowIndex, columnIndex) => ({
+                    value, isSolved: () => value !== 0,
+                })
             );
 
             grid = new SudokuGrid();
@@ -521,11 +518,7 @@ describe("SudokuGrid", () => {
             resolveSpy = jest.fn(null);
 
             _cell.SudokuCell = jest.fn(
-                (value, rowIndex, columnIndex) => (
-                    {
-                        resolve: resolveSpy,
-                    }
-                )
+                (value, rowIndex, columnIndex) => ({resolve: resolveSpy})
             );
 
             grid = new SudokuGrid();
@@ -557,40 +550,28 @@ describe("SudokuGrid", () => {
     });
 
     describe("updateCandidates", () => {
-        let applyNextCandidatesSpy;
-        let updateCandidatesSpy;
         let grid;
+        let updateCandidatesSpy;
 
         beforeEach(() => {
-            applyNextCandidatesSpy = jest.fn(null);
             updateCandidatesSpy = jest.fn(null);
 
             grid = new SudokuGrid();
 
             jest.spyOn(grid, "cellsInRow")
                 .mockImplementation((rowIndex) =>
-                    _.range(9).map((columnIndex) => (
-                        {
-                            value: 0,
-                            rowIndex,
-                            columnIndex,
-                            applyNextCandidates: applyNextCandidatesSpy,
-                            updateCandidates: updateCandidatesSpy,
-                        }
-                    ))
+                    _.range(9).map((columnIndex) => ({
+                        rowIndex, columnIndex,
+                        value: 0, updateCandidates: updateCandidatesSpy,
+                    }))
                 );
 
             jest.spyOn(grid, "cellsInColumn")
                 .mockImplementation((columnIndex) =>
-                    _.range(9).map((rowIndex) => (
-                        {
-                            value: 0,
-                            rowIndex,
-                            columnIndex,
-                            applyNextCandidates: applyNextCandidatesSpy,
-                            updateCandidates: updateCandidatesSpy,
-                        }
-                    ))
+                    _.range(9).map((rowIndex) => ({
+                        rowIndex, columnIndex,
+                        value: 0, updateCandidates: updateCandidatesSpy,
+                    }))
                 );
 
             jest.spyOn(grid, "cellsInBlock")
@@ -600,11 +581,8 @@ describe("SudokuGrid", () => {
                     _.range(3).forEach((rowIndex) =>
                         _.range(3).forEach((columnIndex) =>
                             cells.push({
-                                value: 0,
-                                rowIndex,
-                                columnIndex,
-                                applyNextCandidates: applyNextCandidatesSpy,
-                                updateCandidates: updateCandidatesSpy,
+                                rowIndex, columnIndex,
+                                value: 0, updateCandidates: updateCandidatesSpy,
                             })
                         )
                     );
@@ -613,60 +591,32 @@ describe("SudokuGrid", () => {
                 });
         });
 
-        it("should only apply next candidates for all cells", () => {
-            applyNextCandidatesSpy.mockReturnValue(true);
-            expect(grid.updateCandidates()).toEqual(true);
-
-            expect(applyNextCandidatesSpy).toHaveBeenCalledTimes(81);
-            expect(updateCandidatesSpy).toHaveBeenCalledTimes(0);
-        });
-
-        it("should only apply next candidates for a few cells", () => {
-            applyNextCandidatesSpy
-                .mockReturnValue(false)
-                .mockReturnValueOnce(true)
-                .mockReturnValueOnce(true)
-                .mockReturnValueOnce(true)
-                .mockReturnValueOnce(true);
-            updateCandidatesSpy.mockReturnValue(false);
-
-            expect(grid.updateCandidates()).toEqual(true);
-            expect(applyNextCandidatesSpy).toHaveBeenCalledTimes(81);
-            expect(updateCandidatesSpy).toHaveBeenCalledTimes(77);
-        });
-
         it("should call 'updateCandidates' for all cells with positive results",
             () => {
-                applyNextCandidatesSpy.mockReturnValue(false);
                 updateCandidatesSpy.mockReturnValue(true);
 
                 expect(grid.updateCandidates()).toEqual(true);
-                expect(applyNextCandidatesSpy).toHaveBeenCalledTimes(81);
                 expect(updateCandidatesSpy).toHaveBeenCalledTimes(81);
             }
         );
 
         it("should call 'updateCandidates' for all cells with negative results",
             () => {
-                applyNextCandidatesSpy.mockReturnValue(false);
                 updateCandidatesSpy.mockReturnValue(false);
 
                 expect(grid.updateCandidates()).toEqual(false);
-                expect(applyNextCandidatesSpy).toHaveBeenCalledTimes(81);
                 expect(updateCandidatesSpy).toHaveBeenCalledTimes(81);
             }
         );
 
         it("should call 'updateCandidates' for all cells with mixed results",
             () => {
-                applyNextCandidatesSpy.mockImplementation(() => false);
                 updateCandidatesSpy
                     .mockReturnValue(false)
                     .mockReturnValueOnce(true)
                     .mockReturnValueOnce(true);
 
                 expect(grid.updateCandidates()).toEqual(true);
-                expect(applyNextCandidatesSpy).toHaveBeenCalledTimes(81);
                 expect(updateCandidatesSpy).toHaveBeenCalledTimes(81);
             }
         );

@@ -21,11 +21,8 @@ describe("BasicStrategy", () => {
         grid.blockRowSize = 3;
         grid.blockColumnSize = 3;
 
-        let processCellsSpy;
-
         beforeEach(() => {
-            processCellsSpy = jest.fn(null);
-            BasicStrategy.processCells = processCellsSpy;
+            BasicStrategy.processCells = jest.fn(null);
 
             grid.cellsInRow = jest.fn(() =>
                 ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9"]
@@ -39,7 +36,7 @@ describe("BasicStrategy", () => {
         });
 
         it("should process a grid with no result", () => {
-            processCellsSpy.mockReturnValue({});
+            BasicStrategy.processCells.mockReturnValue({});
             expect(BasicStrategy.processGrid(grid)).toEqual({});
             expect(grid.cellsInRow.mock.calls)
                 .toEqual([[0], [1], [2], [3], [4], [5], [6], [7], [8]]);
@@ -51,11 +48,11 @@ describe("BasicStrategy", () => {
                     [3, 0], [3, 3], [3, 6],
                     [6, 0], [6, 3], [6, 6],
                 ]);
-            expect(processCellsSpy).toHaveBeenCalledTimes(3 * 9);
+            expect(BasicStrategy.processCells).toHaveBeenCalledTimes(3 * 9);
         });
 
         it("should process a grid with a few results", () => {
-            processCellsSpy.mockReturnValue({})
+            BasicStrategy.processCells.mockReturnValue({})
                 .mockReturnValueOnce({c01: "CELL1", c11: "CELL2"})
                 .mockReturnValueOnce({c03: "CELL3"})
                 .mockReturnValueOnce({c01: "CELL4", c31: "CELL5"})
@@ -67,7 +64,7 @@ describe("BasicStrategy", () => {
                     c31: "CELL5",
                     c50: "CELL6", c58: "CELL8",
                 });
-            expect(processCellsSpy.mock.calls)
+            expect(BasicStrategy.processCells.mock.calls)
                 .toEqual(
                     _.range(9).map(() => [[
                         "R1", "R2", "R3",
@@ -92,36 +89,37 @@ describe("BasicStrategy", () => {
         });
     });
 
-    describe("updateFromIntersection", () => {
+    describe("getMatchingCellsFromIntersection", () => {
         let cells = [];
 
         beforeEach(() => {
             cells = [
-                {identifier: "c00", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c01", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c02", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c03", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c04", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c05", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c06", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c07", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c08", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c00", candidates: [], clone: jest.fn(() => "C0")},
+                {identifier: "c01", candidates: [], clone: jest.fn(() => "C1")},
+                {identifier: "c02", candidates: [], clone: jest.fn(() => "C2")},
+                {identifier: "c03", candidates: [], clone: jest.fn(() => "C3")},
+                {identifier: "c04", candidates: [], clone: jest.fn(() => "C4")},
+                {identifier: "c05", candidates: [], clone: jest.fn(() => "C5")},
+                {identifier: "c06", candidates: [], clone: jest.fn(() => "C6")},
+                {identifier: "c07", candidates: [], clone: jest.fn(() => "C7")},
+                {identifier: "c08", candidates: [], clone: jest.fn(() => "C8")},
             ];
         });
 
         it("should not match any candidates", () => {
-            expect(BasicStrategy.updateFromIntersection(cells, [[3, 5]]))
-                .toEqual({});
+            expect(
+                BasicStrategy.getMatchingCellsFromIntersection(cells, [[3, 5]])
+            ).toEqual({});
 
-            expect(cells[0].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[1].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[2].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[3].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[4].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[5].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[6].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[7].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[8].setNextCandidates).toHaveBeenCalledTimes(0);
+            expect(cells[0].clone).toHaveBeenCalledTimes(0);
+            expect(cells[1].clone).toHaveBeenCalledTimes(0);
+            expect(cells[2].clone).toHaveBeenCalledTimes(0);
+            expect(cells[3].clone).toHaveBeenCalledTimes(0);
+            expect(cells[4].clone).toHaveBeenCalledTimes(0);
+            expect(cells[5].clone).toHaveBeenCalledTimes(0);
+            expect(cells[6].clone).toHaveBeenCalledTimes(0);
+            expect(cells[7].clone).toHaveBeenCalledTimes(0);
+            expect(cells[8].clone).toHaveBeenCalledTimes(0);
         });
 
         it("should update a few cells", () => {
@@ -135,54 +133,55 @@ describe("BasicStrategy", () => {
             cells[7].candidates = [8, 7, 3];
             cells[8].candidates = [];
 
-            expect(BasicStrategy.updateFromIntersection(cells, [[2], [4]]))
-                .toEqual({
-                    c05: cells[5],
-                    c06: cells[6],
-                });
+            expect(
+                BasicStrategy.getMatchingCellsFromIntersection(
+                    cells, [[2], [4]]
+                )
+            ).toEqual({c05: "C5", c06: "C6"});
 
-            expect(cells[0].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[1].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[2].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[3].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[4].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[5].setNextCandidates).toHaveBeenLastCalledWith([4]);
-            expect(cells[6].setNextCandidates).toHaveBeenLastCalledWith([2]);
-            expect(cells[7].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[8].setNextCandidates).toHaveBeenCalledTimes(0);
+            expect(cells[0].clone).toHaveBeenCalledTimes(0);
+            expect(cells[1].clone).toHaveBeenCalledTimes(0);
+            expect(cells[2].clone).toHaveBeenCalledTimes(0);
+            expect(cells[3].clone).toHaveBeenCalledTimes(0);
+            expect(cells[4].clone).toHaveBeenCalledTimes(0);
+            expect(cells[5].clone).toHaveBeenLastCalledWith([4]);
+            expect(cells[6].clone).toHaveBeenLastCalledWith([2]);
+            expect(cells[7].clone).toHaveBeenCalledTimes(0);
+            expect(cells[8].clone).toHaveBeenCalledTimes(0);
         });
     });
 
-    describe("updateFromDifference", () => {
+    describe("getMatchingCellsFromDifference", () => {
         let cells = [];
 
         beforeEach(() => {
             cells = [
-                {identifier: "c00", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c01", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c02", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c03", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c04", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c05", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c06", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c07", candidates: [], setNextCandidates: jest.fn(null)},
-                {identifier: "c08", candidates: [], setNextCandidates: jest.fn(null)},
+                {identifier: "c00", candidates: [], clone: jest.fn(() => "C0")},
+                {identifier: "c01", candidates: [], clone: jest.fn(() => "C1")},
+                {identifier: "c02", candidates: [], clone: jest.fn(() => "C2")},
+                {identifier: "c03", candidates: [], clone: jest.fn(() => "C3")},
+                {identifier: "c04", candidates: [], clone: jest.fn(() => "C4")},
+                {identifier: "c05", candidates: [], clone: jest.fn(() => "C5")},
+                {identifier: "c06", candidates: [], clone: jest.fn(() => "C6")},
+                {identifier: "c07", candidates: [], clone: jest.fn(() => "C7")},
+                {identifier: "c08", candidates: [], clone: jest.fn(() => "C8")},
             ];
         });
 
         it("should not match any candidates", () => {
-            expect(BasicStrategy.updateFromDifference(cells, [[3, 5]]))
-                .toEqual({});
+            expect(
+                BasicStrategy.getMatchingCellsFromDifference(cells, [[3, 5]])
+            ).toEqual({});
 
-            expect(cells[0].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[1].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[2].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[3].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[4].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[5].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[6].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[7].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[8].setNextCandidates).toHaveBeenCalledTimes(0);
+            expect(cells[0].clone).toHaveBeenCalledTimes(0);
+            expect(cells[1].clone).toHaveBeenCalledTimes(0);
+            expect(cells[2].clone).toHaveBeenCalledTimes(0);
+            expect(cells[3].clone).toHaveBeenCalledTimes(0);
+            expect(cells[4].clone).toHaveBeenCalledTimes(0);
+            expect(cells[5].clone).toHaveBeenCalledTimes(0);
+            expect(cells[6].clone).toHaveBeenCalledTimes(0);
+            expect(cells[7].clone).toHaveBeenCalledTimes(0);
+            expect(cells[8].clone).toHaveBeenCalledTimes(0);
         });
 
         it("should update a few cells", () => {
@@ -196,22 +195,21 @@ describe("BasicStrategy", () => {
             cells[7].candidates = [5, 8];
             cells[8].candidates = [];
 
-            expect(BasicStrategy.updateFromDifference(cells, [[1, 2], [5, 8]]))
-                .toEqual({
-                    c00: cells[0],
-                    c02: cells[2],
-                    c04: cells[4],
-                });
+            expect(
+                BasicStrategy.getMatchingCellsFromDifference(
+                    cells, [[1, 2], [5, 8]]
+                )
+            ).toEqual({c00: "C0", c02: "C2", c04: "C4"});
 
-            expect(cells[0].setNextCandidates).toHaveBeenLastCalledWith([3, 4]);
-            expect(cells[1].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[2].setNextCandidates).toHaveBeenLastCalledWith([9]);
-            expect(cells[3].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[4].setNextCandidates).toHaveBeenLastCalledWith([7]);
-            expect(cells[5].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[6].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[7].setNextCandidates).toHaveBeenCalledTimes(0);
-            expect(cells[8].setNextCandidates).toHaveBeenCalledTimes(0);
+            expect(cells[0].clone).toHaveBeenLastCalledWith([3, 4]);
+            expect(cells[1].clone).toHaveBeenCalledTimes(0);
+            expect(cells[2].clone).toHaveBeenLastCalledWith([9]);
+            expect(cells[3].clone).toHaveBeenCalledTimes(0);
+            expect(cells[4].clone).toHaveBeenLastCalledWith([7]);
+            expect(cells[5].clone).toHaveBeenCalledTimes(0);
+            expect(cells[6].clone).toHaveBeenCalledTimes(0);
+            expect(cells[7].clone).toHaveBeenCalledTimes(0);
+            expect(cells[8].clone).toHaveBeenCalledTimes(0);
         });
     });
 });
@@ -224,11 +222,11 @@ describe("HiddenSingleStrategy", () => {
 
     describe("processCells", () => {
         let cells = [];
-        let updateFromIntersectionSpy;
+        let getMatchingCellsFromIntersectionSpy;
 
         beforeEach(() => {
-            updateFromIntersectionSpy = jest
-                .spyOn(HiddenSingleStrategy, "updateFromIntersection")
+            getMatchingCellsFromIntersectionSpy = jest
+                .spyOn(HiddenSingleStrategy, "getMatchingCellsFromIntersection")
                 .mockImplementation(() => {});
 
             cells = [
@@ -247,7 +245,7 @@ describe("HiddenSingleStrategy", () => {
         it("should not match any candidates", () => {
             HiddenSingleStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, []);
         });
 
@@ -264,7 +262,7 @@ describe("HiddenSingleStrategy", () => {
 
             HiddenSingleStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, [[6]]);
         });
 
@@ -281,7 +279,7 @@ describe("HiddenSingleStrategy", () => {
 
             HiddenSingleStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, [[2], [4]]);
         });
 
@@ -298,7 +296,7 @@ describe("HiddenSingleStrategy", () => {
 
             HiddenSingleStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, [[8], [9]]);
         });
     });
@@ -312,11 +310,11 @@ describe("HiddenPairStrategy", () => {
 
     describe("processCells", () => {
         let cells = [];
-        let updateFromIntersectionSpy;
+        let getMatchingCellsFromIntersectionSpy;
 
         beforeEach(() => {
-            updateFromIntersectionSpy = jest
-                .spyOn(HiddenPairStrategy, "updateFromIntersection")
+            getMatchingCellsFromIntersectionSpy = jest
+                .spyOn(HiddenPairStrategy, "getMatchingCellsFromIntersection")
                 .mockImplementation(() => {});
 
             cells = [
@@ -335,7 +333,7 @@ describe("HiddenPairStrategy", () => {
         it("should not match any candidates", () => {
             HiddenPairStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, []);
         });
 
@@ -352,7 +350,7 @@ describe("HiddenPairStrategy", () => {
 
             HiddenPairStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, [[1, 9]]);
         });
 
@@ -369,7 +367,7 @@ describe("HiddenPairStrategy", () => {
 
             HiddenPairStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, [[4, 7]]);
         });
 
@@ -386,7 +384,7 @@ describe("HiddenPairStrategy", () => {
 
             HiddenPairStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, [[2, 3], [8, 9]]);
         });
 
@@ -403,7 +401,7 @@ describe("HiddenPairStrategy", () => {
 
             HiddenPairStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, [[1, 3], [2, 8]]);
         });
     });
@@ -417,11 +415,11 @@ describe("HiddenTripleStrategy", () => {
 
     describe("processCells", () => {
         let cells = [];
-        let updateFromIntersectionSpy;
+        let getMatchingCellsFromIntersectionSpy;
 
         beforeEach(() => {
-            updateFromIntersectionSpy = jest
-                .spyOn(HiddenTripleStrategy, "updateFromIntersection")
+            getMatchingCellsFromIntersectionSpy = jest
+                .spyOn(HiddenTripleStrategy, "getMatchingCellsFromIntersection")
                 .mockImplementation(() => {});
 
             cells = [
@@ -440,7 +438,7 @@ describe("HiddenTripleStrategy", () => {
         it("should not update solved grid", () => {
             HiddenTripleStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, []);
         });
 
@@ -457,7 +455,7 @@ describe("HiddenTripleStrategy", () => {
 
             HiddenTripleStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, [[2, 4, 5]]);
         });
 
@@ -474,7 +472,7 @@ describe("HiddenTripleStrategy", () => {
 
             HiddenTripleStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, [[2, 5, 6]]);
         });
     });
@@ -488,11 +486,11 @@ describe("HiddenQuadStrategy", () => {
 
     describe("processCells", () => {
         let cells = [];
-        let updateFromIntersectionSpy;
+        let getMatchingCellsFromIntersectionSpy;
 
         beforeEach(() => {
-            updateFromIntersectionSpy = jest
-                .spyOn(HiddenQuadStrategy, "updateFromIntersection")
+            getMatchingCellsFromIntersectionSpy = jest
+                .spyOn(HiddenQuadStrategy, "getMatchingCellsFromIntersection")
                 .mockImplementation(() => {});
 
             cells = [
@@ -511,7 +509,7 @@ describe("HiddenQuadStrategy", () => {
         it("should not update solved grid", () => {
             HiddenQuadStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, []);
         });
 
@@ -528,7 +526,7 @@ describe("HiddenQuadStrategy", () => {
 
             HiddenQuadStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, [[3, 4, 5, 7]]);
         });
 
@@ -545,7 +543,7 @@ describe("HiddenQuadStrategy", () => {
 
             HiddenQuadStrategy.processCells(cells);
 
-            expect(updateFromIntersectionSpy)
+            expect(getMatchingCellsFromIntersectionSpy)
                 .toHaveBeenLastCalledWith(cells, [[1, 4, 6, 9]]);
         });
     });
@@ -559,11 +557,11 @@ describe("NakedPairStrategy", () => {
 
     describe("processCells", () => {
         let cells = [];
-        let updateFromDifferenceSpy;
+        let getMatchingCellsFromDifferenceSpy;
 
         beforeEach(() => {
-            updateFromDifferenceSpy = jest
-                .spyOn(NakedPairStrategy, "updateFromDifference")
+            getMatchingCellsFromDifferenceSpy = jest
+                .spyOn(NakedPairStrategy, "getMatchingCellsFromDifference")
                 .mockImplementation(() => {});
 
             cells = [
@@ -582,7 +580,7 @@ describe("NakedPairStrategy", () => {
         it("should not match any candidates", () => {
             NakedPairStrategy.processCells(cells);
 
-            expect(updateFromDifferenceSpy)
+            expect(getMatchingCellsFromDifferenceSpy)
                 .toHaveBeenLastCalledWith(cells, []);
         });
 
@@ -599,7 +597,7 @@ describe("NakedPairStrategy", () => {
 
             NakedPairStrategy.processCells(cells);
 
-            expect(updateFromDifferenceSpy)
+            expect(getMatchingCellsFromDifferenceSpy)
                 .toHaveBeenLastCalledWith(cells, [[8, 9]]);
         });
 
@@ -616,7 +614,7 @@ describe("NakedPairStrategy", () => {
 
             NakedPairStrategy.processCells(cells);
 
-            expect(updateFromDifferenceSpy)
+            expect(getMatchingCellsFromDifferenceSpy)
                 .toHaveBeenLastCalledWith(cells, [[6, 7]]);
         });
     });
@@ -630,11 +628,11 @@ describe("NakedTripleStrategy", () => {
 
     describe("processCells", () => {
         let cells = [];
-        let updateFromDifferenceSpy;
+        let getMatchingCellsFromDifferenceSpy;
 
         beforeEach(() => {
-            updateFromDifferenceSpy = jest
-                .spyOn(NakedTripleStrategy, "updateFromDifference")
+            getMatchingCellsFromDifferenceSpy = jest
+                .spyOn(NakedTripleStrategy, "getMatchingCellsFromDifference")
                 .mockImplementation(() => {});
 
             cells = [
@@ -653,7 +651,7 @@ describe("NakedTripleStrategy", () => {
         it("should not match any candidates", () => {
             NakedTripleStrategy.processCells(cells);
 
-            expect(updateFromDifferenceSpy)
+            expect(getMatchingCellsFromDifferenceSpy)
                 .toHaveBeenLastCalledWith(cells, []);
         });
 
@@ -670,7 +668,7 @@ describe("NakedTripleStrategy", () => {
 
             NakedTripleStrategy.processCells(cells);
 
-            expect(updateFromDifferenceSpy)
+            expect(getMatchingCellsFromDifferenceSpy)
                 .toHaveBeenLastCalledWith(cells, [[3, 6, 9]]);
         });
 
@@ -687,7 +685,7 @@ describe("NakedTripleStrategy", () => {
 
             NakedTripleStrategy.processCells(cells);
 
-            expect(updateFromDifferenceSpy)
+            expect(getMatchingCellsFromDifferenceSpy)
                 .toHaveBeenLastCalledWith(cells, [[1, 2, 6]]);
         });
     });

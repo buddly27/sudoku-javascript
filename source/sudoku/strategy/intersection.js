@@ -108,7 +108,7 @@ export class PointingStrategy extends IntersectionStrategy {
      * *cellsInRows* and *cellsInColumns* are collections of
      * :class:`sudoku.cell.SudokuCell` instance lists.
      *
-     * Return a mapping of :class:`sudoku.cell.SudokuCell` instances with
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` cloned instances with
      * updated candidates list per cell identifier.
      */
     static processCells(cellsInRows, cellsInColumns) {
@@ -119,45 +119,16 @@ export class PointingStrategy extends IntersectionStrategy {
         const counters = this.getBlockCounters(cells);
 
         // Map all non block cells per row and column
-        const mapping = this.getNonBlockCellsMapping(
+        const cellsMapping = this.getNonBlockCellsMapping(
             cells, cellsInRows, cellsInColumns
         );
 
         // Get all matching candidates per row and column
-        const matched = this.getMatchingCandidates(counters);
+        const candidatesMapping = this.getMatchingCandidates(counters);
 
         // Try to remove numbers matching cell candidates in block from each
         // remaining rows or columns
-
-        const updatedCells = {};
-
-        matched.row.forEach(([rowIndex, number]) => {
-            mapping.row[rowIndex].forEach((cell) => {
-                const candidates = cell.latestCandidates;
-
-                if (candidates.includes(number)) {
-                    cell.setNextCandidates(
-                        candidates.filter((candidate) => candidate !== number)
-                    );
-                    updatedCells[cell.identifier] = cell;
-                }
-            });
-        });
-
-        matched.column.forEach(([columnIndex, number]) => {
-            mapping.column[columnIndex].forEach((cell) => {
-                const candidates = cell.latestCandidates;
-
-                if (candidates.includes(number)) {
-                    cell.setNextCandidates(
-                        candidates.filter((candidate) => candidate !== number)
-                    );
-                    updatedCells[cell.identifier] = cell;
-                }
-            });
-        });
-
-        return updatedCells;
+        return this.getMatchingCells(candidatesMapping, cellsMapping);
     }
 
     /**
@@ -287,7 +258,7 @@ export class PointingStrategy extends IntersectionStrategy {
      *
      * *counters* is a mapping of candidate counters for intersection block of
      * rows and columns, such as the one returned by
-     * :meth:`sudoku.strategy.intersection.PointingStrategy.getBlockCounters`
+     * :meth:`~sudoku.strategy.intersection.PointingStrategy.getBlockCounters`
      *
      * Each candidate is organised by tuple where the first element is the
      * row or column index and the second is the candidate number.
@@ -339,7 +310,54 @@ export class PointingStrategy extends IntersectionStrategy {
 
         return matchedCandidates;
     }
+
+    /**
+     * Return cloned cells with updated candidates from *candidatesMapping*.
+     *
+     * The result is a mapping of :class:`sudoku.cell.SudokuCell` cloned
+     * instances with updated candidates list per cell identifier.
+     *
+     * *candidatesMapping* is a mapping of cell candidates lists organised per
+     * rows and columns, such as the one returned by
+     * :meth:`~sudoku.strategy.intersection.PointingStrategy.getMatchingCandidates`
+     *
+     * *cellsMapping* is a mapping of all non-block cells organised per row
+     * and columns, such as the one returned by
+     * :meth:`~sudoku.strategy.intersection.PointingStrategy.getNonBlockCellsMapping`
+     */
+    static getMatchingCells(candidatesMapping, cellsMapping) {
+        const mapping = {};
+
+        candidatesMapping.row.forEach(([rowIndex, number]) => {
+            cellsMapping.row[rowIndex].forEach((cell) => {
+                const candidates = (mapping[cell.identifier]) ?
+                    mapping[cell.identifier].candidates : cell.candidates;
+
+                if (candidates.includes(number)) {
+                    mapping[cell.identifier] = cell.clone(
+                        candidates.filter((candidate) => candidate !== number)
+                    );
+                }
+            });
+        });
+
+        candidatesMapping.column.forEach(([columnIndex, number]) => {
+            cellsMapping.column[columnIndex].forEach((cell) => {
+                const candidates = (mapping[cell.identifier]) ?
+                    mapping[cell.identifier].candidates : cell.candidates;
+
+                if (candidates.includes(number)) {
+                    mapping[cell.identifier] = cell.clone(
+                        candidates.filter((candidate) => candidate !== number)
+                    );
+                }
+            });
+        });
+
+        return mapping;
+    }
 }
+
 
 /**
  * Box Line Reduction Strategy.
@@ -360,7 +378,7 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
      * *cellsInRows* and *cellsInColumns* are collections of
      * :class:`sudoku.cell.SudokuCell` instance lists.
      *
-     * Return a mapping of :class:`sudoku.cell.SudokuCell` clone instances with
+     * Return a mapping of :class:`sudoku.cell.SudokuCell` cloned instances with
      * updated candidates list per cell identifier.
      */
     static processCells(cellsInRows, cellsInColumns) {
@@ -370,52 +388,15 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
         const counters = this.getCounters(cellsInRows, cellsInColumns);
 
         // Map all cells per row and column
-        const mapping = this.getCellsMapping(cells);
+        const cellsMapping = this.getCellsMapping(cells);
 
         // Get all matching candidates per row and column
-        const matched = this.getMatchingCandidates(mapping, counters);
+        const candidatesMapping = this.getMatchingCandidates(
+            cellsMapping, counters
+        );
 
         // Try to remove numbers matched from the rest of the block
-
-        const updatedCells = {};
-
-        matched.row.forEach(([rowIndex, number]) => {
-            Object.keys(mapping.row).forEach((blockIndex) => {
-                if (rowIndex !== Number(blockIndex)) {
-                    mapping.row[blockIndex].forEach((cell) => {
-                        const candidates = cell.latestCandidates;
-                        if (candidates.includes(number)) {
-                            cell.setNextCandidates(
-                                candidates.filter(
-                                    (candidate) => candidate !== number
-                                )
-                            );
-                            updatedCells[cell.identifier] = cell;
-                        }
-                    });
-                }
-            });
-        });
-
-        matched.column.forEach(([columnIndex, number]) => {
-            Object.keys(mapping.column).forEach((blockIndex) => {
-                if (columnIndex !== Number(blockIndex)) {
-                    mapping.column[blockIndex].forEach((cell) => {
-                        const candidates = cell.latestCandidates;
-                        if (candidates.includes(number)) {
-                            cell.setNextCandidates(
-                                candidates.filter(
-                                    (candidate) => candidate !== number
-                                )
-                            );
-                            updatedCells[cell.identifier] = cell;
-                        }
-                    });
-                }
-            });
-        });
-
-        return updatedCells;
+        return this.getMatchingCells(candidatesMapping, cellsMapping);
     }
 
     /**
@@ -547,7 +528,7 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
      *
      * *counters* is a mapping of candidate counters for rows and columns, such
      * as the one returned by
-     * :meth:`sudoku.strategy.intersection.BoxLineReductionStrategy.getCounters`
+     * :meth:`~sudoku.strategy.intersection.BoxLineReductionStrategy.getCounters`
      *
      * Each candidate is organised by tuple where the first element is the
      * row or column index and the second is the candidate number.
@@ -604,5 +585,63 @@ export class BoxLineReductionStrategy extends IntersectionStrategy {
         });
 
         return matchedCandidates;
+    }
+
+    /**
+     * Return cloned cells with updated candidates from *candidatesMapping*.
+     *
+     * The result is a mapping of :class:`sudoku.cell.SudokuCell` cloned
+     * instances with updated candidates list per cell identifier.
+     *
+     * *candidatesMapping* is a mapping of cell candidates lists organised per
+     * rows and columns, such as the one returned by
+     * :meth:`~sudoku.strategy.intersection.BoxLineReductionStrategy.getMatchingCandidates`
+     *
+     * *cellsMapping* is a mapping of all cells organised per row and columns,
+     * such as the one returned by
+     * :meth:`~sudoku.strategy.intersection.BoxLineReductionStrategy.getCellsMapping`
+     */
+    static getMatchingCells(candidatesMapping, cellsMapping) {
+        const mapping = {};
+
+        candidatesMapping.row.forEach(([rowIndex, number]) => {
+            Object.keys(cellsMapping.row).forEach((blockIndex) => {
+                if (rowIndex !== Number(blockIndex)) {
+                    cellsMapping.row[blockIndex].forEach((cell) => {
+                        const candidates = (mapping[cell.identifier]) ?
+                            mapping[cell.identifier].candidates
+                            : cell.candidates;
+                        if (candidates.includes(number)) {
+                            mapping[cell.identifier] = cell.clone(
+                                candidates.filter(
+                                    (candidate) => candidate !== number
+                                )
+                            );
+                        }
+                    });
+                }
+            });
+        });
+
+        candidatesMapping.column.forEach(([columnIndex, number]) => {
+            Object.keys(cellsMapping.column).forEach((blockIndex) => {
+                if (columnIndex !== Number(blockIndex)) {
+                    cellsMapping.column[blockIndex].forEach((cell) => {
+                        const candidates = (mapping[cell.identifier]) ?
+                            mapping[cell.identifier].candidates
+                            : cell.candidates;
+                        if (candidates.includes(number)) {
+                            mapping[cell.identifier] = cell.clone(
+                                candidates.filter(
+                                    (candidate) => candidate !== number
+                                )
+                            );
+                        }
+                    });
+                }
+            });
+        });
+
+        return mapping;
     }
 }
