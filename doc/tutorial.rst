@@ -57,28 +57,11 @@ cell with a non-zero value is considered solved and does not have candidates::
     []
 
 A :class:`~sudoku.solver.SudokuSolver` must then be created and used to resolve
-the grid and return a mapping of all modified by one of the strategies::
+the grid::
 
     >>> const solver = SudokuSolver()
     >>> solver.resolve(grid)
-    {
-        c03: [SudokuCell],
-        c04: [SudokuCell],
-        c06: [SudokuCell],
-        c14: [SudokuCell],
-        c28: [SudokuCell],
-        c31: [SudokuCell],
-        c32: [SudokuCell],
-        c34: [SudokuCell],
-        c35: [SudokuCell],
-        c45: [SudokuCell],
-        c48: [SudokuCell],
-        c52: [SudokuCell],
-        c54: [SudokuCell],
-        c63: [SudokuCell],
-        c82: [SudokuCell],
-        c85: [SudokuCell],
-    }
+    true
 
 If the process is successful, the grid is now solved::
 

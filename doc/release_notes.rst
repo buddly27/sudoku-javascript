@@ -4,6 +4,12 @@
 Release Notes
 *************
 
+.. release:: 0.3.1
+
+    .. change:: fixed
+
+        Updated :ref:`tutorial`.
+
 .. release:: 0.3.0
 
     .. change:: changed
