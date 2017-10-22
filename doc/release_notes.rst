@@ -8,11 +8,6 @@ Release Notes
 
     .. change:: changed
 
-        Added optional argument to set initial candidates to a
-        :class:`~sudoku.cell.SudokuCell`.
-
-    .. change:: changed
-
         Changed the logic which leads to the modification of cell candidate
         numbers when a strategy have been successfully applied:
 
@@ -27,25 +22,16 @@ Release Notes
         Changed :meth:`sudoku.solver.SudokuSolver.resolve` so to take care of
         the update of each cell candidates.
 
-    .. change:: fixed
+    .. change:: new
 
-        The assumption that setting a new value to a cell should automatically
-        empty the candidate list was incorrect as a value of zero should bring
-        back a list of possible candidate numbers, which is impossible to
-        guess from the scope of the cell as it should be computed relatively to
-        the entire grid (see :meth:`sudoku.grid.SudokuGrid.updateCandidates`).
+        Added optional argument to set initial candidates to a
+        :class:`~sudoku.cell.SudokuCell`.
 
-        Therefore, the setter to manually change the value of a
-        :class:`~sudoku.cell.SudokuCell` has been removed in favor of a setter
-        to manually change its candidate numbers. It is safer to rely on a
-        candidates setter and on the :meth:`sudoku.cell.SudokuCell.resolve`
-        method to update a cell value::
+    .. change:: new
 
-            >>> cell = new SudokuCell(0, 0, 0, [1, 2, 3])
-            >>> cell.candidates = [3]
-            >>> cell.resolve()
-            >>> cell.value
-            3
+        Added optional argument to set initial candidates for each
+        :class:`~sudoku.cell.SudokuCell` instance within a
+        :class:`~sudoku.grid.SudokuGrid` instance.
 
     .. change:: new
 
@@ -63,6 +49,26 @@ Release Notes
             >>> const cell = grid.cellFromId("c36")
             >>> cell.value
             7
+
+    .. change:: fixed
+
+        The assumption that setting a new value to a cell should automatically
+        empty the candidate list was incorrect as a value of zero should bring
+        back a list of possible candidate numbers, which is impossible to
+        guess from the scope of the cell as it should be computed relatively to
+        the entire grid (see :meth:`sudoku.grid.SudokuGrid.updateCandidates`).
+
+        Therefore, the setter to manually change the value of a
+        :class:`~sudoku.cell.SudokuCell` has been removed in favor of a setter
+        to manually change its candidate numbers. It is safer to rely on a
+        candidates setter and on the :meth:`sudoku.cell.SudokuCell.resolve`
+        method to update a cell value::
+
+            >>> cell = new SudokuCell(0, 0, 0)
+            >>> cell.candidates = [3]
+            >>> cell.resolve()
+            >>> cell.value
+            3
 
 .. release:: 0.2.0
 
