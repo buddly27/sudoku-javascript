@@ -4,6 +4,12 @@
 Release Notes
 *************
 
+.. release:: 0.3.2
+
+    .. change:: fixed
+
+        Fix package version.
+
 .. release:: 0.3.1
 
     .. change:: fixed

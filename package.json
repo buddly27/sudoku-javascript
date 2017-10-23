@@ -1,6 +1,6 @@
 {
     "name": "sudoku-javascript",
-    "version": "0.1.0",
+    "version": "0.3.2",
     "description": "Sudoku Solver",
     "main": "./dist/sudoku.min.js",
     "repository": {
