@@ -4,6 +4,18 @@
 Release Notes
 *************
 
+.. release:: 0.4.0
+
+    .. change:: changed
+
+        Renamed :func:`sudoku.grid.SudokuGrid.toMapping` to
+        :func:`sudoku.grid.SudokuGrid.toValueMapping` for clarity.
+
+    .. change:: new
+
+        Added :func:`sudoku.grid.SudokuGrid.toCandidateMapping` to return a
+        mapping of all candidates per cell identifier.
+
 .. release:: 0.3.2
 
     .. change:: fixed
