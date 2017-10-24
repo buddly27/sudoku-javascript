@@ -79,7 +79,7 @@ The solver keep track of the strategies used to solve the grid::
 
 The grid can then be returned as a mapping::
 
-    >>> grid.toMapping()
+    >>> grid.toValueMapping()
     {
         c00: 9, c01: 2, c02: 8, c03: 5, c04: 4, c05: 7, c06: 3, c07: 1, c08: 6,
         c10: 4, c11: 3, c12: 1, c13: 9, c14: 8, c15: 6, c16: 5, c17: 7, c18: 2,
