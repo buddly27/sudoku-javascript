@@ -19,7 +19,7 @@ describe("Sudoku Solver", () => {
 
         const solver = new SudokuSolver();
         expect(solver.resolve(grid)).toEqual(true);
-        expect(grid.toMapping()).toEqual({
+        expect(grid.toValueMapping()).toEqual({
             c00: 6, c01: 7, c02: 2,
             c03: 1, c04: 4, c05: 5,
             c06: 3, c07: 9, c08: 8,
@@ -67,7 +67,7 @@ describe("Sudoku Solver", () => {
 
         const solver = new SudokuSolver();
         expect(solver.resolve(grid)).toEqual(true);
-        expect(grid.toMapping()).toEqual({
+        expect(grid.toValueMapping()).toEqual({
             c00: 7, c01: 3, c02: 5,
             c03: 1, c04: 6, c05: 4,
             c06: 9, c07: 2, c08: 8,
@@ -115,7 +115,7 @@ describe("Sudoku Solver", () => {
 
         const solver = new SudokuSolver();
         expect(solver.resolve(grid)).toEqual(true);
-        expect(grid.toMapping()).toEqual({
+        expect(grid.toValueMapping()).toEqual({
             c00: 3, c01: 8, c02: 1,
             c03: 9, c04: 7, c05: 6,
             c06: 5, c07: 2, c08: 4,

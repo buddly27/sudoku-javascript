@@ -370,17 +370,35 @@ export class SudokuGrid {
     }
 
     /**
-     * Return the content of the grid as a cell mapping.
+     * Return all cell values of the grid as a cell mapping.
      *
      * The mapping is similar to the *cellsMapping* argument given to the
      * :meth:`~sudoku.grid.SudokuGrid.constructor`.
      */
-    toMapping() {
+    toValueMapping() {
         const mapping = {};
 
         this._grid.forEach((cells) => {
             cells.forEach((cell) => {
                 mapping[cell.identifier] = cell.value;
+            });
+        });
+
+        return mapping;
+    }
+
+    /**
+     * Return all cell candidates of the grid as a cell mapping.
+     *
+     * The mapping is similar to the *candidatesMapping* argument given to the
+     * :meth:`~sudoku.grid.SudokuGrid.constructor`.
+     */
+    toCandidateMapping() {
+        const mapping = {};
+
+        this._grid.forEach((cells) => {
+            cells.forEach((cell) => {
+                mapping[cell.identifier] = cell.candidates;
             });
         });
 
