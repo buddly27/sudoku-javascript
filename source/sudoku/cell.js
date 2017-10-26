@@ -130,6 +130,11 @@ export class SudokuCell {
      *
      *     If the list of new candidates is bigger than the current list of
      *     candidates, it is not applied.
+     *
+     * .. warning ::
+     *
+     *      An Error will be raised if updated list of candidates is incoherent
+     *      with the cell value.
      */
     updateCandidates(rowValues, columnValues, blockValues) {
         if (this.isSolved()) {
