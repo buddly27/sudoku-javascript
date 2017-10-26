@@ -146,6 +146,14 @@ export class SudokuCell {
             )
         );
 
+        if (difference.size === 0) {
+            throw Error(
+                `The cell '${this.identifier}' can not receive an empty list ` +
+                "of candidates during the update has it does not have a " +
+                "value yet. Some neighbor cells might have incorrect values."
+            );
+        }
+
         if (difference.size < this._candidates.length) {
             this._candidates = Array.from(difference).sort();
             return true;
