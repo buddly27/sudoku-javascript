@@ -219,26 +219,25 @@ export class SudokuGrid {
     }
 
     /**
-     * Update the grid and return whether the grid has been modified.
+     * Update the grid and return the number of solutions found.
      *
      * Analyse the grid for possible solved cells and compute the resulting
-     * candidates for each cell. Repeat this two operations as long as solved
-     * cells are found.
+     * candidates for each cell. Repeat this two operations as long as new
+     * candidates are found.
      */
     update() {
-        let call = 0;
+        let solutionFound = 0;
 
         do {
-            this.updateSolvedCells();
-            call += 1;
+            solutionFound += this.updateSolvedCells();
         } while (this.updateCandidates());
 
-        return call > 1;
+        return solutionFound;
     }
 
     /**
-     * Update all cells that can be solved and return the number of solutions
-     * found.
+     * Attempt to resolve all cells in the grid and return the number of
+     * solutions found.
      *
      * A cell which has a single candidate left can be updated with the value
      * of this candidate.

@@ -686,48 +686,53 @@ describe("SudokuGrid", () => {
     });
 
     describe("update", () => {
-        let updateSolvedCellsSpy;
-        let updateCandidatesSpy;
         let grid;
 
         beforeEach(() => {
             grid = new SudokuGrid();
-            updateSolvedCellsSpy = jest.fn(null);
-            updateCandidatesSpy = jest.fn(null);
-
-            grid.updateSolvedCells = updateSolvedCellsSpy;
-            grid.updateCandidates = updateCandidatesSpy;
+            grid.updateSolvedCells = jest.fn(null);
+            grid.updateCandidates = jest.fn(null);
         });
 
-        it("should not update any cell", () => {
-            updateCandidatesSpy.mockReturnValue(false);
+        it("should not update any cells", () => {
+            grid.updateCandidates.mockReturnValue(false);
+            grid.updateSolvedCells.mockReturnValue(0);
 
-            expect(grid.update()).toEqual(false);
-            expect(updateSolvedCellsSpy).toHaveBeenCalledTimes(1);
-            expect(updateCandidatesSpy).toHaveBeenCalledTimes(1);
+            expect(grid.update()).toEqual(0);
+            expect(grid.updateSolvedCells).toHaveBeenCalledTimes(1);
+            expect(grid.updateCandidates).toHaveBeenCalledTimes(1);
         });
 
         it("should update one cell", () => {
-            updateCandidatesSpy
+            grid.updateSolvedCells
+                .mockReturnValueOnce(0)
+                .mockReturnValueOnce(1);
+            grid.updateCandidates
                 .mockReturnValue(false)
                 .mockReturnValueOnce(true);
 
-            expect(grid.update()).toEqual(true);
-            expect(updateSolvedCellsSpy).toHaveBeenCalledTimes(2);
-            expect(updateCandidatesSpy).toHaveBeenCalledTimes(2);
+            expect(grid.update()).toEqual(1);
+            expect(grid.updateSolvedCells).toHaveBeenCalledTimes(2);
+            expect(grid.updateCandidates).toHaveBeenCalledTimes(2);
         });
 
         it("should update a few cells", () => {
-            updateCandidatesSpy
+            grid.updateSolvedCells
+                .mockReturnValueOnce(3)
+                .mockReturnValueOnce(0)
+                .mockReturnValueOnce(1)
+                .mockReturnValueOnce(5)
+                .mockReturnValueOnce(2);
+            grid.updateCandidates
                 .mockReturnValue(false)
                 .mockReturnValueOnce(true)
                 .mockReturnValueOnce(true)
                 .mockReturnValueOnce(true)
                 .mockReturnValueOnce(true);
 
-            expect(grid.update()).toEqual(true);
-            expect(updateSolvedCellsSpy).toHaveBeenCalledTimes(5);
-            expect(updateCandidatesSpy).toHaveBeenCalledTimes(5);
+            expect(grid.update()).toEqual(11);
+            expect(grid.updateSolvedCells).toHaveBeenCalledTimes(5);
+            expect(grid.updateCandidates).toHaveBeenCalledTimes(5);
         });
     });
 
