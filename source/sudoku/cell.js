@@ -132,6 +132,10 @@ export class SudokuCell {
      *     candidates, it is not applied.
      */
     updateCandidates(rowValues, columnValues, blockValues) {
+        if (this.isSolved()) {
+            return false;
+        }
+
         const allElements = new Set(
             [...rowValues, ...columnValues, ...blockValues]
         );
