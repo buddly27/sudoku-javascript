@@ -2,6 +2,18 @@
  * Sudoku cell.
  */
 
+/**
+ * Error thrown when an error appears in the :class:`~sudoku.cell.SudokuCell`.
+ */
+export function SudokuCellError(message, identifier) {
+    this.name = "SudokuCellError";
+    this.message = message;
+    this.identifier = identifier;
+}
+
+// eslint-disable-next-line new-parens
+SudokuCellError.prototype = new Error;
+
 
 /**
  * Represent a Sudoku Cell object.
@@ -59,15 +71,17 @@ export class SudokuCell {
      */
     validateCandidates(candidates) {
         if (candidates.length > 0 && this.isSolved()) {
-            throw Error(
+            throw new SudokuCellError(
                 "A non-empty list of candidates can not be set for a " +
-                "solved cell."
+                "solved cell.",
+                this.identifier,
             );
         }
         else if (candidates.length === 0 && !this.isSolved()) {
-            throw Error(
+            throw new SudokuCellError(
                 "A empty list of candidates can not be set for an " +
-                "unsolved cell."
+                "unsolved cell.",
+                this.identifier,
             );
         }
     }
@@ -152,10 +166,11 @@ export class SudokuCell {
         );
 
         if (difference.size === 0) {
-            throw Error(
+            throw new SudokuCellError(
                 `The cell '${this.identifier}' can not receive an empty list ` +
                 "of candidates during the update has it does not have a " +
-                "value yet. Some neighbor cells might have incorrect values."
+                "value yet. Some neighbor cells might have incorrect values.",
+                this.identifier,
             );
         }
 
