@@ -1,3 +1,5 @@
+/* eslint-disable no-new */
+
 import {SudokuCell} from "sudoku/cell";
 
 
@@ -96,6 +98,13 @@ describe("SudokuCell", () => {
                     "solved cell."
                 )
             );
+
+            try {
+                new SudokuCell(2, 3, 5, [1, 2, 3]);
+            }
+            catch (error) {
+                expect(error.identifier).toEqual("c35");
+            }
         });
     });
 
@@ -109,6 +118,13 @@ describe("SudokuCell", () => {
                     "unsolved cell."
                 )
             );
+
+            try {
+                new SudokuCell(0, 3, 5, []);
+            }
+            catch (error) {
+                expect(error.identifier).toEqual("c35");
+            }
         });
     });
 
@@ -210,6 +226,13 @@ describe("SudokuCell", () => {
                     "values."
                 )
             );
+
+            try {
+                cell.updateCandidates([1, 4, 6], [2, 3, 5], [7, 8, 9]);
+            }
+            catch (error) {
+                expect(error.identifier).toEqual("c19");
+            }
         });
     });
 
