@@ -173,26 +173,43 @@ describe("SudokuCell", () => {
         });
     });
 
-    describe("resolve", () => {
-        it("should not solve a cell with many candidates are left", () => {
+    describe("update candidates from row, column and block values", () => {
+        it("should not update when empty arrays are given", () => {
             const cell = new SudokuCell(0, 1, 9);
-            expect(cell.resolve()).toEqual(false);
-            expect(cell.isSolved()).toEqual(false);
-            expect(cell.value).toEqual(0);
+            expect(cell.updateCandidates([], [], [])).toEqual(false);
+            expect(cell.candidates).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         });
 
-        it("should not solve a cell with no candidates left", () => {
-            const cell = new SudokuCell(4, 1, 9);
-            expect(cell.resolve()).toEqual(false);
-            expect(cell.isSolved()).toEqual(true);
-            expect(cell.value).toEqual(4);
+        it("should update when one matching value is found", () => {
+            const cell = new SudokuCell(0, 1, 9);
+            expect(cell.updateCandidates([1], [], [])).toEqual(true);
+            expect(cell.candidates).toEqual([2, 3, 4, 5, 6, 7, 8, 9]);
         });
 
-        it("should solve a cell with only one candidate left", () => {
-            const cell = new SudokuCell(0, 1, 9, [8]);
-            expect(cell.resolve()).toEqual(true);
-            expect(cell.isSolved()).toEqual(true);
-            expect(cell.value).toEqual(8);
+        it("should update when several matching values are found", () => {
+            const cell = new SudokuCell(0, 1, 9);
+            expect(cell.updateCandidates([1, 4, 5], [2, 5], [9])).toEqual(true);
+            expect(cell.candidates).toEqual([3, 6, 7, 8]);
+        });
+
+        it("should not update when cell is already resolved", () => {
+            const cell = new SudokuCell(3, 1, 9);
+            expect(cell.updateCandidates([1, 4, 5], [2, 5], [9])).toEqual(false);
+            expect(cell.candidates).toEqual([]);
+        });
+
+        it("should throw an error if update is incoherent", () => {
+            const cell = new SudokuCell(0, 1, 9);
+            expect(
+                () => cell.updateCandidates([1, 4, 6], [2, 3, 5], [7, 8, 9])
+            ).toThrow(
+                Error(
+                    "The cell 'c19' can not receive an empty list of " +
+                    "candidates during the update has it does not have a " +
+                    "value yet. Some neighbor cells might have incorrect " +
+                    "values."
+                )
+            );
         });
     });
 
