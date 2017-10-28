@@ -4,6 +4,44 @@
 Release Notes
 *************
 
+.. release:: 0.5.0
+
+    .. change:: changed
+
+        Changed :meth:`sudoku.grid.SudokuGrid.update` to return the number of
+        solved cells instead of whether any candidates have been modified.
+
+    .. change:: changed
+
+        Changed :meth:`sudoku.cell.SudokuCell.updateCandidates` to return
+        directly with 'false' if the cell is already solved.
+
+    .. change:: new
+
+        Added :func:`sudoku.cell.SudokuCellError` and use it instead of the
+        generic error class for :class:`~sudoku.cell.SudokuCell` in order to
+        include the cell identifier when an error is thrown.
+
+    .. change:: changed
+
+        Changed :class:`~sudoku.cell.SudokuCell` to throw
+        :func:`~sudoku.cell.SudokuCellError` when an incoherent list of
+        candidates is provided to a cell.
+
+    .. change:: changed
+
+        Changed :meth:`sudoku.cell.SudokuCell.updateCandidates` to throw
+        :func:`~sudoku.cell.SudokuCellError` when it attempts to set an
+        incoherent list of candidates to a cell.
+
+        .. code-block:: js
+
+            const cell = new SudokuCell(0, 1, 9)
+
+            // This would result to an empty candidate list, whereas the cell
+            // does not have a value yet...
+            cell.updateCandidates([1, 4, 6], [2, 3, 5], [7, 8, 9])
+
 .. release:: 0.4.0
 
     .. change:: changed
