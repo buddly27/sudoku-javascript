@@ -57,8 +57,8 @@ export class SudokuCell {
      *
      * .. warning ::
      *
-     *      An Error will be raised if the custom list of candidates is
-     *      incoherent with the cell value.
+     *      A :func:`~sudoku.cell.SudokuCellError` is thrown if the
+     *      custom list of candidates is incoherent with the cell value.
      */
     constructor(value, rowIndex, columnIndex, candidates = null) {
         this._identifier = `c${rowIndex}${columnIndex}`;
@@ -79,9 +79,9 @@ export class SudokuCell {
     /**
      * Validate *candidates* and throw an error if invalid.
      *
-     * An error is raised if the candidates list is not empty while the cell
-     * already has a non-zero value, or if the candidates list is empty while
-     * the cell do not has a non-zero value yet.
+     * A :func:`~sudoku.cell.SudokuCellError` is thrown if the candidates list
+     * is not empty while the cell already has a non-zero value, or if the
+     * candidates list is empty while the cell do not has a non-zero value yet.
      */
     validateCandidates(candidates) {
         if (candidates.length > 0 && this.isSolved()) {
@@ -130,8 +130,8 @@ export class SudokuCell {
      *
      * .. warning ::
      *
-     *      An Error will be raised if the new list of candidates is incoherent
-     *      with the cell value.
+     *      A :func:`~sudoku.cell.SudokuCellError` is thrown if the new list of
+     *      candidates is incoherent with the cell value.
      */
     set candidates(candidates) {
         this.validateCandidates(candidates);
@@ -161,8 +161,8 @@ export class SudokuCell {
      *
      * .. warning ::
      *
-     *      An Error will be raised if updated list of candidates is incoherent
-     *      with the cell value.
+     *      A :func:`~sudoku.cell.SudokuCellError` is thrown if the updated
+     *      list of candidates is incoherent with the cell value.
      */
     updateCandidates(rowValues, columnValues, blockValues) {
         if (this.isSolved()) {
