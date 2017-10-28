@@ -4,6 +4,20 @@
 
 /**
  * Error thrown when an error appears in the :class:`~sudoku.cell.SudokuCell`.
+ *
+ * It includes the *identifier* of the cell.
+ *
+ * Example::
+ *
+ *     const cell = new SudokuCell(0, 3, 5);
+ *
+ *     try {
+ *         cell.candidates = [];
+ *     }
+ *     catch (error) {
+ *         console.log(error.message);
+ *         console.log(error.identifier);
+ *     }
  */
 export function SudokuCellError(message, identifier) {
     this.name = "SudokuCellError";
