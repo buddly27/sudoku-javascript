@@ -4,6 +4,12 @@
 Release Notes
 *************
 
+.. release:: 0.6.1
+
+    .. change:: fixed
+
+        Changed lodash dependency to 4.17.5 due to vulnerability issues.
+
 .. release:: 0.6.0
 
     .. change:: changed
