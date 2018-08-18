@@ -4,6 +4,20 @@
 Release Notes
 *************
 
+.. release:: 0.6.0
+
+    .. change:: changed
+
+        Changed README to `Markdown <https://en.wikipedia.org/wiki/Markdown>`_
+        in order to have it displayed on the :term:`NPM` profile page.
+
+        .. seealso:: https://www.npmjs.com/package/sudoku-javascript
+
+    .. change:: changed
+
+        Changed licensing to use the `MIT License
+        <https://en.wikipedia.org/wiki/MIT_License>`_.
+
 .. release:: 0.5.0
 
     .. change:: changed

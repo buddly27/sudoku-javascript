@@ -22,7 +22,7 @@ master_doc = "index"
 
 # General information about the project.
 project = u"Sudoku Javascript"
-copyright = u"2017, Jeremy Retailleau"
+copyright = u"2018, Jeremy Retailleau"
 
 # Version
 with open(os.path.join(os.path.dirname(__file__), "..", "package.json")) as f:
