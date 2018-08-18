@@ -8,6 +8,12 @@ Release Notes
 
     .. change:: fixed
 
+        Ensured that built library is published in the :term:`NPM` index.
+
+.. release:: 0.6.1
+
+    .. change:: fixed
+
         Changed lodash dependency to 4.17.5 due to vulnerability issues.
 
 .. release:: 0.6.0

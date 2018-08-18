@@ -8,7 +8,7 @@ from setuptools import setup
 ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 README_PATH = os.path.join(ROOT_PATH, "README.md")
 
-VERSION = "0.6.1"
+VERSION = "0.6.2"
 
 # Compute dependencies.
 INSTALL_REQUIRES = [
