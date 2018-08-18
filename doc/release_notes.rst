@@ -4,19 +4,29 @@
 Release Notes
 *************
 
-.. release:: 0.6.1
+.. release:: 0.6.3
+    :date: 2018-08-18
+
+    .. change:: fixed
+
+        Add missing dates to release notes.
+
+.. release:: 0.6.2
+    :date: 2018-08-18
 
     .. change:: fixed
 
         Ensured that built library is published in the :term:`NPM` index.
 
 .. release:: 0.6.1
+    :date: 2018-08-18
 
     .. change:: fixed
 
         Changed lodash dependency to 4.17.5 due to vulnerability issues.
 
 .. release:: 0.6.0
+    :date: 2018-08-18
 
     .. change:: changed
 
@@ -31,6 +41,7 @@ Release Notes
         <https://en.wikipedia.org/wiki/MIT_License>`_.
 
 .. release:: 0.5.0
+    :date: 2017-10-28
 
     .. change:: changed
 
@@ -69,6 +80,7 @@ Release Notes
             cell.updateCandidates([1, 4, 6], [2, 3, 5], [7, 8, 9])
 
 .. release:: 0.4.0
+    :date: 2017-10-24
 
     .. change:: changed
 
@@ -81,18 +93,21 @@ Release Notes
         mapping of all candidates per cell identifier.
 
 .. release:: 0.3.2
+    :date: 2017-10-22
 
     .. change:: fixed
 
         Fix package version.
 
 .. release:: 0.3.1
+    :date: 2017-10-21
 
     .. change:: fixed
 
         Updated :ref:`tutorial`.
 
 .. release:: 0.3.0
+    :date: 2017-10-21
 
     .. change:: changed
 
@@ -159,6 +174,7 @@ Release Notes
             3
 
 .. release:: 0.2.0
+    :date: 2017-10-15
 
     .. change:: new
 
@@ -166,6 +182,7 @@ Release Notes
         :class:`~sudoku.cell.SudokuCell` and empty its list of candidates.
 
 .. release:: 0.1.0
+    :date: 2017-10-12
 
     .. change:: new
 

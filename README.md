@@ -8,9 +8,6 @@ This library is attempting to solve 9x9 Sudoku grids based on built-in
 strategies. It records the modified cells and keep track of the strategies
 used in order to be used for didactic purposes.
 
-It is inspired from the excellent [Sudoku Wiki](<http://www.sudokuwiki.org/>)
-solver.
-
 ```javascript
 import {SudokuGrid, SudokuSolver} from "sudoku-javascript";
 
@@ -29,6 +26,15 @@ const grid = new SudokuGrid({
 const solver = new SudokuSolver();
 solver.resolve(grid);
 ```
+
+You can install it in your project as follow
+
+```bash
+npm install sudoku-javascript
+```
+
+It is inspired from the excellent [Sudoku Wiki](<http://www.sudokuwiki.org/>)
+solver.
 
 ## Documentation
 
