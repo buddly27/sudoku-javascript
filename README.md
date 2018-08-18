@@ -1,9 +1,7 @@
 ## Sudoku Javascript
 
 [![CircleCI](https://circleci.com/gh/buddly27/sudoku-javascript.svg?style=shield)](https://circleci.com/gh/buddly27/sudoku-javascript)
-
 [![codecov](https://codecov.io/gh/buddly27/sudoku-javascript/branch/master/graph/badge.svg)](https://codecov.io/gh/buddly27/sudoku-javascript)
-
 [![Documentation Status](https://readthedocs.org/projects/sudoku-javascript/badge/?version=stable)](http://sudoku-javascript.readthedocs.io/en/stable)
 
 This library is attempting to solve 9x9 Sudoku grids based on built-in
